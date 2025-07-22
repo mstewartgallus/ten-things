@@ -1,6 +1,6 @@
 "use client";
 
-import type { Id, Entry, Fresh } from "@/lib/features/ten/tenSlice";
+import type { Id, Entry, Fresh } from "@/lib/definitions";
 
 import {
     edit,
@@ -15,7 +15,7 @@ import {
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useCallback, useMemo } from 'react';
-import { FreshList } from '@/components/fresh-list/FreshList';
+import { FreshList } from '@/ui/fresh-list/FreshList';
 import { usePersistBootstrapped } from '../StoreProvider';
 
 interface FreshSectionProps {

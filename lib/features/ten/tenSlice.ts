@@ -1,21 +1,6 @@
 import type { PayloadAction, Selector } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-
-export type Id = number;
-
-export interface Entry {
-    value: string;
-    created: number;
-}
-
-export interface Fresh {
-    id: Id;
-}
-
-export interface Complete {
-    id: Id;
-    completed: number;
-}
+import type { Id, Entry, Fresh, Complete } from "@/lib/definitions";
 
 interface CreateAction {
     index: number;

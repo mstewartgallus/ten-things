@@ -1,6 +1,6 @@
 "use client";
 
-import type { Id, Entry } from "@/lib/features/ten/tenSlice";
+import type { Id, Entry } from "@/lib/definitions";
 
 import { useMemo } from 'react';
 

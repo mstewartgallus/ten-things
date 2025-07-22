@@ -1,4 +1,4 @@
-import type { Id, Entry, Fresh } from "@/lib/features/ten/tenSlice";
+import type { Entry, Fresh, Id } from "@/lib/definitions";
 
 import { CreateForm } from "../slot-controls/SlotControls";
 import { FreshEdit } from "../fresh-edit/FreshEdit";

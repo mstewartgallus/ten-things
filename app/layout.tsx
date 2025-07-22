@@ -1,17 +1,17 @@
 import type { ReactNode } from "react";
-import { Link } from "@/components/link/Link";
-import { Html } from "@/components/html/Html";
-import { StoreProvider } from "./_components/StoreProvider";
+import { Link } from "@/ui/link/Link";
+import { Html } from "@/ui/html/Html";
+import { inter } from "@/ui/fonts";
+import { StoreProvider } from "./_ui/StoreProvider";
 
-import "./_styles/globals.css";
-import styles from "./_styles/layout.module.css";
+import "./_ui/styles/globals.css";
+import styles from "./_ui/styles/layout.module.css";
 
-const Nav = () => {
-    return <nav className={styles.nav}>
+const Nav = () =>
+    <nav className={styles.nav}>
         <Link href="/">Fresh</Link>
         <Link href="/complete">Complete</Link>
-        </nav>;
-};
+    </nav>;
 
 interface Props {
   readonly children: ReactNode;
@@ -20,7 +20,7 @@ interface Props {
 const RootLayout = ({ children }: Props) =>
     <StoreProvider>
         <Html lang="en">
-            <body>
+            <body className={inter.className}>
                  <Nav />
                  <main className={styles.main}>
                      {children}

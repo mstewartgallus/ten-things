@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { Logo } from '@/components/Logo';
+import { Logo } from '@/ui/Logo';
 
 export const dynamic = 'force-static';
 

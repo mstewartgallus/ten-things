@@ -1,6 +1,6 @@
 "use client";
 
-import type { Id, Entry, Fresh } from "@/lib/features/ten/tenSlice";
+import type { Id, Entry, Fresh } from "@/lib/definitions";
 
 import { useCallback, useMemo, useState } from 'react';
 import { DndList, DndItem, useDndItem } from '../dnd-list/DndList';

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { CompleteThings } from "../_components/complete-things/CompleteThings";
+import { CompleteThings } from "../_ui/complete-things/CompleteThings";
 
 const CompletePage = () => <CompleteThings />;
 

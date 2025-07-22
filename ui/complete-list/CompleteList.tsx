@@ -1,4 +1,4 @@
-import type { Id, Entry, Complete } from "@/lib/features/ten/tenSlice";
+import type { Id, Entry, Complete } from "@/lib/definitions";
 
 import { useCallback } from 'react';
 import { Complete as CompleteComponent } from '../complete/Complete';

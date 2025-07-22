@@ -40,7 +40,7 @@ export const EditForm = ({ value, onChange }: Props) => {
     }, [editValue, onChange]);
 
     return <form className={styles.formButton} id={formId} action="#" onSubmit={onSubmitForm}>
-            <input disabled={!onChangeInput} className={styles.input} value={editValue} onChange={onChangeInput} />
+            <input disabled={!onChangeInput} required className={styles.input} value={editValue} onChange={onChangeInput} />
             <Button disabled={!onSubmitForm}>
                 Submit
             </Button>

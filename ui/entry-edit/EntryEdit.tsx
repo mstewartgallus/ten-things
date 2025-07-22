@@ -1,6 +1,6 @@
 "use client";
 
-import type { Entry } from "@/lib/features/ten/tenSlice";
+import type { Entry } from "@/lib/definitions";
 
 import { EditFormMaybe } from "../edit-form-maybe/EditFormMaybe";
 import { Time } from "../time/Time";

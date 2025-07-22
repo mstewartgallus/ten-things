@@ -1,6 +1,6 @@
 "use client";
 
-import type { Id, Entry, Complete } from "@/lib/features/ten/tenSlice";
+import type { Id, Entry, Complete } from "@/lib/definitions";
 
 import {
     selectEntryAtId,
@@ -8,7 +8,7 @@ import {
 } from "@/lib/features/ten/tenSlice";
 
 import { useAppSelector } from "@/lib/hooks";
-import { CompleteList } from '@/components/complete-list/CompleteList';
+import { CompleteList } from '@/ui/complete-list/CompleteList';
 import { usePersistBootstrapped } from '../StoreProvider';
 
 interface Props {
