@@ -1,4 +1,6 @@
 import type { UnknownAction } from "redux";
+import type { Selector } from "@reduxjs/toolkit";
+import type { RootState } from "@/lib/store";
 
 import {
     selectNewEntryId,
@@ -11,29 +13,31 @@ import {
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useCallback } from 'react';
-import { usePersistBootstrapped } from './PersistProvider';
-
+import { usePersisting } from './StoreProvider';
 
 type Tuple = unknown[];
 type ActionCreator<T extends Tuple> = (...x: T) => UnknownAction;
 type ActionDispatcher<T extends Tuple> = (...x: T) => void;
 
 const useDispatchAction:
-    <T extends Tuple>(actionCreator: ActionCreator<T>) => (ActionDispatcher<T> | undefined)
+    <T extends Tuple>(actionCreator: ActionCreator<T>) => ActionDispatcher<T>
     = <T extends Tuple>(actionCreator: ActionCreator<T>) => {
-        // FIXME there must be a better way of handling bootstrapping here
-        const bootstrapped = usePersistBootstrapped();
+        usePersisting();
         const dispatch = useAppDispatch();
-        const cb = useCallback(
+        return useCallback(
             (...x: T) => dispatch(actionCreator(...x)),
             [dispatch, actionCreator]);
-        return bootstrapped ? cb : undefined;
+    };
+
+const useSelector: <T>(selector: Selector<RootState, T>) => T = <T>(selector: Selector<RootState, T>) => {
+    usePersisting();
+    return useAppSelector(selector);
 };
 
-export const useNewEntryId = () => useAppSelector(selectNewEntryId);
-export const useEntryAtId = () => useAppSelector(selectEntryAtId);
-export const useFresh = () => useAppSelector(selectFresh);
-export const useComplete = () => useAppSelector(selectComplete);
+export const useNewEntryId = () => useSelector(selectNewEntryId);
+export const useEntryAtId = () => useSelector(selectEntryAtId);
+export const useFresh = () => useSelector(selectFresh);
+export const useComplete = () => useSelector(selectComplete);
 
 export const useOnChangeId = () => useDispatchAction(edit);
 export const useOnCreateIndex = () => useDispatchAction(create);
