@@ -9,8 +9,8 @@ import styles from "./_ui/styles/layout.module.css";
 
 const Nav = () =>
     <nav className={styles.nav}>
-        <Link href="/">Fresh</Link>
-        <Link href="/complete">Complete</Link>
+        <Link href="/">Fresh Things</Link>
+        <Link href="/complete">Complete Things</Link>
     </nav>;
 
 interface Props {

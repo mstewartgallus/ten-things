@@ -18,7 +18,7 @@ interface Props {
 
 const TenImpl = ({ entryAtId, complete }: Props) => {
     return <section>
-        <h1>Completed</h1>
+        <h1>Complete Things</h1>
         <CompleteList complete={complete} entryAtId={entryAtId} />
     </section>;
 };

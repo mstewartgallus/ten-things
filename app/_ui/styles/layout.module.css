@@ -4,7 +4,7 @@
 .nav {
     display: flex;
     justify-content: space-between;
-    inline-size: 10em;
+    inline-size: 16em;
     margin-block: 1em;
     margin-inline: 1em;
 }
