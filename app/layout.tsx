@@ -1,18 +1,32 @@
-import type { Metadata } from 'next';
+import type { ReactNode } from "react";
+import { Link } from "@/components/link/Link";
+import { Html } from "@/components/html/Html";
+import { StoreProvider } from "./_components/StoreProvider";
 
-export const metadata: Metadata = {
-  title: 'Next.js on GitHub Pages',
-  description: 'Deploy your static Next.js site to GitHub Pages.',
+import "./_styles/globals.css";
+import styles from "./_styles/layout.module.css";
+
+const Nav = () => {
+    return <nav className={styles.nav}>
+        <Link href="/">Fresh</Link>
+        <Link href="/complete">Complete</Link>
+        </nav>;
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  );
+interface Props {
+  readonly children: ReactNode;
 }
+
+const RootLayout = ({ children }: Props) =>
+    <StoreProvider>
+        <Html lang="en">
+            <body>
+                 <Nav />
+                 <main className={styles.main}>
+                     {children}
+                 </main>
+            </body>
+        </Html>
+    </StoreProvider>;
+
+export default RootLayout;

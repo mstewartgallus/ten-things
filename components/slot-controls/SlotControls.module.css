@@ -1,0 +1,24 @@
+.formButton {
+    display: flex;
+}
+.editForm {
+    display: flex;
+}
+
+.entryForm {
+    display: flex;
+    justify-content: space-between;
+    inline-size: 40em;
+}
+
+.editableTitle {
+    display: flex;
+}
+
+.titleAndInput {
+
+}
+.title, .titleAndInput {
+    display: flex;
+    align-items: center;
+}
