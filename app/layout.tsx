@@ -3,6 +3,7 @@ import { Link } from "@/ui/link/Link";
 import { Html } from "@/ui/html/Html";
 import { inter } from "@/ui/fonts";
 import { StoreProvider } from "./_ui/StoreProvider";
+import { PersistProvider } from "./_ui/PersistProvider";
 
 import "./_ui/styles/globals.css";
 import styles from "./_ui/styles/layout.module.css";
@@ -18,15 +19,17 @@ interface Props {
 }
 
 const RootLayout = ({ children }: Props) =>
-    <StoreProvider>
-        <Html lang="en">
-            <body className={inter.className}>
-                 <Nav />
-                 <main className={styles.main}>
-                     {children}
-                 </main>
-            </body>
-        </Html>
-    </StoreProvider>;
+    <Html lang="en">
+        <body className={inter.className}>
+             <Nav />
+             <main className={styles.main}>
+                 <StoreProvider>
+                     <PersistProvider>
+                         {children}
+                      </PersistProvider>
+                 </StoreProvider>
+             </main>
+         </body>
+    </Html>;
 
 export default RootLayout;

@@ -1,0 +1,41 @@
+import type { UnknownAction } from "redux";
+
+import {
+    selectNewEntryId,
+    selectEntryAtId,
+    selectFresh,
+    selectComplete,
+
+    edit, create, complete, swap
+} from "@/lib/features/ten/tenSlice";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useCallback } from 'react';
+import { usePersistBootstrapped } from './PersistProvider';
+
+
+type Tuple = unknown[];
+type ActionCreator<T extends Tuple> = (...x: T) => UnknownAction;
+type ActionDispatcher<T extends Tuple> = (...x: T) => void;
+
+const useDispatchAction:
+    <T extends Tuple>(actionCreator: ActionCreator<T>) => (ActionDispatcher<T> | undefined)
+    = <T extends Tuple>(actionCreator: ActionCreator<T>) => {
+        // FIXME there must be a better way of handling bootstrapping here
+        const bootstrapped = usePersistBootstrapped();
+        const dispatch = useAppDispatch();
+        const cb = useCallback(
+            (...x: T) => dispatch(actionCreator(...x)),
+            [dispatch, actionCreator]);
+        return bootstrapped ? cb : undefined;
+};
+
+export const useNewEntryId = () => useAppSelector(selectNewEntryId);
+export const useEntryAtId = () => useAppSelector(selectEntryAtId);
+export const useFresh = () => useAppSelector(selectFresh);
+export const useComplete = () => useAppSelector(selectComplete);
+
+export const useOnChangeId = () => useDispatchAction(edit);
+export const useOnCreateIndex = () => useDispatchAction(create);
+export const useOnCompleteIndex = () => useDispatchAction(complete);
+export const useOnSwapIndices = () => useDispatchAction(swap);
