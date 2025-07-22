@@ -1,6 +1,4 @@
 import type { UnknownAction } from "redux";
-import type { Selector } from "@reduxjs/toolkit";
-import type { RootState } from "@/lib/store";
 
 import {
     selectNewEntryId,
