@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from 'react';
+import { Suspense, useMemo } from 'react';
 import { FreshList } from '@/ui/fresh-list/FreshList';
 import {
     useFresh,
@@ -18,7 +18,15 @@ const useFreshCount = () => {
             [fresh]);
 };
 
-export const TenThings = () => {
+const Heading = () => {
+    const count = useFreshCount();
+    return <>{count} / 10 Things</>
+};
+
+const FallbackHeading = () =>
+    <>? / 10 Things</>;
+
+const List = () => {
     const fresh = useFresh();
     const entryAtId = useEntryAtId();
     const newEntryId = useNewEntryId();
@@ -28,21 +36,28 @@ export const TenThings = () => {
     const onCompleteIndex = useOnCompleteIndex();
     const onSwapIndices = useOnSwapIndices();
 
-    const count = useFreshCount();
+    return <FreshList
+                 entryAtId={entryAtId}
+                 fresh={fresh}
+                 newEntryId={newEntryId}
 
-    return <section>
-        <h1>{count} / 10 Things</h1>
-        <FreshList
-              entryAtId={entryAtId}
-              fresh={fresh}
-              newEntryId={newEntryId}
+                 onChangeId={onChangeId}
 
-              onChangeId={onChangeId}
+                 onCreateIndex={onCreateIndex}
+                 onCompleteIndex={onCompleteIndex}
+                 onSwapIndices={onSwapIndices}
 
-              onCreateIndex={onCreateIndex}
-              onCompleteIndex={onCompleteIndex}
-              onSwapIndices={onSwapIndices}
+        />;
+};
 
-                    />
-        </section>;
-}
+export const TenThings = () =>
+    <section>
+       <h1>
+          <Suspense fallback={<FallbackHeading />}>
+             <Heading />
+          </Suspense>
+       </h1>
+       <Suspense>
+          <List />
+       </Suspense>
+    </section>;

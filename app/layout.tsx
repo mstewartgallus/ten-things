@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "@/ui/link/Link";
 import { Html } from "@/ui/html/Html";
 import { inter } from "@/ui/fonts";
-import { StoreProvider } from "./_ui/StoreProvider";
+import { StoreProvider } from "@/lib/StoreProvider";
 
 import "./_ui/styles/globals.css";
 import styles from "./_ui/styles/layout.module.css";
