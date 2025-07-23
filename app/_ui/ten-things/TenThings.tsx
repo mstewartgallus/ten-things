@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo } from 'react';
+import { useMemo } from 'react';
 import { FreshList } from '@/ui/fresh-list/FreshList';
 import {
     useFresh,
@@ -22,9 +22,6 @@ const Heading = () => {
     const count = useFreshCount();
     return <>{count} / 10 Things</>
 };
-
-const FallbackHeading = () =>
-    <>? / 10 Things</>;
 
 const List = () => {
     const fresh = useFresh();
@@ -53,11 +50,7 @@ const List = () => {
 export const TenThings = () =>
     <section>
        <h1>
-          <Suspense fallback={<FallbackHeading />}>
-             <Heading />
-          </Suspense>
+           <Heading />
        </h1>
-       <Suspense>
-          <List />
-       </Suspense>
+       <List />
     </section>;
