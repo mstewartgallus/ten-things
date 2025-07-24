@@ -1,7 +1,7 @@
 import type { FormEvent } from "react";
 import { useMemo, useId } from 'react';
-import { Button } from "../button/Button";
-import { Icon } from "../icon/Icon";
+import { Button } from "../button";
+import { Icon } from "../icon";
 
 interface CompleteProps {
     disabled: boolean;

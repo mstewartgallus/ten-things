@@ -1,11 +1,9 @@
-"use client";
-
 import type { Id, Entry } from "@/lib/definitions";
 
 import { useMemo } from 'react';
 
-import { CompleteForm } from "../slot-controls/SlotControls";
-import { EntryEdit } from "../entry-edit/EntryEdit";
+import { CompleteForm } from "../slot-controls";
+import { EntryEdit } from "../entry-edit";
 
 interface FreshEditStateArgs {
     id: Id;

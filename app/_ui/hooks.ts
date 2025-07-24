@@ -1,5 +1,8 @@
+'use client';
+
 import type { UnknownAction } from "redux";
 
+// FIXME
 import {
     selectNewEntryId,
     selectEntryAtId,
@@ -9,7 +12,7 @@ import {
     edit, create, complete, swap
 } from "@/lib/features/ten/tenSlice";
 
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib";
 import { useCallback } from 'react';
 
 type Tuple = unknown[];

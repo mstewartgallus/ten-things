@@ -1,6 +1,6 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { useMemo, useId, useState } from 'react';
-import { Button } from "../button/Button";
+import { Button } from "../button";
 
 import styles from "./EditForm.module.css";
 

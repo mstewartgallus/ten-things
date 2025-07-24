@@ -1,9 +1,9 @@
 import type { MouseEvent } from "react";
 import { useMemo, useId } from 'react';
 import { If } from "../If";
-import { Button } from "../button/Button";
-import { Icon } from "../icon/Icon";
-import { EditForm } from "../edit-form/EditForm";
+import { Button } from "../button";
+import { Icon } from "../icon";
+import { EditForm } from "../edit-form";
 
 import styles from "./EditFormMaybe.module.css";
 

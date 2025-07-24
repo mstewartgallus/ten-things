@@ -1,4 +1,4 @@
-import { Time } from '../time/Time';
+import { Time } from '../time';
 
 import styles from './Complete.module.css';
 

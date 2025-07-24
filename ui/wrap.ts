@@ -1,3 +1,5 @@
+'use client';
+
 import type { PointerEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
 

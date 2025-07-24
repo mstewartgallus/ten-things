@@ -1,8 +1,8 @@
 import type { Id, Entry, Complete } from "@/lib/definitions";
 
 import { useCallback } from 'react';
-import { Complete as CompleteComponent } from '../complete/Complete';
-import { List, Item, useItem } from '../list/List';
+import { Complete as CompleteComponent } from '../complete';
+import { List, Item, useItem } from '../list';
 
 interface Props {
     complete: readonly Complete[];

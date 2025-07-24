@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { TenThings } from "./_ui/ten-things/TenThings";
+import { TenThings } from "./_ui/ten-things";
 
 const IndexPage = () => <TenThings />;
 

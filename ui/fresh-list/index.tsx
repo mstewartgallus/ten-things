@@ -3,8 +3,8 @@
 import type { Id, Entry, Fresh } from "@/lib/definitions";
 
 import { useCallback, useMemo, useState } from 'react';
-import { DndList, DndItem, useDndItem } from '../dnd-list/DndList';
-import { FreshEditMaybe } from "../fresh-edit-maybe/FreshEditMaybe";
+import { DndList, DndItem, useDndItem } from '../dnd-list';
+import { FreshEditMaybe } from "../fresh-edit-maybe";
 
 import styles from "./FreshList.module.css";
 

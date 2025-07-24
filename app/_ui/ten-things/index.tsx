@@ -1,8 +1,7 @@
-"use client";
+'use client';
 
 import { useMemo } from 'react';
-import { FreshList } from '@/ui/fresh-list/FreshList';
-import { H1 } from "@/ui";
+import { FreshList, H1 } from "@/ui";
 import {
     useFresh,
     useEntryAtId,

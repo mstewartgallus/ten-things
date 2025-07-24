@@ -1,9 +1,7 @@
-"use client";
-
 import type { Entry } from "@/lib/definitions";
 
-import { EditFormMaybe } from "../edit-form-maybe/EditFormMaybe";
-import { Time } from "../time/Time";
+import { EditFormMaybe } from "../edit-form-maybe";
+import { Time } from "../time";
 
 type Props = Entry & {
     onChange?: (value: string) => void;

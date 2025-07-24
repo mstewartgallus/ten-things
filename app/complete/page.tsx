@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { H1 } from "@/ui";
 
-import { CompleteThings } from "../_ui/complete-things/CompleteThings";
+import { CompleteThings } from "../_ui/complete-things";
 
 const CompletePage = () =>
     <section>

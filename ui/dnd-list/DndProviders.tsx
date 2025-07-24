@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState } from 'react';
-import { useIsPrimaryPointerDown } from "../html/Html";
+import { useIsPrimaryPointerDown } from "../html";
 
 interface ListContext {
     readonly dragIndex?: number;

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
 import { useEntryAtId, useComplete } from "../hooks";
-import { CompleteList } from '@/ui/complete-list/CompleteList';
+import { CompleteList } from '@/ui';
 
 export const CompleteThings = () => {
     const entryAtId = useEntryAtId();

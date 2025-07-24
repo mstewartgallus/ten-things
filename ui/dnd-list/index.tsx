@@ -2,9 +2,9 @@
 
 import type { Key, ReactNode } from 'react';
 import { createContext, useContext, useMemo } from 'react';
-import { useCursor } from "../html/Html";
-import { DragButton } from "../drag-button/DragButton";
-import { DropButton } from "../drop-button/DropButton";
+import { useCursor } from "../html";
+import { DragButton } from "../drag-button";
+import { DropButton } from "../drop-button";
 import {
     DndListProvider, DndItemProvider,
     useDndListState, useDndItemState

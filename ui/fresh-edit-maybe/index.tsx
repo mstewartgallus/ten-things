@@ -1,7 +1,7 @@
 import type { Entry, Fresh, Id } from "@/lib/definitions";
 
-import { CreateForm } from "../slot-controls/SlotControls";
-import { FreshEdit } from "../fresh-edit/FreshEdit";
+import { CreateForm } from "../slot-controls";
+import { FreshEdit } from "../fresh-edit";
 
 import styles from "./FreshEditMaybe.module.css";
 

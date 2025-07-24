@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
-import { A } from "@/ui";
-import { Html } from "@/ui/html/Html";
-import { Body } from "@/ui/body/Body";
-import { StoreProvider } from "@/lib/StoreProvider";
+import { A, Html, Body } from "@/ui";
+import { StoreProvider } from "@/lib";
 
 import "./_ui/styles/globals.css";
 import styles from "./_ui/styles/layout.module.css";

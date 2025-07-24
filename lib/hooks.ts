@@ -1,3 +1,5 @@
+'use client';
+
 import type { Selector } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
 
