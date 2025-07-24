@@ -8,15 +8,14 @@
 
     cursor: default;
 
-    margin-inline: 0.5em;
+    margin-inline: calc(0.5 * var(--line));
+    padding-inline: calc(0.25 * var(--line));
+    padding-block: calc(0.25 * var(--line));
+    margin-block: calc(0.25 * var(--line));
 
-    padding-inline: 0.5ch;
-    padding-block: 0.25em;
-    margin-block: 0.5em;
-
-    border-style: solid;
-    border-width: 2px;
-    border-radius: 1em;
+    border-radius: 0.89em;
+    outline-style: solid;
+    outline-width: 2px;
 
     display: flex;
     justify-content: center;
@@ -25,8 +24,8 @@
 
 
 .button:focus {
-    outline-width: 2px;
-    outline-style: solid;
+    outline-width: 3px;
+    outline-color: var(--highlight-text);
 }
 
 .button {

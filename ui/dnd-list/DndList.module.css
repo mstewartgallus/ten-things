@@ -10,8 +10,7 @@
 
 .grabberIcon {
     user-select: none;
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--line);
 
     display: flex;
     justify-content: center;

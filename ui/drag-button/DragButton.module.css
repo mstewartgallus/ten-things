@@ -10,11 +10,11 @@
     user-select: none;
     touch-action: none;
 
-    padding-block: 0.75em;
-    margin-block: 0.25em;
+    padding-block: calc(0.5 * var(--line));
+    margin-block: calc(0.5 * var(--line));
 
-    padding-inline: 0.5em;
-    margin-inline: 0.25em;
+    padding-inline: calc(0.5 * var(--line));
+    margin-inline: calc(0.25 * var(--line));
 
     display: flex;
     align-items: center;
@@ -22,7 +22,7 @@
     border-radius: 0.7em;
 
     font-size: 1.5625rem;
-    color: var(--emphasis-text);
+
 }
 
 .grabber {
@@ -35,12 +35,12 @@
 .grabber {
     outline-color: var(--highlight-text) ;
     background-color: var(--canvas);
-    color: var(--canvas-text);
+    color: var(--emphasis-text);
 }
 .grabber:hover {
     background: var(--button-face);
     color: var(--button-text);
-    border-color: var(--button-border);
+    outline-color: var(--button-border);
 }
 
 .grabber:hover,
@@ -56,11 +56,11 @@
 }
 
 .grabber[aria-expanded="true"] {
-    border-color: var(--accent-color-text) ;
+    outline-color: var(--accent-color-text) ;
     background-color: var(--accent-color) ;
     color: var(--accent-color-text) ;
 }
 .grabber:focus {
     outline-style: solid;
-    outline-size: 2px;
+    outline-size: 3px;
 }

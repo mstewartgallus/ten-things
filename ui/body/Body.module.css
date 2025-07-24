@@ -19,9 +19,9 @@
     caret-color: var(--highlight-text) ;
 }
 
-/* Debug pixel grid */
+/* Debug text grid */
 /* .body { */
-/*      background: linear-gradient(var(--canvas), var(--canvas-text)); */
+/*      background: linear-gradient(var(--canvas), var(--button-face)); */
 /*      background-size: 100% var(--line) ; */
 /* } */
 

@@ -2,26 +2,25 @@
     all: unset;
 
     border-radius: 0.8ch;
-    border-style: solid;
-    border-width: 0.17rem;
-    border-color: var(--button-border);
 
     background-color: var(--field);
     color: var(--field-text);
 
     padding-inline: 0.5ch;
 
-    padding-block: 0.25em;
-    margin-block: 0.25em;
+    /* padding-block: calc(0.25 * var(--line)); */
+    margin-block: calc(0.25 * var(--line));
 
     cursor: caret;
+
+    outline-style: solid;
+    outline-width: 0.15rem;
+    outline-color: var(--button-border);
 }
 
 .input:focus {
-    outline-style: solid;
-    outline-color: var(--highlight);
+    outline-color: var(--highlight-text);
 }
 .input:focus-visible {
-    outline-offset: 0.2em;
-    outline-width: 0.1rem;
+    outline-width: 0.2rem;
 }

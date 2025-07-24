@@ -1,11 +1,9 @@
 .icon {
     user-select: none;
 
-    inline-size: 1em;
-    block-size: 1em;
+    inline-size: var(--line);
 
-
-    font-size: 1.25rem;
+    font-size: 1.5625rem;
 
     display: flex;
     justify-content: center;
