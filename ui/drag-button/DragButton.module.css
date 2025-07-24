@@ -62,5 +62,5 @@
 }
 .grabber:focus {
     outline-style: solid;
-    outline-size: 3px;
+    outline-width: 3px;
 }

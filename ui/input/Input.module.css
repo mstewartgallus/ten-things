@@ -11,7 +11,7 @@
     /* padding-block: calc(0.25 * var(--line)); */
     margin-block: calc(0.25 * var(--line));
 
-    cursor: caret;
+    cursor: text;
 
     outline-style: solid;
     outline-width: 0.15rem;

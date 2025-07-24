@@ -19,7 +19,7 @@
 }
 .dropZone:focus {
     outline: solid;
-    outline-size: 2px;
+    outline-width: 2px;
 }
 
 .dropZone[disabled] {
