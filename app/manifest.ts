@@ -8,7 +8,7 @@ const manifest: () => MetadataRoute.Manifest = () => ({
     description: 'A minimalist todo list app',
     start_url: process.env.PAGES_BASE_PATH,
     display: 'standalone',
-    background_color: '#60000',
+    background_color: '#600000',
     theme_color: '#00C0FF',
     icons: [32, 192, 512].map(size => ({
         src: `${process.env.PAGES_BASE_PATH}/icon/icon-${size}x${size}.png`,
