@@ -6,12 +6,12 @@ const manifest: () => MetadataRoute.Manifest = () => ({
     name: 'Ten Things',
     short_name: 'Ten',
     description: 'A minimalist todo list app',
-    start_url: '/ten-things',
+    start_url: process.env.PAGES_BASE_PATH,
     display: 'standalone',
-    background_color: '#FFFFFF',
-    theme_color: '#00FFFF',
+    background_color: '#60000',
+    theme_color: '#00C0FF',
     icons: [32, 192, 512].map(size => ({
-        src: `/ten-things/icon/icon-${size}x${size}.png`,
+        src: `${process.env.PAGES_BASE_PATH}/icon/icon-${size}x${size}.png`,
         sizes: `${size}x${size}`,
         type: 'image/png'
     }))
