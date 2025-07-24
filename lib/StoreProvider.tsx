@@ -37,8 +37,8 @@ export const StoreProvider = ({ children }: Props) => {
 
     if (!ref.current) {
         ref.current = makeStore();
-
     }
+
     return <Provider store={ref.current!}>
         {children}
     </Provider>;

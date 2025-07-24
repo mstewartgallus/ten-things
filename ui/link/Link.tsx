@@ -14,7 +14,7 @@ export const Link = (props: LinkProps) => {
 
     const pathname = usePathname();
     if (pathname !== href) {
-            return <NextLink {...props} />;
+        return <NextLink {...props} />;
     }
 
     return <a { ...rmHref(props) } aria-current="page" />;

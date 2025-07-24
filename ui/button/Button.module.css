@@ -7,15 +7,16 @@
     all: unset;
 
     cursor: default;
-    background: Canvas;
+    background: var(--button-face);
+    color: var(--button-text);
+    border-color: var(--button-text);
 
     margin-block: 0.3em;
     margin-inline: 0.4em;
 
-    border-color: CanvasText;
     border-style: solid;
     border-width: 1px;
-    border-radius: 0.3em;
+    border-radius: 0.4em;
 
     padding-inline: 0.3em;
     padding-block: 0.2em;

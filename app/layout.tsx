@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { Link } from "@/ui/link/Link";
+import { A } from "@/ui";
 import { Html } from "@/ui/html/Html";
-import { inter } from "@/ui/fonts";
+import { Body } from "@/ui/body/Body";
 import { StoreProvider } from "@/lib/StoreProvider";
 
 import "./_ui/styles/globals.css";
@@ -9,8 +9,8 @@ import styles from "./_ui/styles/layout.module.css";
 
 const Nav = () =>
     <nav className={styles.nav}>
-        <Link href="/">Fresh Things</Link>
-        <Link href="/complete">Complete Things</Link>
+        <A href="/">Fresh Things</A>
+        <A href="/complete">Complete Things</A>
     </nav>;
 
 interface Props {
@@ -19,14 +19,14 @@ interface Props {
 
 const RootLayout = ({ children }: Props) =>
     <Html lang="en">
-        <body className={inter.className}>
-             <Nav />
-             <main className={styles.main}>
-                 <StoreProvider>
-                      {children}
-                  </StoreProvider>
+        <Body>
+            <Nav />
+            <main className={styles.main}>
+                <StoreProvider>
+                     {children}
+                 </StoreProvider>
              </main>
-         </body>
+         </Body>
     </Html>;
 
 export default RootLayout;

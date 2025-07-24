@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { FreshList } from '@/ui/fresh-list/FreshList';
+import { H1 } from "@/ui";
 import {
     useFresh,
     useEntryAtId,
@@ -49,8 +50,8 @@ const List = () => {
 
 export const TenThings = () =>
     <section>
-       <h1>
+       <H1>
            <Heading />
-       </h1>
+       </H1>
        <List />
     </section>;

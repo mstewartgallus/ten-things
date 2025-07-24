@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { H1 } from "@/ui";
 
 import { CompleteThings } from "../_ui/complete-things/CompleteThings";
 
 const CompletePage = () =>
     <section>
-       <h1>Complete Things</h1>
+       <H1>Complete Things</H1>
        <CompleteThings />
     </section>;
 
