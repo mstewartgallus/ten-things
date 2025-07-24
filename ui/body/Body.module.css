@@ -19,6 +19,12 @@
     caret-color: var(--highlight-text) ;
 }
 
+/* Debug pixel grid */
+/* .body { */
+/*      background: linear-gradient(var(--canvas), var(--canvas-text)); */
+/*      background-size: 100% var(--line) ; */
+/* } */
+
 .body ::selection {
     background-color: var(--selected-item);
     color: var(--selected-item-text);
@@ -122,15 +128,15 @@
 
 @media screen and (prefers-color-scheme: dark) and (forced-colors: none) {
     .body {
-        --canvas: #250050 ;
-        --canvas-text: #50FF90 ;
+        --canvas: #1A0F00 ;
+        --canvas-text: #A0C0FF ;
 
         --gray-text: #A3A7A1 ;
 
         --mark: hsl(48deg 100% 31%);
         --mark-text: white ;
 
-        --emphasis-text: #FFA088 ;
+        --emphasis-text: #E0D090 ;
 
         --accent-color: hsl(88deg 100% 59%);
         --accent-color-text: black ;
@@ -139,7 +145,7 @@
         --selected-item-text: black ;
 
         --link-text: #CBBCF2 ;
-        --visited-text: #FFA8E3 ;
+        --visited-text: #F088C0 ;
         --active-text: hsl(346deg 100% 59%);
 
         --highlight: black ;
@@ -149,7 +155,7 @@
         --field-text: hsl(270deg 70% 90%);
 
         --button-face: black ;
-        --button-text: white ;
-        --button-border: white ;
+        --button-text: #CCF ;
+        --button-border: #99D ;
     }
 }

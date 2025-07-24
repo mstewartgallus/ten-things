@@ -1,6 +1,6 @@
-import type { ComponentType } from "react";
+import type { ElementType } from "react";
 
-export const componentName = <T>(Component: ComponentType<T>) => {
+export const componentName = <T>(Component: ElementType<T>) => {
     if (typeof Component === 'string') {
         return Component;
     }

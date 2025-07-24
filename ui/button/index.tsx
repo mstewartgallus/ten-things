@@ -1,16 +1,18 @@
-import type { DetailedHTMLProps, ButtonHTMLAttributes } from "react";
-
+import type { JSX } from "react";
 import { useWrap, toDataProps } from "../wrap";
+import { withClass } from "../with-class";
 
 import styles from "./Button.module.css";
 
-type ButtonProps = DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>;
+type Props = JSX.IntrinsicElements["body"];
 
-export const Button = ({children, ...props}: ButtonProps) => {
+const RawButton = withClass<HTMLBodyElement, Props>('button', styles.button);
+
+export const Button = ({children, ...props}: Props) => {
     const { state, hooks } = useWrap();
-    return <div className={styles.editButtonWrapper} {...hooks}>
-        <button {...props} className={styles.editButton} {...toDataProps(state)}>
+    return <div className={styles.buttonWrapper} {...hooks}>
+        <RawButton {...props} {...toDataProps(state)}>
             {children}
-        </button>
+        </RawButton>
     </div>;
 };

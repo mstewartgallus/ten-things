@@ -1,11 +1,5 @@
-import type { ReactNode } from "react";
-
+import type { JSX } from "react";
+import { withClass } from "../with-class";
 import styles from "./Icon.module.css";
 
-interface Props {
-    readonly children: ReactNode;
-}
-export const Icon = ({children}: Props) =>
-    <div className={styles.editButtonIcon}>
-       {children}
-    </div>;
+export const Icon = withClass<HTMDivElement, JSX.IntrinsicElements["div"]>('div', styles.icon);

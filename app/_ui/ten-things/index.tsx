@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import { FreshList, H1 } from "@/ui";
+import { FreshList, H1, Header } from "@/ui";
 import {
     useFresh,
     useEntryAtId,
@@ -49,8 +49,10 @@ const List = () => {
 
 export const TenThings = () =>
     <section>
-       <H1>
-           <Heading />
-       </H1>
+       <Header>
+          <H1>
+              <Heading />
+          </H1>
+       </Header>
        <List />
     </section>;

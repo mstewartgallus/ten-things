@@ -1,10 +1,11 @@
-.editButtonIcon {
+.icon {
     user-select: none;
-    font-size: 1.3em;
+
     inline-size: 1em;
     block-size: 1em;
-    margin-inline: 0.1em;
-    margin-block: 0.1em;
+
+
+    font-size: 1.25rem;
 
     display: flex;
     justify-content: center;

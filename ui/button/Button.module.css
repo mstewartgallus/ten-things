@@ -1,25 +1,22 @@
-.editButtonWrapper {
+.buttonWrapper {
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.editButton {
+.button {
     all: unset;
 
     cursor: default;
-    background: var(--button-face);
-    color: var(--button-text);
-    border-color: var(--button-text);
 
-    margin-block: 0.3em;
-    margin-inline: 0.4em;
+    margin-inline: 0.5em;
+
+    padding-inline: 0.5ch;
+    padding-block: 0.25em;
+    margin-block: 0.5em;
 
     border-style: solid;
-    border-width: 1px;
-    border-radius: 0.4em;
-
-    padding-inline: 0.3em;
-    padding-block: 0.2em;
+    border-width: 2px;
+    border-radius: 1em;
 
     display: flex;
     justify-content: center;
@@ -27,25 +24,38 @@
 }
 
 
-.editButton[aria-expanded="true"]:not(:active) {
-    background: lightgrey;
-}
-
-.editButton[disabled] {
-    background: lightgrey;
-    border-color: grey;
-    color: #333;
-}
-
-.editButton:focus {
+.button:focus {
     outline-width: 2px;
     outline-style: solid;
 }
 
-.editButton[data-hover] {
-    background: lightblue;
+.button {
+    background: var(--button-face);
+    color: var(--button-text);
+    border-color: var(--button-border);
 }
 
-.editButton[data-active] {
-    background: lightgreen;
+/* FIXME differentiate states */
+.button[data-hover] {
+    background: var(--button-text);
+    border-color: var(--button-face);
+    color: var(--button-face);
+}
+
+.button[data-active] {
+    border-color: var(--accent-color-text) ;
+    background-color: var(--accent-color) ;
+    color: var(--accent-color-text) ;
+}
+
+.button[aria-expanded="true"]:not(:active) {
+    background: var(--button-text);
+    border-color: var(--button-face);
+    color: var(--button-face);
+}
+
+.button[disabled] {
+    background: var(--button-text);
+    border-color: var(--button-face);
+    color: var(--button-face);
 }

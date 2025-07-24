@@ -1,24 +1,24 @@
-import type { ComponentType, DetailedHTMLProps, HTMLAttributes, ReactElement } from "react";
+import type { JSX } from "react";
 import { withClass } from "../with-class";
 import styles from "./heading.module.css";
 
-type Props = DetailedHTMLProps<HTMLAttributes<HTMLHeadingElement>, HTMLHeadingElement>;
+type Props = JSX.IntrinsicElements;
 
-export const H1 = withClass<HTMLHeadingElement, Props>(
-    ({...props}) => <h1 {...props} />,
+export const H1 = withClass<HTMLHeadingElement, Props['h1']>(
+    'h1',
     styles.heading1);
-export const H2 = withClass<HTMLHeadingElement, Props>(
-    ({...props}) => <h2 {...props} />,
+export const H2 = withClass<HTMLHeadingElement, Props['h2']>(
+    'h2',
     styles.heading2);
-export const H3 = withClass<HTMLHeadingElement, Props>(
-    ({...props}) => <h3 {...props} />,
+export const H3 = withClass<HTMLHeadingElement, Props['h3']>(
+    'h3',
     styles.heading);
-export const H4 = withClass<HTMLHeadingElement, Props>(
-        ({...props}) => <h4 {...props} />,
+export const H4 = withClass<HTMLHeadingElement, Props['h4']>(
+    'h4',
     styles.heading);
-export const H5 = withClass<HTMLHeadingElement, Props>(
-    ({...props}) => <h5 {...props} />,
+export const H5 = withClass<HTMLHeadingElement, Props['h5']>(
+    'h5',
     styles.heading);
-export const H6 = withClass<HTMLHeadingElement, Props>(
-    ({...props}) => <h6 {...props} />,
+export const H6 = withClass<HTMLHeadingElement, Props['h6']>(
+    'h6',
     styles.heading);

@@ -2,6 +2,7 @@ import type { FormEvent } from "react";
 import { useMemo, useId } from 'react';
 import { Button } from "../button";
 import { Icon } from "../icon";
+import styles from "./SlotControls.module.css";
 
 interface CompleteProps {
     disabled: boolean;
@@ -20,7 +21,7 @@ export const CompleteForm = ({ disabled, onComplete }: CompleteProps) => {
     }, [onComplete]);
 
     const id = useId();
-    return <form id={id} onSubmit={onSubmit} action="#">
+    return <form className={styles.form} id={id} onSubmit={onSubmit} action="#">
         <Button disabled={disabled} aria-label="Complete Thing" value="complete">
             <Icon>✔</Icon>
         </Button>
@@ -44,7 +45,7 @@ export const CreateForm = ({ disabled, onCreate }: CreateProps) => {
     }, [onCreate]);
 
     const id = useId();
-    return <form id={id} onSubmit={onSubmit} action="#">
+    return <form className={styles.form} id={id} onSubmit={onSubmit} action="#">
         <Button disabled={disabled} aria-label="Create Thing" value="create">
             <Icon>+</Icon>
         </Button>

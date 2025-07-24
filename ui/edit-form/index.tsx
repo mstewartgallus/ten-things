@@ -1,6 +1,7 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { useMemo, useId, useState } from 'react';
 import { Button } from "../button";
+import { Input } from "../input";
 
 import styles from "./EditForm.module.css";
 
@@ -40,7 +41,7 @@ export const EditForm = ({ value, onChange }: Props) => {
     }, [editValue, onChange]);
 
     return <form className={styles.formButton} id={formId} action="#" onSubmit={onSubmitForm}>
-            <input disabled={!onChangeInput} required className={styles.input} value={editValue} onChange={onChangeInput} />
+            <Input disabled={!onChangeInput} required value={editValue} onChange={onChangeInput} />
             <Button disabled={!onSubmitForm}>
                 Submit
             </Button>

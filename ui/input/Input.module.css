@@ -1,0 +1,27 @@
+.input {
+    all: unset;
+
+    border-radius: 0.8ch;
+    border-style: solid;
+    border-width: 0.17rem;
+    border-color: var(--button-border);
+
+    background-color: var(--field);
+    color: var(--field-text);
+
+    padding-inline: 0.5ch;
+
+    padding-block: 0.25em;
+    margin-block: 0.25em;
+
+    cursor: caret;
+}
+
+.input:focus {
+    outline-style: solid;
+    outline-color: var(--highlight);
+}
+.input:focus-visible {
+    outline-offset: 0.2em;
+    outline-width: 0.1rem;
+}

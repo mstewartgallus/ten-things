@@ -16,15 +16,15 @@ interface Props {
 }
 
 const RootLayout = ({ children }: Props) =>
-    <Html lang="en">
-        <Body>
-            <Nav />
-            <main className={styles.main}>
-                <StoreProvider>
-                     {children}
-                 </StoreProvider>
-             </main>
-         </Body>
-    </Html>;
+    <StoreProvider>
+        <Html lang="en">
+            <Body>
+                <Nav />
+                <main className={styles.main}>
+                    {children}
+                </main>
+             </Body>
+        </Html>
+    </StoreProvider>;
 
 export default RootLayout;
