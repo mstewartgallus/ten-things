@@ -1,0 +1,5 @@
+.bag {
+    display: flex;
+    justify-content: space-between;
+    inline-size: 16em;
+}

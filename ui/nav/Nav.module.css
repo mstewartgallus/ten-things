@@ -1,5 +1,4 @@
 .nav {
-    display: flex;
-    justify-content: space-between;
-    inline-size: 16em;
+    margin-block: var(--line);
+    margin-inline: 1em;
 }

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { A, Html, Body, Main, Nav, Footer, Header, useMainId } from "@/ui";
+import { A, Bag, Html, Body, Main, Nav, Footer, Header } from "@/ui";
 import { StoreProvider } from "@/lib";
 
 import "./_ui/styles/globals.css";
@@ -12,19 +12,19 @@ const RootLayout = ({ children }: Props) =>
     <StoreProvider>
         <Html lang="en">
             <Body>
-                <Header>
-                    <Nav>
+                <Nav>
+                    <Bag>
                         <A href="/">Fresh Things</A>
                         <A href="/complete">Complete Things</A>
-                    </Nav>
-                </Header>
+                    </Bag>
+                </Nav>
                 <Main>
                     {children}
                 </Main>
                 <Footer>
-                    <Nav>
+                    <Bag>
                         <A href="/about">About Ten Things</A>
-                    </Nav>
+                    </Bag>
                 </Footer>
              </Body>
         </Html>

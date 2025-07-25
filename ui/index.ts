@@ -8,6 +8,7 @@ export { H1, H2, H3, H4, H5, H6 } from "./heading";
 export { Header } from "./header";
 export { Footer } from "./footer";
 export { Nav } from "./nav";
+export { Bag } from "./bag";
 export { P } from "./p";
 export { Section } from "./section";
 
