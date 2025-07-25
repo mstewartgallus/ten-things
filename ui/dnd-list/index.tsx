@@ -38,9 +38,11 @@ export const DndItem = ({ children }: ItemProps) => {
             onDragStart={onDragStart} onToggle={onToggle}>
             <div className={styles.grabberIcon}>&</div>
         </DragButton>
-        <ItemChildrenContext.Provider value={context}>
-            {children}
-        </ItemChildrenContext.Provider>
+        <div>
+            <ItemChildrenContext.Provider value={context}>
+                {children}
+            </ItemChildrenContext.Provider>
+        </div>
     </li>;
 };
 

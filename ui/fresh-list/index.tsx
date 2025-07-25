@@ -1,12 +1,10 @@
 "use client";
 
-import type { Id, Entry, Fresh } from "@/lib/definitions";
+import type { Id, Entry, Fresh } from "@/lib";
 
 import { useCallback, useMemo, useState } from 'react';
 import { DndList, DndItem, useDndItem } from '../dnd-list';
 import { FreshEditMaybe } from "../fresh-edit-maybe";
-
-import styles from "./FreshList.module.css";
 
 interface FreshItemProps {
     fresh: readonly (Fresh | null)[];
@@ -45,13 +43,11 @@ const FreshItem = ({
         return () => onCompleteIndex(index);
     }, [index, onCompleteIndex]);
 
-    return <div className={styles.freshSlot}>
-        <FreshEditMaybe disabled={isDragging}
+    return <FreshEditMaybe disabled={isDragging}
             item={fresh[index] ?? undefined} selectionId={selectionId} entryAtId={entryAtId}
             onChangeId={onChangeId} onSelectId={onSelectId} onDeselect={onDeselect}
             onCreate={onCreate} onComplete={onComplete}
-        />
-        </div>;
+        />;
 };
 
 interface Props {

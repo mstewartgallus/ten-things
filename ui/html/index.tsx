@@ -4,7 +4,10 @@ import type {
     DetailedHTMLProps, HtmlHTMLAttributes, PointerEvent
 } from "react";
 
-import { createContext, useCallback, useContext, useMemo, useEffect, useState } from "react";
+import {
+    createContext, useCallback, useContext, useMemo, useEffect, useId,
+    useState
+} from "react";
 
 import styles from "./Html.module.css";
 
@@ -20,7 +23,6 @@ const HtmlContext = createContext<HtmlContext>({
     setCursor: () => {},
     isPrimaryPointerDown: false
 });
-
 
 export const useCursor = (value?: Cursor) => {
     const { setCursor } = useContext(HtmlContext);
@@ -44,6 +46,7 @@ type Props = DetailedHTMLProps<HtmlHTMLAttributes<HTMLHtmlElement>, HTMLHtmlElem
 export const Html = ({ children, ...props }: Props) => {
     const [isPrimaryPointerDown, setIsPrimaryPointerDown] = useState(false);
     const [cursor, setCursor] = useState<Cursor | null>(null);
+    const mainId = useId();
 
     const onPointerDown = useCallback((e: PointerEvent<HTMLHtmlElement>) => {
         if (!e.isPrimary) {
@@ -60,8 +63,9 @@ export const Html = ({ children, ...props }: Props) => {
 
     const context = useMemo(() => ({
         isPrimaryPointerDown,
-        setCursor: (cursor?: Cursor) => setCursor(cursor || null)
-    }), [setCursor, isPrimaryPointerDown]);
+        setCursor: (cursor?: Cursor) => setCursor(cursor || null),
+        mainId
+    }), [setCursor, isPrimaryPointerDown, mainId]);
     return <html className={styles.html}
         onPointerUp={onPointerUp}
         onPointerDown={onPointerDown} onPointerLeave={onPointerDown}

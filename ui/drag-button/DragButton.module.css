@@ -1,11 +1,4 @@
-.grabberWrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
-    touch-action: none;
-}
-.grabber {
+.button {
     all: unset;
     user-select: none;
     touch-action: none;
@@ -13,8 +6,8 @@
     padding-block: calc(0.5 * var(--line));
     margin-block: calc(0.5 * var(--line));
 
-    padding-inline: calc(0.5 * var(--line));
-    margin-inline: calc(0.25 * var(--line));
+    padding-inline: calc(0.3 * var(--line));
+    margin-inline: calc(0.5 * var(--line));
 
     display: flex;
     align-items: center;
@@ -22,45 +15,43 @@
     border-radius: 0.7em;
 
     font-size: 1.5625rem;
-
 }
 
-.grabber {
+.button {
     cursor: grab;
 }
-.grabber:active {
+.button:active {
     cursor: grabbing;
 }
 
-.grabber {
-    outline-color: var(--highlight-text) ;
+.button {
     background-color: var(--canvas);
     color: var(--emphasis-text);
-}
-.grabber:hover {
-    background: var(--button-face);
-    color: var(--button-text);
     outline-color: var(--button-border);
 }
+.button:hover {
+    outline-style: solid;
+    background: var(--button-face);
+    color: var(--button-text);
+}
 
-.grabber:hover,
-.grabber:focus-visible {
+.button:focus-visible {
     border-color: var(--accent-color-text) ;
     background-color: var(--accent-color) ;
     color: var(--accent-color-text) ;
 }
 
-.grabber:active {
+.button:active {
     background-color: var(--button-text) ;
     color: var(--button-face) ;
 }
 
-.grabber[aria-expanded="true"] {
-    outline-color: var(--accent-color-text) ;
-    background-color: var(--accent-color) ;
-    color: var(--accent-color-text) ;
+.button[aria-expanded="true"] {
+    background-color: var(--button-text) ;
+    color: var(--button-face) ;
 }
-.grabber:focus {
+.button:focus {
     outline-style: solid;
+    outline-color: var(--highlight-text) ;
     outline-width: 3px;
 }

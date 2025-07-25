@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { Header, H1, P } from "@/ui";
+import { MainLabel, Header, H1, P } from "@/ui";
 
 const AboutPage = () =>
-    <section>
-       <Header>
-          <H1>About Ten Things</H1>
-       </Header>
+    <>
+       <MainLabel>
+            <Header>
+                <H1>About Ten Things</H1>
+            </Header>
+       </MainLabel>
 
        <P>Right now this is mostly just a a demo page for Lorem Ipsum text and testing layout stuff.</P>
 
@@ -48,7 +50,7 @@ molestie aliquam. Morbi bibendum non nisi eu pellentesque. Maecenas
 auctor sodales augue vitae efficitur. In vehicula eu purus vel
 tincidunt.</P>
 
-    </section>;
+    </>;
 
 export default AboutPage;
 

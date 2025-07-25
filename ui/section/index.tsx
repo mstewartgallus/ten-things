@@ -1,0 +1,17 @@
+import type { JSX, ReactElement } from "react";
+import { useId } from "react";
+import styles from "./Section.module.css";
+
+type Props = JSX.IntrinsicElements['section'] & {
+    readonly header: ReactElement;
+};
+
+export const Section = ({ header, children, ...props }: Props) => {
+    const headerId = useId();
+    return <section aria-labelledby={headerId} {...props}>
+        <div className={styles.header} id={headerId}>
+            {header}
+        </div>
+        {children}
+    </section>;
+};

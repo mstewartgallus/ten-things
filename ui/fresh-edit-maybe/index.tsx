@@ -1,9 +1,7 @@
-import type { Entry, Fresh, Id } from "@/lib/definitions";
+import type { Entry, Fresh, Id } from "@/lib";
 
-import { CreateForm } from "../slot-controls";
+import { FreshCreate } from "../fresh-create";
 import { FreshEdit } from "../fresh-edit";
-
-import styles from "./FreshEditMaybe.module.css";
 
 interface Props {
     disabled: boolean;
@@ -30,10 +28,7 @@ export const FreshEditMaybe = ({
     onCreate, onComplete
 }: Props) => {
     if (!item) {
-        return <div className={styles.create}>
-               <CreateForm disabled={disabled} onCreate={onCreate} />
-               <>...</>
-            </div>;
+        return <FreshCreate disabled={disabled} onCreate={onCreate} />;
     }
     return <FreshEdit disabled={disabled} id={item.id} selectionId={selectionId} entryAtId={entryAtId}
         onChangeId={onChangeId} onSelectId={onSelectId} onDeselect={onDeselect}

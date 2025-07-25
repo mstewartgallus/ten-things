@@ -5,6 +5,8 @@ import { useMemo } from 'react';
 import { CompleteForm } from "../slot-controls";
 import { EntryEdit } from "../entry-edit";
 
+import styles from "./FreshEdit.module.css";
+
 interface FreshEditStateArgs {
     id: Id;
 
@@ -79,9 +81,9 @@ export const FreshEdit = ({
     const { value, created } = entryAtId(id);
 
     const selected = selectionId == id;
-    return <>
-        <EntryEdit value={value} created={created}
+    return <div className={styles.freshSlot}>
+         <EntryEdit value={value} created={created}
     onChange={onChange} onSelect={onSelect} onDeselect={onDeselect} />
          <CompleteForm disabled={disabled || selected} onComplete={onComplete} />
-        </>;
+        </div>;
 };
