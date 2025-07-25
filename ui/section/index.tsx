@@ -1,5 +1,6 @@
 import type { JSX, ReactElement } from "react";
 import { useId } from "react";
+
 import styles from "./Section.module.css";
 
 type Props = JSX.IntrinsicElements['section'] & {
