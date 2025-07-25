@@ -1,5 +1,7 @@
+'use client';
+
 import { withClass } from "../with-class";
 import { Link } from "../link";
-import { a } from "./a.module.css";
+import styles from "./A.module.css";
 
-export const A = withClass(Link, a);
+export const A = withClass(Link, styles.a);

@@ -1,11 +1,10 @@
-"use client";
+'use client';
 
 import type { JSX, MouseEvent, PointerEvent, ReactNode } from 'react';
 import { useMemo } from 'react';
 import { withClass } from "../with-class";
 
 import styles from './DragButton.module.css';
-
 
 export const RawButton =
     withClass<HTMLButtonElement, JSX.IntrinsicElements["button"]>(

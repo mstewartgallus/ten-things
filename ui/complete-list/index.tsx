@@ -1,4 +1,6 @@
-import type { Id, Entry, Complete } from "@/lib/definitions";
+'use client';
+
+import type { Id, Entry, Complete } from "@/lib";
 
 import { useCallback } from 'react';
 import { Complete as CompleteComponent } from '../complete';

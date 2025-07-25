@@ -1,3 +1,5 @@
+'use client';
+
 import type {
     ForwardedRef, PropsWithoutRef,
     ElementType,
@@ -12,7 +14,6 @@ interface Props<T> {
     className?: string;
     ref?: ForwardedRef<T>;
 }
-
 
 const withClassImpl = <T, P extends Props<T>>(
     Component: ElementType<PropsWithoutRef<P> & { ref: ForwardedRef<T>}>,

@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
 import type {
+    JSX,
     DetailedHTMLProps, HtmlHTMLAttributes, PointerEvent
 } from "react";
 
@@ -12,7 +13,6 @@ import {
 import styles from "./Html.module.css";
 
 export type Cursor = 'grabbing';
-
 
 interface HtmlContext {
     setCursor: (cursor?: Cursor) => void;
@@ -41,7 +41,7 @@ export const useCursor = (value?: Cursor) => {
 
 export const useIsPrimaryPointerDown = () => useContext(HtmlContext).isPrimaryPointerDown;
 
-type Props = DetailedHTMLProps<HtmlHTMLAttributes<HTMLHtmlElement>, HTMLHtmlElement>;
+type Props = JSX.IntrinsicElements['html'];
 
 export const Html = ({ children, ...props }: Props) => {
     const [isPrimaryPointerDown, setIsPrimaryPointerDown] = useState(false);

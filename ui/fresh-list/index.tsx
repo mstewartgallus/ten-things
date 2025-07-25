@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import type { Id, Entry, Fresh } from "@/lib";
 

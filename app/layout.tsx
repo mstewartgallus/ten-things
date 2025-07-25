@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { A, Bag, Html, Body, Main, Nav, Footer, Header } from "@/ui";
+import { A, Bag, Html, Body, Main, Nav, Footer } from "@/ui";
 import { StoreProvider } from "@/lib";
 
 import "./_ui/styles/globals.css";
