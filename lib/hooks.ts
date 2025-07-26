@@ -8,7 +8,6 @@ import { useImperativeHandle } from 'react';
 import type { Id } from "./definitions";
 import type { AppDispatch, AppStore, RootState } from "./store";
 import {
-    selectNewEntryId,
     selectEntryAtId,
     selectFresh,
     selectComplete,
@@ -44,7 +43,6 @@ export const useTen = (ref: Ref<TenHandle>) => {
     return {
         complete: useAppSelector(selectComplete),
         fresh: useAppSelector(selectFresh),
-        entryAtId: useAppSelector(selectEntryAtId),
-        newEntryId: useAppSelector(selectNewEntryId)
+        entryAtId: useAppSelector(selectEntryAtId)
     };
 };

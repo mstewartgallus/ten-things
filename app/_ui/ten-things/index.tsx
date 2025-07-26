@@ -76,10 +76,11 @@ const Item = ({ entryAtId, onDeselect }: ItemProps) => {
 
 const TenFresh = () => {
     const ref = useRef<TenHandle>(null);
-    const { fresh, entryAtId, newEntryId } = useTen(ref);
+    const { fresh, entryAtId } = useTen(ref);
+
+    const onCreateIndex = useCallback((index: number) => ref.current!.createIndex(index), []);
 
     const onChangeId = useCallback((id: Id, value: string) => ref.current!.changeId(id, value), []);
-    const onCreateIndex = useCallback((index: number) => ref.current!.createIndex(index), []);
     const onCompleteIndex = useCallback((index: number) => ref.current!.completeIndex(index), []);
     const onSwapIndices = useCallback((leftIndex: number, rightIndex: number) =>
         ref.current!.swapIndices(leftIndex, rightIndex), []);
@@ -92,9 +93,10 @@ const TenFresh = () => {
     return <ul role="list" className={styles.list}>
             <FreshList
                 ref={fsh}
-                fresh={fresh} newEntryId={newEntryId}
+                fresh={fresh}
+                onCreateIndex={onCreateIndex}
                 onSwapIndices={onSwapIndices}
-                onChangeId={onChangeId} onCreateIndex={onCreateIndex} onCompleteIndex={onCompleteIndex}>
+                onChangeId={onChangeId} onCompleteIndex={onCompleteIndex}>
                 <Item entryAtId={entryAtId} onDeselect={onDeselect} />
             </FreshList>
         </ul>;

@@ -8,13 +8,10 @@ import { useItem } from '../list';
 interface Context {
     fresh: readonly (Fresh | null)[];
     selectionId?: Id;
-    selectId(id: Id): void;
-    newEntryId: Id;
+    onSelectId?: (id: Id) => void;
 }
 const SelectionContext = createContext<Context>({
-    fresh: [],
-    selectId: () => {},
-    newEntryId: -1
+    fresh: []
 });
 
 export interface SelectionItemHandle {
@@ -26,27 +23,22 @@ export const useSelectionItem = (ref: Ref<SelectionItemHandle>) => {
     const {
         fresh,
         selectionId,
-        selectId,
-        newEntryId
+        onSelectId
     } = useContext(SelectionContext);
 
     const item = fresh[index] ?? undefined;
     const id = item && item.id;
 
     useImperativeHandle(ref, () => {
-        if (!id) {
-            return {
-                select: () => selectId(newEntryId),
-            };
-        }
         return {
-            select: () => selectId(id)
+            select: onSelectId && id ? () => onSelectId(id) : () => {}
         }
-    }, [id, newEntryId]);
+    }, [id]);
     return { selectionId, item };
 };
 
 export interface SelectionListHandle {
+    selectId(id: Id): void;
     deselect(): void;
 }
 
@@ -54,30 +46,27 @@ interface Props {
     children: ReactNode,
     ref: Ref<SelectionListHandle>;
     fresh: readonly (Fresh | null)[];
-    newEntryId: Id,
 }
 
 export const SelectionList = ({
     children,
     ref,
-    fresh,
-    newEntryId
+    fresh
 }: Props) => {
     const [selectionId, setSelectionId] = useState<Id | null>(null);
-
-    const selectId = useCallback((id: Id) => setSelectionId(id), []);
-
     useImperativeHandle(ref, () => ({
+        selectId: (id: Id) => setSelectionId(id),
         deselect: () => setSelectionId(null)
     }), []);
 
+    const onSelectId = useCallback((id: Id) => setSelectionId(id), []);
+
     const context = useMemo(() => ({
         selectionId: selectionId ?? undefined,
-        selectId,
-        newEntryId,
+        onSelectId,
         fresh
     }), [
-        selectionId, selectId, newEntryId, fresh
+        selectionId, onSelectId, fresh
     ]);
     return <SelectionContext value={context}>
             {children}

@@ -6,6 +6,7 @@ interface CreateAction {
     index: number;
     created: number;
 }
+
 interface EditAction {
     id: Id;
     value: string;
@@ -66,16 +67,17 @@ export const tenSlice = createSlice({
             (index: number) => {
                 const created = Date.now();
                 return { payload: { index, created } };
-            }, ({ fresh, entry }, { payload: { index, created } }: PayloadAction<CreateAction>) => {
-            checkIndex(fresh, index);
-            if (fresh[index]) {
-                throw Error(`fresh ${index} is non-empty`);
-            }
+            },
+            ({ fresh, entry }, { payload: { index, created } }: PayloadAction<CreateAction>) => {
+                checkIndex(fresh, index);
+                if (fresh[index]) {
+                    throw Error(`fresh ${index} is non-empty`);
+                }
 
                 const id = entry.length;
 
-            entry.push({ created, value: '' });
-            fresh[index] = { id };
+                entry.push({ created, value: '' });
+                fresh[index] = { id };
         }),
 
         complete: create.preparedReducer(

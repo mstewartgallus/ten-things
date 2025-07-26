@@ -61,7 +61,6 @@ export const useFreshItem = (ref: Ref<FreshItemHandle>) => {
         create: () => {
             onCreateIndex &&
                 onCreateIndex(index);
-            fsh.current!.select();
         },
         complete: () => {
             onCompleteIndex &&
@@ -76,16 +75,16 @@ interface Props {
     children: ReactNode;
     fresh: readonly (Fresh | null)[];
     ref: Ref<FreshListHandle>;
-    newEntryId: Id;
-    onSwapIndices?: (leftIndex: number, rightIndex: number) => void;
+
     onCreateIndex?: (index: number) => void;
+    onSwapIndices?: (leftIndex: number, rightIndex: number) => void;
     onCompleteIndex?: (index: number) => void;
     onChangeId?: (id: Id, value: string) => void;
 }
 
 export const FreshList = ({
     ref,
-    children, newEntryId, fresh,
+    children, fresh,
     onChangeId,
     onCreateIndex, onCompleteIndex,
     onSwapIndices
@@ -106,7 +105,7 @@ export const FreshList = ({
         onCompleteIndex
     }), [onChangeId, onCreateIndex, onCompleteIndex]);
 
-    return <SelectionList ref={selectRef} newEntryId={newEntryId} fresh={fresh}>
+    return <SelectionList ref={selectRef} fresh={fresh}>
                 <DndList onSwapIndices={onSwapIndices}>
                     <FreshContext value={context}>
                         <List keyAt={keyAt} length={fresh.length}>
