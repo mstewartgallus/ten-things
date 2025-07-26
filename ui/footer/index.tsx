@@ -1,8 +1,6 @@
-'use client';
-
 import type { JSX } from "react";
-import { withClass } from "../with-class";
+import { withClassServer } from "../with-class-server";
 
 import styles from "./Footer.module.css";
 
-export const Footer = withClass<HTMLElement, JSX.IntrinsicElements['footer']>('footer', styles.footer);
+export const Footer = withClassServer<HTMLElement, JSX.IntrinsicElements['footer']>('footer', styles.footer);

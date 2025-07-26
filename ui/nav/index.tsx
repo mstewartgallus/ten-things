@@ -1,7 +1,5 @@
-'use client';
-
 import type { JSX } from "react";
-import { withClass } from "../with-class";
+import { withClassServer } from "../with-class-server";
 import styles from "./Nav.module.css";
 
-export const Nav = withClass<HTMLElement, JSX.IntrinsicElements['nav']>('nav', styles.nav);
+export const Nav = withClassServer<HTMLElement, JSX.IntrinsicElements['nav']>('nav', styles.nav);

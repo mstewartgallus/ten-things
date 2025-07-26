@@ -1,10 +1,10 @@
-import type { JSX, ReactElement } from "react";
+import type { JSX, ReactNode } from "react";
 import { useId } from "react";
 
 import styles from "./Section.module.css";
 
 type Props = JSX.IntrinsicElements['section'] & {
-    readonly header: ReactElement;
+    readonly header: ReactNode;
 };
 
 export const Section = ({ header, children, ...props }: Props) => {

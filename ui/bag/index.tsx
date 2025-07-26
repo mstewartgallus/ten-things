@@ -1,7 +1,5 @@
-'use client';
-
 import type { JSX } from "react";
-import { withClass } from "../with-class";
+import { withClassServer } from "../with-class-server";
 import styles from "./Bag.module.css";
 
-export const Bag = withClass<HTMLDivElement, JSX.IntrinsicElements['div']>('div', styles.bag);
+export const Bag = withClassServer<HTMLDivElement, JSX.IntrinsicElements['div']>('div', styles.bag);

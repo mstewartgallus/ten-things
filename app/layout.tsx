@@ -9,25 +9,25 @@ interface Props {
 }
 
 const RootLayout = ({ children }: Props) =>
-    <StoreProvider>
-        <Html lang="en">
-            <Body>
-                <Nav>
-                    <Bag>
-                        <A href="/">Fresh Things</A>
-                        <A href="/complete">Complete Things</A>
-                    </Bag>
-                </Nav>
-                <Main>
+    <Html lang="en">
+        <Body>
+            <Nav>
+                <Bag>
+                    <A href="/">Fresh Things</A>
+                    <A href="/complete">Complete Things</A>
+                </Bag>
+            </Nav>
+            <Main>
+                <StoreProvider>
                     {children}
-                </Main>
-                <Footer>
-                    <Bag>
-                        <A href="/about">About Ten Things</A>
-                    </Bag>
-                </Footer>
-             </Body>
-        </Html>
-    </StoreProvider>;
+                </StoreProvider>
+            </Main>
+            <Footer>
+                <Bag>
+                    <A href="/about">About Ten Things</A>
+                </Bag>
+            </Footer>
+         </Body>
+    </Html>;
 
 export default RootLayout;

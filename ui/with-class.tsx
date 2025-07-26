@@ -3,7 +3,7 @@
 import type {
     ForwardedRef, PropsWithoutRef,
     ElementType,
-    ComponentType, DetailedHTMLProps, HTMLAttributes, ReactElement
+    ComponentType
 } from "react";
 import { createElement, forwardRef } from "react";
 import { componentName } from "./component-name";

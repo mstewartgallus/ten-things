@@ -1,7 +1,5 @@
-'use client';
-
 import type { JSX } from "react";
-import { withClass } from "../with-class";
+import { withClassServer } from "../with-class-server";
 import styles from "./Body.module.css";
 
-export const Body = withClass<HTMLBodyElement, JSX.IntrinsicElements["body"]>('body', styles.body);
+export const Body = withClassServer<HTMLBodyElement, JSX.IntrinsicElements["body"]>('body', styles.body);

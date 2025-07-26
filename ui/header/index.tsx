@@ -1,8 +1,6 @@
-'use client';
-
 import type { JSX } from "react";
-import { withClass } from "../with-class";
+import { withClassServer } from "../with-class-server";
 
 import styles from "./Header.module.css";
 
-export const Header = withClass<HTMLElement, JSX.IntrinsicElements['header']>('header', styles.header);
+export const Header = withClassServer<HTMLElement, JSX.IntrinsicElements['header']>('header', styles.header);
