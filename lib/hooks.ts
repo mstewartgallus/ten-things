@@ -4,7 +4,7 @@ import type { Selector } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
 
 import type { AppDispatch, AppStore, RootState } from "./store";
-import { usePersistIsLoaded, usePersist } from "./StoreProvider";
+import { usePersist } from "./StoreProvider";
 
 export const useAppStore = useStore.withTypes<AppStore>();
 
@@ -19,7 +19,5 @@ export const useAppSelector = <T>(selector: Selector<RootState, T>) => {
 
 export const useAppDispatch = () => {
     usePersist();
-    const persisting = usePersistIsLoaded();
-    const dispatch = useAppDispatchPrim();
-    return persisting ? dispatch : () => {};
+    return useAppDispatchPrim();
 };

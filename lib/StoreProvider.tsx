@@ -1,29 +1,34 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { Persistor } from "redux-persist";
+import type { Persistor, PersistorOptions } from "redux-persist";
 import type { Store } from "@reduxjs/toolkit";
 import { makeStore } from "@/lib/store";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { useEffect, useRef } from "react";
-import { Provider, useStore } from "react-redux";
+import { createContext, useContext, useCallback, useEffect, useRef, useState } from "react";
+import { Provider } from "react-redux";
 import { persistStore } from "redux-persist";
 
-let globalPersistor: Persistor | null = null;
-export const usePersistIsLoaded = () => globalPersistor !== null;
+const PersistContext = createContext<() => Promise<void>>(() => {
+    throw Error("no persistor");
+});
 
 export const usePersist = () => {
-    const store = useStore();
+    const persistAction = useContext(PersistContext);
+    // FIXME use react "use" to wait for persistence to finish?
     useEffect(() => {
-        if (globalPersistor) {
-            return;
-        }
-
-        globalPersistor = persistStore(store);
-    }, [store]);
+        persistAction();
+    }, [persistAction]);
 };
 
-export const usePersistLoaded = () => {
+const withResolvers = <T,>() => {
+    let resolve;
+    let reject;
+    const promise = new Promise<T>((res, rej) => {
+        resolve = res;
+        reject = rej;
+    });
+    return { promise, resolve: resolve!, reject: reject! };
 };
 
 interface Props {
@@ -32,14 +37,43 @@ interface Props {
 
 export const StoreProvider = ({ children }: Props) => {
     const ref = useRef<Store>(null);
-
-    useEffect(() => setupListeners(ref.current!.dispatch), []);
+    const persistRef = useRef<Persistor>(null);
+    const onLoadRef = useRef<Promise<void>>(null);
 
     if (!ref.current) {
-        ref.current = makeStore();
+        const store = makeStore();
+
+        const { promise, resolve } = withResolvers<void>();
+        const persistor = persistStore(
+            store,
+            { manualPersist: true } as PersistorOptions,
+            () => resolve());
+
+        persistRef.current = persistor;
+        ref.current = store;
+        onLoadRef.current = promise;
     }
 
+    const [persisting, setPersisting] = useState(false);
+
+    useEffect(() => setupListeners(ref.current!.dispatch), []);
+    useEffect(() => {
+        if (persisting) {
+            persistRef.current!.persist();
+        } else {
+            // FIXME not needed?
+            persistRef.current!.pause();
+        }
+    }, [persisting]);
+
+    const persistAction = useCallback(async () => {
+        setPersisting(true);
+        await onLoadRef.current!;
+    }, []);
+
     return <Provider store={ref.current!}>
-        {children}
+        <PersistContext.Provider value={persistAction}>
+            {children}
+        </PersistContext.Provider>
     </Provider>;
 };
