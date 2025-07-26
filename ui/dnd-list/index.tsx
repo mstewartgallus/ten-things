@@ -1,77 +1,83 @@
 'use client';
 
-import type { Key, ReactNode } from 'react';
-import { createContext, useContext, useMemo } from 'react';
-import { DragButton } from "../drag-button";
-import { DropButton } from "../drop-button";
-import {
-    DndListProvider, DndItemProvider,
-    useDndListState, useDndItemState
-} from "./DndProviders";
+import type { Key, ReactNode, Ref } from 'react';
+import { createContext, useCallback, useContext, useImperativeHandle, useMemo, useState } from 'react';
+import { useIsPrimaryPointerDown } from "../html";
+import { useItem } from "../list";
 import { useCursor } from "../UiProvider";
 
-import styles from './DndList.module.css';
+interface ListContext {
+    readonly dragIndex?: number;
+    readonly onDragStart?: (index: number) => void;
+    readonly onDrop?: (index: number) => void;
+};
 
-interface ItemChildrenContext {
-    index: number;
-    isDragging: boolean;
-}
-
-const ItemChildrenContext = createContext<ItemChildrenContext>({
-    index: 0,
-    isDragging: false
+const ListContext = createContext<ListContext>({
 });
-ItemChildrenContext.displayName = `ItemChildrenContext`;
+ListContext.displayName = 'ListContext';
 
-export const useDndItem = () => useContext(ItemChildrenContext);
-
-interface ItemProps {
-    readonly children: ReactNode;
+export interface DndItemHandle {
+    drag(): void;
+    drop(): void;
 }
 
-export const DndItem = ({ children }: ItemProps) => {
-    const { index, isDragging, onDrop, onDragStart, onToggle } = useDndItemState();
-    const context = useMemo(() => ({ isDragging, index }), [ isDragging, index ]);
-    return <li role="listitem" className={styles.item}>
-        <DropButton onDrop={onDrop} />
-        <DragButton dragging={isDragging}
-            onDragStart={onDragStart} onToggle={onToggle}>
-            <div className={styles.grabberIcon}>&</div>
-        </DragButton>
-        <div>
-            <ItemChildrenContext.Provider value={context}>
-                {children}
-            </ItemChildrenContext.Provider>
-        </div>
-    </li>;
+export const useDndItem = (ref: Ref<DndItemHandle>) => {
+    const index = useItem();
+    const { dragIndex, onDragStart, onDrop } = useContext(ListContext);
+
+    useImperativeHandle(ref, () => ({
+        drag: () => {
+            onDragStart && onDragStart(index);
+        },
+        drop: () => {
+            onDrop && onDrop(index);
+        }
+    }), [onDragStart, onDrop]);
+    return dragIndex;
 };
 
 interface Props {
     children: ReactNode;
-    length: number;
-    keyOf: (index: number) => Key;
     onSwapIndices?: (dragIndex: number, dropIndex: number) => void;
 }
 
-export const DndList = ({
-    children,
-    keyOf,
-    length,
-    onSwapIndices
-}: Props) => {
-    const context = useDndListState(onSwapIndices);
+export const DndList = ({ children, onSwapIndices }: Props) => {
+    const [dragIndex, setDragIndex] = useState<number | null>(null);
 
-    const { dragIndex } = context;
-    useCursor(dragIndex !== undefined ? 'grabbing' : undefined);
+    const isPrimaryPointerDown = useIsPrimaryPointerDown();
 
-    return <ul className={styles.list} role="list">
-        <DndListProvider value={context}>
-        {
-            Array(length).fill(null).map((x, index) =>
-                <DndItemProvider key={keyOf(index)} value={index}>
-                    {children}
-                </DndItemProvider>)
+    if (!isPrimaryPointerDown && dragIndex !== null) {
+        setDragIndex(null);
+    }
+
+    const onDragStart = useCallback((index: number) => {
+            setDragIndex(index);
+    }, []);
+    let onDrop = useMemo(() => {
+        if (!onSwapIndices) {
+            return;
         }
-        </DndListProvider>
-    </ul>;
+        if (!dragIndex) {
+            return;
+        }
+        return (index: number) => {
+            onSwapIndices(dragIndex, index);
+            setDragIndex(null);
+        };
+    }, [dragIndex, onSwapIndices]);
+
+    if (dragIndex === null) {
+        onDrop = undefined;
+    }
+
+    useCursor(dragIndex !== null ? 'grabbing' : undefined);
+
+    const context = useMemo(() => ({
+        dragIndex: dragIndex ?? undefined,
+        onDragStart,
+        onDrop
+    }), [dragIndex, onDragStart, onDrop]);
+    return <ListContext value={context}>
+        {children}
+    </ListContext>;
 };

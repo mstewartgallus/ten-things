@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { use, createContext, useEffect, useContext } from "react";
+import { createContext, useEffect, useContext } from "react";
 
 interface Context {
     persist(): void;

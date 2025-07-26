@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import type { Store } from "redux";
 import type { Cursor, HtmlHandle } from "@/ui";
 import { UiProvider, A, Bag, Html, Body, Main, Nav, Footer } from "@/ui";

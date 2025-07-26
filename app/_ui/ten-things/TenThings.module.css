@@ -1,9 +1,10 @@
 .list {
     all: unset;
+    display: flex;
+    flex-direction: column;
 }
 .item {
     all: unset;
-
     position: relative;
     display: flex;
     align-items: center;

@@ -4,7 +4,7 @@ import type { Id, Entry, Complete } from "@/lib";
 
 import { useCallback } from 'react';
 import { Complete as CompleteComponent } from '../complete';
-import { List, Item, useItem } from '../list';
+import { List, useItem } from '../list';
 
 interface Props {
     complete: readonly Complete[];
@@ -15,14 +15,16 @@ const CompleteItem = ({ complete, entryAtId }: Props) => {
     const index = useItem();
     const item = complete[index];
     const entry = entryAtId(item.id);
-    return <CompleteComponent {...entry} completed={item.completed} />;
+    return <li role="listitem">
+            <CompleteComponent {...entry} completed={item.completed} />
+        </li>;
 };
 
 export const CompleteList = ({ complete, entryAtId }: Props) => {
-    const keyOf = useCallback((index: number) => complete[index].id, [complete]);
-    return <List length={complete.length} keyOf={keyOf}>
-            <Item>
-                <CompleteItem complete={complete} entryAtId={entryAtId} />
-            </Item>
-        </List>;
+    const keyAt = useCallback((index: number) => complete[index].id, [complete]);
+    return <ul role="list">
+           <List length={complete.length} keyAt={keyAt}>
+               <CompleteItem complete={complete} entryAtId={entryAtId} />
+            </List>
+        </ul>;
 };
