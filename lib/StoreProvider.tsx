@@ -14,21 +14,11 @@ const PersistContext = createContext<() => Promise<void>>(() => {
 });
 
 export const usePersist = () => {
-    const persistAction = useContext(PersistContext);
+    const persist = useContext(PersistContext);
     // FIXME use react "use" to wait for persistence to finish?
     useEffect(() => {
-        persistAction();
-    }, [persistAction]);
-};
-
-const withResolvers = <T,>() => {
-    let resolve;
-    let reject;
-    const promise = new Promise<T>((res, rej) => {
-        resolve = res;
-        reject = rej;
-    });
-    return { promise, resolve: resolve!, reject: reject! };
+        persist();
+    }, []);
 };
 
 interface Props {
@@ -37,42 +27,28 @@ interface Props {
 
 export const StoreProvider = ({ children }: Props) => {
     const ref = useRef<Store>(null);
-    const persistRef = useRef<Persistor>(null);
-    const onLoadRef = useRef<Promise<void>>(null);
+    const promiseRef = useRef<Promise<void>>(null);
 
     if (!ref.current) {
-        const store = makeStore();
-
-        const { promise, resolve } = withResolvers<void>();
-        const persistor = persistStore(
-            store,
-            { manualPersist: true } as PersistorOptions,
-            () => resolve());
-
-        persistRef.current = persistor;
-        ref.current = store;
-        onLoadRef.current = promise;
+        ref.current = makeStore();
     }
 
-    const [persisting, setPersisting] = useState(false);
-
     useEffect(() => setupListeners(ref.current!.dispatch), []);
-    useEffect(() => {
-        if (persisting) {
-            persistRef.current!.persist();
-        } else {
-            // FIXME not needed?
-            persistRef.current!.pause();
-        }
-    }, [persisting]);
 
-    const persistAction = useCallback(async () => {
-        setPersisting(true);
-        await onLoadRef.current!;
+    const persist = useCallback(async () => {
+        const store = ref.current!;
+        let persistPromise = promiseRef.current;
+
+        if (!persistPromise) {
+            persistPromise = new Promise<void>(res => persistStore(store, null, () => res()));
+            promiseRef.current = persistPromise;
+        }
+
+        await persistPromise;
     }, []);
 
     return <Provider store={ref.current!}>
-        <PersistContext.Provider value={persistAction}>
+        <PersistContext.Provider value={persist}>
             {children}
         </PersistContext.Provider>
     </Provider>;
