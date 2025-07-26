@@ -1,9 +1,23 @@
-import type { ChangeEvent, FormEvent } from "react";
-import { useMemo, useId, useState } from 'react';
+import type { Ref, ChangeEvent, FormEvent } from "react";
+import { useCallback, useImperativeHandle, useMemo, useId, useRef, useState } from 'react';
 import { Button } from "../button";
 import { Input } from "../input";
 
 import styles from "./EditForm.module.css";
+
+interface EditHandle {
+    change(value: string): void;
+}
+
+const useEdit = (ref: Ref<EditHandle>, initValue: string) => {
+    const [value, setValue] = useState(initValue);
+
+    useImperativeHandle(ref, () => ({
+        change: v => setValue(v)
+    }), []);
+
+    return value;
+};
 
 interface Props {
     value: string;
@@ -12,23 +26,20 @@ interface Props {
 }
 
 export const EditForm = ({ value, onChange }: Props) => {
-    const [editValue, setEditValue] = useState(value);
+    const ref = useRef<EditHandle>(null);
+
+    const editValue = useEdit(ref, value);
 
     const formId = useId();
 
-    const onChangeInput = useMemo(() => {
-        if (!onChange) {
+    const onChangeInput = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        const { target } = e;
+        if (!target) {
             return;
         }
-        return (e: ChangeEvent<HTMLInputElement>) => {
-            const { target } = e;
-            if (!target) {
-                return;
-            }
-            e.preventDefault();
-            setEditValue((target as HTMLInputElement).value);
-        };
-    }, [onChange]);
+        e.preventDefault();
+        ref.current!.change((target as HTMLInputElement).value);
+    }, []);
 
     const onSubmitForm = useMemo(() => {
         if (!onChange) {

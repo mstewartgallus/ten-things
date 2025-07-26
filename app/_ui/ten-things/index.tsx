@@ -2,26 +2,20 @@
 
 import type { Id, Entry } from '@/lib';
 import type { FreshListHandle, FreshItemHandle } from '@/ui';
+import type { TenHandle } from '@/lib';
 
 import { useCallback, useMemo, useRef } from 'react';
 import { DragButton, DropButton, MainLabel,
          FreshCreate, FreshEdit,
          FreshList, useFreshItem,
          H1, Header } from '@/ui';
-import {
-    useFresh,
-    useEntryAtId,
-    useNewEntryId,
-    useOnChangeId,
-    useOnCreateIndex,
-    useOnCompleteIndex,
-    useOnSwapIndices
-} from '../hooks';
+import { useTen } from '@/lib';
 
 import styles from './TenThings.module.css';
 
 const useFreshCount = () => {
-    const fresh = useFresh();
+    const ref = useRef<TenHandle>(null);
+    const { fresh } = useTen(ref);
     return useMemo(() => fresh.reduce((x, y) => (y != null ? 1 : 0) + x, 0),
             [fresh]);
 };
@@ -81,24 +75,23 @@ const Item = ({ entryAtId, onDeselect }: ItemProps) => {
 };
 
 const TenFresh = () => {
-    const fresh = useFresh();
-    const entryAtId = useEntryAtId();
-    const newEntryId = useNewEntryId();
+    const ref = useRef<TenHandle>(null);
+    const { fresh, entryAtId, newEntryId } = useTen(ref);
 
-    const onChangeId = useOnChangeId();
-    const onCreateIndex = useOnCreateIndex();
-    const onCompleteIndex = useOnCompleteIndex();
-    const onSwapIndices = useOnSwapIndices();
+    const onChangeId = useCallback((id: Id, value: string) => ref.current!.changeId(id, value), []);
+    const onCreateIndex = useCallback((index: number) => ref.current!.createIndex(index), []);
+    const onCompleteIndex = useCallback((index: number) => ref.current!.completeIndex(index), []);
+    const onSwapIndices = useCallback((leftIndex: number, rightIndex: number) =>
+        ref.current!.swapIndices(leftIndex, rightIndex), []);
 
-    const ref = useRef<FreshListHandle>(null);
-
+    const fsh = useRef<FreshListHandle>(null);
     const onDeselect = useCallback(() => {
-        ref.current!.deselect();
+        fsh.current!.deselect();
     }, []);
 
     return <ul role="list" className={styles.list}>
             <FreshList
-                ref={ref}
+                ref={fsh}
                 fresh={fresh} newEntryId={newEntryId}
                 onSwapIndices={onSwapIndices}
                 onChangeId={onChangeId} onCreateIndex={onCreateIndex} onCompleteIndex={onCompleteIndex}>
