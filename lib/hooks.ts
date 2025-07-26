@@ -2,9 +2,9 @@
 
 import type { Selector } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
+import { usePersist } from "./LibProvider";
 
 import type { AppDispatch, AppStore, RootState } from "./store";
-import { usePersist } from "./StoreProvider";
 
 export const useAppStore = useStore.withTypes<AppStore>();
 

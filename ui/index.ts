@@ -1,3 +1,6 @@
+export type { Cursor, HtmlHandle } from "./html";
+
+export { UiProvider } from "./UiProvider";
 export { Html } from "./html";
 export { Main } from "./main";
 export { MainLabel } from "./main-label";

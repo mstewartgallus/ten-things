@@ -2,13 +2,13 @@
 
 import type { Key, ReactNode } from 'react';
 import { createContext, useContext, useMemo } from 'react';
-import { useCursor } from "../html";
 import { DragButton } from "../drag-button";
 import { DropButton } from "../drop-button";
 import {
     DndListProvider, DndItemProvider,
     useDndListState, useDndItemState
 } from "./DndProviders";
+import { useCursor } from "../UiProvider";
 
 import styles from './DndList.module.css';
 

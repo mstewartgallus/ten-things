@@ -2,11 +2,12 @@
 
 import type {
     JSX,
-    DetailedHTMLProps, HtmlHTMLAttributes, PointerEvent
+    Ref, PointerEvent
 } from "react";
 
 import {
-    createContext, useCallback, useContext, useMemo, useEffect, useId,
+    createContext, useCallback, useContext, useMemo, useEffect,
+    useImperativeHandle,
     useState
 } from "react";
 
@@ -14,39 +15,27 @@ import styles from "./Html.module.css";
 
 export type Cursor = 'grabbing';
 
-interface HtmlContext {
-    setCursor: (cursor?: Cursor) => void;
-    isPrimaryPointerDown: boolean;
+const HtmlContext = createContext<boolean>(false);
+
+export const useIsPrimaryPointerDown = () => useContext(HtmlContext);
+
+export interface HtmlHandle {
+    cursor(cursor?: Cursor): void;
 }
 
-const HtmlContext = createContext<HtmlContext>({
-    setCursor: () => {},
-    isPrimaryPointerDown: false
-});
-
-export const useCursor = (value?: Cursor) => {
-    const { setCursor } = useContext(HtmlContext);
-
-    useEffect(() => {
-        if (!value) {
-            return;
-        }
-        // FIXME do a push and pop thing
-        setCursor(value);
-        return () => {
-            setCursor();
-        };
-    }, [value, setCursor]);
+type Props = Omit<JSX.IntrinsicElements['html'], "ref"> & {
+    ref: Ref<HtmlHandle>;
 };
 
-export const useIsPrimaryPointerDown = () => useContext(HtmlContext).isPrimaryPointerDown;
-
-type Props = JSX.IntrinsicElements['html'];
-
-export const Html = ({ children, ...props }: Props) => {
+export const Html = ({ ref, children, ...props }: Props) => {
     const [isPrimaryPointerDown, setIsPrimaryPointerDown] = useState(false);
     const [cursor, setCursor] = useState<Cursor | null>(null);
-    const mainId = useId();
+
+    useImperativeHandle(ref, () => ({
+        cursor: (cursor?: Cursor) => {
+            setCursor(() => cursor ?? null);
+        }
+    }), []);
 
     const onPointerDown = useCallback((e: PointerEvent<HTMLHtmlElement>) => {
         if (!e.isPrimary) {
@@ -61,16 +50,11 @@ export const Html = ({ children, ...props }: Props) => {
         setIsPrimaryPointerDown(false);
     }, []);
 
-    const context = useMemo(() => ({
-        isPrimaryPointerDown,
-        setCursor: (cursor?: Cursor) => setCursor(cursor || null),
-        mainId
-    }), [setCursor, isPrimaryPointerDown, mainId]);
     return <html className={styles.html}
         onPointerUp={onPointerUp}
         onPointerDown={onPointerDown} onPointerLeave={onPointerDown}
     data-cursor={cursor} {...props}>
-           <HtmlContext.Provider value={context}>
+           <HtmlContext.Provider value={isPrimaryPointerDown}>
               {children}
            </HtmlContext.Provider>
         </html>;

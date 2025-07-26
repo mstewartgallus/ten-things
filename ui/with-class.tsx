@@ -15,6 +15,8 @@ interface Props<T> {
     ref?: ForwardedRef<T>;
 }
 
+// FIXME react 19 shouldn't need forwardRef anymore and this could
+// probably work for both client and server.
 const withClassImpl = <T, P extends Props<T>>(
     Component: ElementType<PropsWithoutRef<P> & { ref: ForwardedRef<T>}>,
     className: string

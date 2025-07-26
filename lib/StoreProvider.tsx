@@ -1,55 +1,47 @@
 "use client";
 
-import type { ReactNode } from "react";
-import type { Persistor, PersistorOptions } from "redux-persist";
+import type { ReactNode, Ref } from "react";
 import type { Store } from "@reduxjs/toolkit";
 import { makeStore } from "@/lib/store";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { createContext, useContext, useCallback, useEffect, useRef, useState } from "react";
+import { useImperativeHandle, useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { persistStore } from "redux-persist";
 
-const PersistContext = createContext<() => Promise<void>>(() => {
-    throw Error("no persistor");
-});
-
-export const usePersist = () => {
-    const persist = useContext(PersistContext);
-    // FIXME use react "use" to wait for persistence to finish?
-    useEffect(() => {
-        persist();
-    }, []);
-};
+export interface StoreHandle {
+    persist(): Promise<void>;
+}
 
 interface Props {
     readonly children: ReactNode;
+    readonly ref: Ref<StoreHandle>
 }
 
-export const StoreProvider = ({ children }: Props) => {
-    const ref = useRef<Store>(null);
+export const StoreProvider = ({ ref, children }: Props) => {
+    const storeRef = useRef<Store>(null);
     const promiseRef = useRef<Promise<void>>(null);
 
-    if (!ref.current) {
-        ref.current = makeStore();
+    if (!storeRef.current) {
+        storeRef.current = makeStore();
     }
 
-    useEffect(() => setupListeners(ref.current!.dispatch), []);
+    useImperativeHandle(ref, () => ({
+        persist: async () => {
+            const store = storeRef.current!;
+            let persistPromise = promiseRef.current;
 
-    const persist = useCallback(async () => {
-        const store = ref.current!;
-        let persistPromise = promiseRef.current;
+            if (!persistPromise) {
+                persistPromise = new Promise<void>(res => persistStore(store, null, () => res()));
+                promiseRef.current = persistPromise;
+            }
 
-        if (!persistPromise) {
-            persistPromise = new Promise<void>(res => persistStore(store, null, () => res()));
-            promiseRef.current = persistPromise;
+            await persistPromise;
         }
+    }), []);
 
-        await persistPromise;
-    }, []);
+    useEffect(() => setupListeners(storeRef.current!.dispatch), []);
 
-    return <Provider store={ref.current!}>
-        <PersistContext.Provider value={persist}>
+    return <Provider store={storeRef.current!}>
             {children}
-        </PersistContext.Provider>
     </Provider>;
 };
