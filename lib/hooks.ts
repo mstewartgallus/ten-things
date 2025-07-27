@@ -5,47 +5,41 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import { compose } from "redux";
 import { usePersist } from "./LibProvider";
 import { useImperativeHandle } from 'react';
-import type { Id } from "./definitions";
+import type { EntryId, FreshId, CompleteId } from "./definitions";
 import type { AppDispatch, AppStore, RootState } from "./store";
 import {
-    selectEntryAtId,
+    selectEntry,
+
+    selectFreshNonNull,
+    selectFreshLength,
     selectFresh,
+
+    selectCompleteLength,
     selectComplete,
 
-    edit, complete, deleteIndex
-} from "@/lib/features/ten/tenSlice";
-import {
-    selectSelectedIndex,
-    selectDragIndex,
+    selectHasSelection,
+    selectHasDragging,
 
-    dragStart,
-    dragEnd,
+    selectSelected,
+    selectDragging,
 
-    setSelectedIndex,
+    drag,
+    drop,
+    select,
     deselect,
 
     create,
-    swap
-} from "@/lib/features/ui/uiSlice";
+    edit, complete, deleteFresh
+} from "@/lib/features/ten/tenSlice";
 
 export const useAppStore = useStore.withTypes<AppStore>();
 const useAppSelector = useSelector.withTypes<RootState>();
 const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 
-// FIXME setup a separate thing for each page
+// FIXME setup a separate thing for each page?
 export interface TenHandle {
-    changeId(id: Id, value: string): Promise<void>;
-
-    createIndex(index: number): Promise<void>;
-    completeIndex(index: number): Promise<void>;
-    deleteIndex(index: number): Promise<void>;
-
-    selectIndex(index: number): Promise<void>;
     deselect(): Promise<void>;
-
-    dragStartIndex(index: number): Promise<void>;
-    dragEnd(): Promise<void>;
-    dropIndex(index: number): Promise<void>;
+    // dragEnd(): Promise<void>;
 }
 
 export const useTen = (ref: Ref<TenHandle>) => {
@@ -53,50 +47,119 @@ export const useTen = (ref: Ref<TenHandle>) => {
 
     const dispatch = useAppDispatch();
 
-    const dragIndex = useAppSelector(selectDragIndex);
-
     useImperativeHandle(ref, () => ({
-        changeId: async (...x) => {
-            await dispatch(edit(...x));
-        },
-        createIndex: async (...x) => {
-            await dispatch(create(...x));
-        },
-        completeIndex: async (...x) => {
-            await dispatch(complete(...x));
-        },
-        deleteIndex: async (...x) => {
-            await dispatch(deleteIndex(...x));
-        },
-
-        selectIndex: async (...x) => {
-            await dispatch(setSelectedIndex(...x));
-        },
-        deselect: async (...x) => {
-            await dispatch(deselect(...x));
-        },
-
-        dragStartIndex: async (...x) => {
-            await dispatch(dragStart(...x));
-        },
-        dragEnd: async (...x) => {
-            await dispatch(dragEnd(...x));
-        },
-
-        dropIndex: async index => {
-            if (dragIndex === undefined) {
-                return;
-            }
-            await dispatch(swap(dragIndex, index));
+        deselect: async () => {
+            await dispatch(deselect());
         }
-    }), [dispatch, dragIndex]);
+    }), [dispatch]);
+
+    const selected = useAppSelector(selectHasSelection);
+    const dragging = useAppSelector(selectHasDragging);
+    const freshNonNull = useAppSelector(selectFreshNonNull);
 
     return {
-        complete: useAppSelector(selectComplete),
-        fresh: useAppSelector(selectFresh),
-        entryAtId: useAppSelector(selectEntryAtId),
+        completeLength: useAppSelector(selectCompleteLength),
+        freshLength: useAppSelector(selectFreshLength),
 
-        selectionIndex: useAppSelector(selectSelectedIndex),
-        dragIndex
+        freshNonNull,
+
+        selected,
+        dragging
     };
+};
+
+export interface FreshHandle {
+    create(): Promise<void>;
+    complete(): Promise<void>;
+    deleteFresh(): Promise<void>;
+
+    select(): Promise<void>;
+
+    drag(): Promise<void>;
+    drop(): Promise<void>;
+}
+
+export const useFresh = (ref: Ref<FreshHandle>, id: FreshId) => {
+    usePersist();
+
+    const dispatch = useAppDispatch();
+
+    useImperativeHandle(ref, () => ({
+        create: async () => {
+            await dispatch(create(id));
+        },
+
+        complete: async () => {
+            await dispatch(complete(id));
+        },
+
+        deleteFresh: async () => {
+            await dispatch(deleteFresh(id));
+        },
+
+        select: async () => {
+            await dispatch(select(id));
+        },
+
+        drag: async () => {
+            await dispatch(drag(id));
+        },
+
+        drop: async () => {
+            await dispatch(drop(id));
+        },
+    }), [id]);
+
+    const item = useAppSelector(selectFresh)(id);
+    const dragging = useAppSelector(selectDragging)(id);
+    const selected = useAppSelector(selectSelected)(id);
+
+    return { item, selected, dragging };
+};
+
+
+export interface CompleteHandle {
+}
+
+export const useComplete = (ref: Ref<CompleteHandle>, id: CompleteId) => {
+    usePersist();
+
+    const dispatch = useAppDispatch();
+    useImperativeHandle(ref, () => ({
+    }), [id]);
+
+    const complete = useAppSelector(selectComplete);
+
+    return {
+        item: complete(id)
+    };
+};
+
+export interface EntryHandle {
+    change(value: string): Promise<void>;
+}
+
+export const useEntry = (ref: Ref<EntryHandle>, id?: EntryId) => {
+    usePersist();
+
+    const dispatch = useAppDispatch();
+
+    useImperativeHandle(ref, () => {
+        if (id === undefined) {
+            return {
+                change: async () => {
+                    throw Error(`Invalid id ${id}`);
+                }
+            };
+        }
+        return {
+            change: async (value: string) => {
+                await dispatch(edit(id, value));
+            }
+        };
+    }, [id]);
+
+    const entry = useAppSelector(selectEntry);
+
+    return id !== undefined ? entry(id) : undefined;
 };

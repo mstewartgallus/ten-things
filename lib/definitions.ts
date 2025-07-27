@@ -1,15 +1,17 @@
-export type Id = number;
+export type EntryId = number;
+export type FreshId = number;
+export type CompleteId = number;
 
 export interface Entry {
     value: string;
     created: number;
 }
 
-export interface Fresh {
-    id: Id;
+export type Fresh = null | {
+    id: EntryId;
 }
 
 export interface Complete {
-    id: Id;
+    id: EntryId;
     completed: number;
 }

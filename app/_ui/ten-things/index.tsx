@@ -1,23 +1,20 @@
 'use client';
 
-import type { Id, Entry } from '@/lib';
-import type { FreshItemHandle } from '@/ui';
-import type { TenHandle } from '@/lib';
+import type { TenHandle, FreshHandle, EntryHandle } from '@/lib';
 
 import { useCallback, useMemo, useRef } from 'react';
 import { DragButton, DropButton, MainLabel,
          FreshCreate, FreshEdit,
-         FreshList, useFreshItem,
+         List, useItem,
          H1, Header } from '@/ui';
-import { useTen } from '@/lib';
+import { useTen, useFresh, useEntry } from '@/lib';
 
 import styles from './TenThings.module.css';
 
 const useFreshCount = () => {
     const ref = useRef<TenHandle>(null);
-    const { fresh } = useTen(ref);
-    return useMemo(() => fresh.reduce((x, y) => (y != null ? 1 : 0) + x, 0),
-            [fresh]);
+    const { freshNonNull } = useTen(ref);
+    return freshNonNull;
 };
 
 const Heading = () => {
@@ -26,85 +23,69 @@ const Heading = () => {
 };
 
 interface ItemProps {
-    entryAtId(id: Id): Entry;
-
+    anyDragging: boolean;
     deselectAction?: () => Promise<void>;
 }
 
 const iff = <T,>(cond: boolean, val: T) => cond ? val : undefined;
 
-const Item = ({ entryAtId, deselectAction }: ItemProps) => {
-    const ref = useRef<FreshItemHandle>(null);
+const Item = ({ anyDragging, deselectAction }: ItemProps) => {
+    const index = useItem();
+    const fsh = useRef<FreshHandle>(null);
+    const { item, selected, dragging } = useFresh(fsh, index);
 
-    const { index, dragIndex, selectionIndex, item } = useFreshItem(ref);
+    const entryRef = useRef<EntryHandle>(null);
+    const entry = useEntry(entryRef, (item && item.id) ?? undefined);
 
-    const selected = selectionIndex === index;
-    const isDragging = dragIndex !== undefined;
-    const draggingMe = dragIndex === index;
+    const changeAction = useCallback(async (value: string) => await entryRef.current!.change(value), []);
 
-    const changeAction = useCallback(async (value: string) => await ref.current!.change(value), []);
-    const completeAction = useCallback(async () => await ref.current!.complete(), []);
-    const deleteAction = useCallback(async () => await ref.current!.deleteIndex(), []);
-    const createAction = useCallback(async () => await ref.current!.create(), []);
+    const completeAction = useCallback(async () => await fsh.current!.complete(), []);
+    const deleteAction = useCallback(async () => await fsh.current!.deleteFresh(), []);
+    const createAction = useCallback(async () => await fsh.current!.create(), []);
 
-    const selectAction = useCallback(async () => await ref.current!.select(), []);
-
-    const dragStartAction = iff(!isDragging,
-                            useCallback(async () => await ref.current!.dragStart(), []));
-    const dropAction = iff(isDragging && !draggingMe,
-                       useCallback(async () => await ref.current!.drop(), []));
+    const selectAction = useCallback(async () => await fsh.current!.select(), []);
+    const dragStartAction = useCallback(async () => await fsh.current!.drag(), []);
+    const dropAction = iff(anyDragging && !dragging,
+                       useCallback(async () => await fsh.current!.drop(), []));
 
     return <li role="listitem" className={styles.item}>
             <DropButton action={dropAction} />
-            <DragButton dragging={isDragging} dragStartAction={dragStartAction}>
+            <DragButton dragging={dragging} dragStartAction={dragStartAction}>
                 <div className={styles.grabberIcon}>&</div>
             </DragButton>
         {
-            item ?
-                <FreshEdit disabled={isDragging}
-                    {...entryAtId(item.id)} selected={selected}
+            entry ?
+                <FreshEdit disabled={dragging}
+                    {...entry} selected={selected}
                     changeAction={changeAction}
                     selectAction={iff(!selected, selectAction)}
-                    deselectAction={iff(selectionIndex !== undefined, deselectAction)}
+                    deselectAction={deselectAction}
                     completeAction={completeAction} deleteAction={deleteAction}
                 /> :
-            <FreshCreate disabled={isDragging} createAction={createAction} />
+            <FreshCreate disabled={dragging} createAction={createAction} />
         }
         </li>;
 };
 
 const TenFresh = () => {
     const ref = useRef<TenHandle>(null);
-    const { fresh, entryAtId, selectionIndex, dragIndex } = useTen(ref);
+    const { freshLength, dragging } = useTen(ref);
 
-    const createAction = useCallback(async (index: number) => await ref.current!.createIndex(index), []);
-
-    const changeAction = useCallback(async (id: Id, value: string) => await ref.current!.changeId(id, value), []);
-    const completeAction = useCallback(async (index: number) => await ref.current!.completeIndex(index), []);
-    const deleteAction = useCallback(async (index: number) => await ref.current!.deleteIndex(index), []);
-
-    const selectAction = useCallback(async (index: number) => await ref.current!.selectIndex(index), []);
     const deselectAction = useCallback(async () => {
         await ref.current!.deselect();
     }, []);
 
-    const dragStartAction = useCallback((index: number) => ref.current!.dragStartIndex(index), []);
-    const dropAction = useCallback((index: number) => ref.current!.dropIndex(index), []);
+    // FIXME
+    const keyAt = useCallback((index: number) => {
+        // const item = fresh[index];
+        // return item ? `id-${item.id}` : `indx-${index}`;
+        return index;
+    }, []);
 
     return <ul role="list" className={styles.list}>
-            <FreshList
-                fresh={fresh} dragIndex={dragIndex}
-                selectionIndex={selectionIndex}
-                selectAction={selectAction}
-                changeAction={changeAction}
-                createAction={createAction}
-                completeAction={completeAction}
-                deleteAction={deleteAction}
-                dragStartAction={dragStartAction}
-                dropAction={dropAction}
-                >
-                <Item entryAtId={entryAtId} deselectAction={deselectAction} />
-            </FreshList>
+            <List length={freshLength} keyAt={keyAt}>
+                <Item anyDragging={dragging} deselectAction={deselectAction} />
+            </List>
         </ul>;
 };
 

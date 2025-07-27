@@ -1,45 +1,82 @@
 import type { PayloadAction, Selector } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
-import type { Id, Entry, Fresh, Complete } from "@/lib/definitions";
-import { swap, create } from "../ui/uiSlice";
+import type {
+    EntryId, FreshId, CompleteId,
+    Entry, Fresh, Complete
+} from "@/lib/definitions";
 
 interface EditAction {
-    id: Id;
+    id: EntryId;
     value: string;
 }
 
 interface CompleteAction {
-    index: number;
+    id: FreshId;
     completed: number;
 }
 
 interface DeleteAction {
-    index: number;
+    id: FreshId;
 }
 
+interface SelectAction {
+    id: FreshId;
+}
+
+interface DragAction {
+    id: FreshId;
+}
+
+interface CreateAction {
+    id: FreshId;
+    created: number;
+}
+
+interface DropAction {
+    id: FreshId;
+}
+
+// FIXME factor out into multiple slices?
 export interface TenSliceState {
-    entry: Entry[],
-    fresh: (Fresh | null)[],
-    complete: Complete[]
+    ten: {
+        entry: Entry[];
+        fresh: Fresh[];
+        complete: Complete[];
+    };
+    ui: {
+        dragId?: FreshId;
+        selectionId?: FreshId;
+    };
 };
 
 const initialState: TenSliceState = (() => {
     const fresh = Array(10).fill(null);
     return {
-        entry: [],
-        fresh,
-        complete: []
+        ten: {
+            entry: [],
+            fresh,
+            complete: []
+        },
+        ui: {
+            dragId: undefined,
+            selectionId: undefined
+        }
     };
 })();
 
 type TenSelector<T> = Selector<TenSliceState, T>;
 
-const selectEntry: TenSelector<readonly Entry[]> = ten => ten.entry;
+const selectDragId: TenSelector<FreshId | undefined> = ({ ui }) => ui.dragId;
+const selectSelectionId: TenSelector<FreshId | undefined> = ({ ui }) => ui.selectionId;
 
-const checkIndex = <T>(array: readonly T[], index: number) => {
+const selectEntryArray: TenSelector<readonly Entry[]> = ({ ten }) => ten.entry;
+const selectFreshArray: TenSelector<readonly Fresh[]> = ({ ten }) => ten.fresh;
+const selectCompleteArray: TenSelector<readonly Complete[]> = ({ ten }) => ten.complete;
+
+const checkId = <T>(array: readonly T[], id: number) => {
     const { length } = array;
-    if (index < 0 || index >= length) {
-        throw Error(`${index} out of bounds of array of length ${length}`);
+    if (id < 0 || id >= length) {
+        throw Error(`${id} out of bounds of array of length ${length}`);
     }
 };
 
@@ -50,81 +87,157 @@ export const tenSlice = createSlice({
 
     reducers: create => ({
         edit: create.preparedReducer(
-            (id: Id, value: string) => ({ payload: {id, value } })
+            (id: EntryId, value: string) => ({ payload: { id, value } })
             ,
-            ({ entry }, { payload: { id, value } }: PayloadAction<EditAction>) => {
-            checkIndex(entry, id);
+            ({ ten: { entry } }, { payload: { id, value } }: PayloadAction<EditAction>) => {
+            checkId(entry, id);
 
-            entry[id].value = value;
-        }),
+                entry[id].value = value;
+            }),
 
-        deleteIndex: create.preparedReducer(
-            (index: number) => ({ payload: { index } })
+        create: create.preparedReducer(
+            (id: FreshId) => {
+                const created = Date.now();
+                return { payload: { id, created } };
+            },
+            ({ ui, ten: { entry, fresh } }, { payload: { id, created } }: PayloadAction<CreateAction>) => {
+                ui.selectionId = id;
+
+                checkId(fresh, id);
+                if (fresh[id]) {
+                    throw Error(`fresh ${id} is non-empty`);
+                }
+
+                const entryId = entry.length;
+
+                entry.push({ created, value: '' });
+                fresh[id] = { id: entryId };
+            }),
+
+        deleteFresh: create.preparedReducer(
+            (id: FreshId) => ({ payload: { id } })
             ,
-            ({ fresh }, { payload: { index } }: PayloadAction<DeleteAction>) => {
-                checkIndex(fresh, index);
+            ({ ten: { fresh } }, { payload: { id } }: PayloadAction<DeleteAction>) => {
+                checkId(fresh, id);
                 // FIXME what to do about the leftover garbage entry?
-                fresh[index] = null;
-        }),
+                fresh[id] = null;
+            }),
 
         complete: create.preparedReducer(
-            index => {
+            (id: FreshId) => {
                 const completed = Date.now();
-                return { payload: { index, completed } };
-            }, ({ fresh, complete }, { payload: { index, completed } }: PayloadAction<CompleteAction>) => {
-                checkIndex(fresh, index);
+                return { payload: { id, completed } };
+            }, ({ ten: { fresh, complete } }, { payload: { id, completed } }: PayloadAction<CompleteAction>) => {
+                checkId(fresh, id);
 
-                const oldFresh = fresh[index];
+                const oldFresh = fresh[id];
                 if (!oldFresh) {
-                    throw Error(`fresh ${index} is empty`);
+                    throw Error(`fresh ${id} is empty`);
                 }
-                fresh[index] = null;
+                fresh[id] = null;
                 complete.unshift({ ...oldFresh, completed });
             }),
+
+        select: create.preparedReducer(
+            (id: FreshId) => ({ payload: { id } }),
+            ({ ui }, { payload: { id } }: PayloadAction<SelectAction>) => {
+                ui.selectionId = id;
+            }),
+        deselect: create.preparedReducer(
+            () => ({ payload: null }),
+            ({ ui }) => {
+                ui.selectionId = undefined;
+            }),
+
+        drag: create.preparedReducer(
+            (id: FreshId) => ({ payload: { id } }),
+            ({ ui }, { payload: { id } }: PayloadAction<DragAction>) => {
+                ui.dragId = id;
+            }),
+
+        // Not sure if this is a sensible way of organizing things
+        drop: create.preparedReducer(
+            (id: FreshId) => ({ payload: { id } }),
+            ({ ui, ten: { fresh }}, { payload: { id } }: PayloadAction<DropAction>) => {
+                const { dragId } = ui;
+                if (dragId === undefined) {
+                    throw Error("not dragging");
+                }
+
+                checkId(fresh, id);
+                checkId(fresh, dragId);
+
+                const old = fresh[dragId];
+                fresh[dragId] = fresh[id];
+                fresh[id] = old;
+
+                ui.dragId = undefined;
+            })
     }),
-
-    extraReducers: builder => {
-        builder
-            .addCase(swap,
-                     ({ fresh }, { payload: { indexLeft, indexRight } }) => {
-                         checkIndex(fresh, indexLeft);
-                         checkIndex(fresh, indexRight);
-
-                         const leftFresh = fresh[indexLeft];
-                         fresh[indexLeft] = fresh[indexRight];
-                         fresh[indexRight] = leftFresh;
-                     })
-            .addCase(create,
-                     ({ fresh, entry }, { payload: { index, created } }) => {
-                         checkIndex(fresh, index);
-                         if (fresh[index]) {
-                             throw Error(`fresh ${index} is non-empty`);
-                         }
-
-                         const id = entry.length;
-
-                         entry.push({ created, value: '' });
-                         fresh[index] = { id };
-                     })
-
-    },
-
     selectors: {
-        selectEntryAtId: createSelector([selectEntry], entry => (id: Id) => entry[id]),
+        selectHasSelection: createSelector(
+            selectSelectionId,
+            (id?: FreshId) => id !== undefined),
+        selectHasDragging: createSelector(
+            selectDragId,
+            (dragId?: FreshId) => dragId !== undefined),
 
-        selectFresh: ten => ten.fresh,
-        selectComplete: ten => ten.complete
+        selectDragging: createSelector(
+            selectDragId,
+            dragId => (id: FreshId) => dragId === id),
+        selectSelected: createSelector(
+            selectSelectionId,
+            selectionId => (id: FreshId) => selectionId === id),
+
+        selectEntry: createSelector(
+            selectEntryArray,
+            entry => (id: FreshId) => entry[id]),
+
+        selectFreshNonNull: createSelector(
+            selectFreshArray,
+            fresh => fresh.reduce((x, y) => (y !== null ? 1 : 0) + x, 0)),
+        selectFreshLength: createSelector(
+            selectFreshArray,
+            fresh => fresh.length),
+        selectFresh: createSelector(
+            selectFreshArray,
+            fresh => (id: FreshId) => fresh[id]),
+
+        selectCompleteLength: createSelector(
+            selectCompleteArray,
+            complete => complete.length),
+        selectComplete: createSelector(
+            selectCompleteArray,
+            complete => (id: CompleteId) => complete[id])
     },
 });
 
 export const {
     edit,
+    create,
     complete,
-    deleteIndex
+    deleteFresh,
+
+    select,
+    deselect,
+
+    drag,
+    drop
 } = tenSlice.actions;
 
 export const {
-    selectEntryAtId,
+    selectEntry,
+
+    selectFreshNonNull,
+    selectFreshLength,
     selectFresh,
-    selectComplete
+
+    selectCompleteLength,
+    selectComplete,
+
+    selectHasSelection,
+    selectHasDragging,
+
+    selectSelected,
+    selectDragging
 } = tenSlice.selectors;

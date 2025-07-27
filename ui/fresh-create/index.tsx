@@ -1,6 +1,5 @@
 "use client";
 
-import type { Entry, Fresh, Id } from "@/lib";
 import { useActionState, useEffect, useId } from 'react';
 import { Button } from "../button";
 import { Icon } from "../icon";

@@ -1,5 +1,4 @@
 export type { Cursor, HtmlHandle } from "./html";
-export type { FreshItemHandle } from "./fresh-list";
 
 export { UiProvider } from "./UiProvider";
 export { Html } from "./html";
@@ -16,14 +15,14 @@ export { Bag } from "./bag";
 export { P } from "./p";
 export { Section } from "./section";
 
-// FIXME do these belong here?
-export { Logo } from "./Logo";
-
+export { Icon } from "./icon";
 export { List, useItem } from "./list";
-export { FreshList, useFreshItem } from "./fresh-list";
 
 export { DragButton } from "./drag-button";
 export { DropButton } from "./drop-button";
 export { FreshEdit } from "./fresh-edit";
 export { FreshCreate } from "./fresh-create";
-export { CompleteList } from "./complete-list";
+export { Complete } from "./complete";
+
+// FIXME do these belong here?
+export { Logo } from "./Logo";
