@@ -2,9 +2,7 @@
 
 import type { MouseEvent, PointerEvent, ReactNode } from 'react';
 import { useMemo } from 'react';
-import type { WrapHandle } from "../wrap";
-import { useRef } from "react";
-import { useWrapCallbacks, useWrap, toDataProps } from "../wrap";
+import { useWrap, toDataProps } from "../wrap";
 
 import styles from './DropButton.module.css';
 
@@ -14,9 +12,7 @@ interface Props {
 }
 
 export const DropButton = ({ children, action }: Props) => {
-    const ref = useRef<WrapHandle>(null);
-    const state = useWrap(ref);
-    const cb = useWrapCallbacks(ref);
+    const { state, cb } = useWrap();
 
     const onPointerUp = useMemo(() => {
         if (!action) {

@@ -1,9 +1,9 @@
 'use client';
 
-import type { PointerEvent, Ref, RefObject } from "react";
+import type { PointerEvent, Ref } from "react";
 import {
     useImperativeHandle,
-    useTransition, useCallback, useMemo, useState
+    useTransition, useCallback, useMemo, useRef, useState
 } from "react";
 
 interface Wrap {
@@ -21,7 +21,7 @@ export const toDataProps: (props: Wrap) => DataProps = ({ hover, active }) => ({
     "data-active": active ? "data-active" : undefined
 });
 
-export interface WrapHandle {
+interface WrapHandle {
     pointerEnter(): void;
     pointerLeave(): void;
 
@@ -29,27 +29,7 @@ export interface WrapHandle {
     pointerUp(): void;
 }
 
-// FIXME this is silly
-export const useWrapCallbacks = (ref: RefObject<WrapHandle | null>) => {
-    const onPointerEnter = useCallback(() => ref.current!.pointerEnter(), []);
-    const onPointerLeave = useCallback(() => ref.current!.pointerLeave(), []);
-
-    const onPointerDown = useCallback((e: PointerEvent) => {
-        if (!e.isPrimary) {
-            return;
-        }
-        ref.current!.pointerDown();
-    }, []);
-    const onPointerUp = useCallback((e: PointerEvent) => {
-        if (!e.isPrimary) {
-            return;
-        }
-        ref.current!.pointerUp();
-    }, []);
-    return { onPointerEnter, onPointerLeave, onPointerDown, onPointerUp };
-};
-
-export const useWrap: (ref: Ref<WrapHandle>) => Wrap = (ref: Ref<WrapHandle>) => {
+const useWrapState: (ref: Ref<WrapHandle>) => Wrap = (ref: Ref<WrapHandle>) => {
     const [, startTransition] = useTransition();
     const [hover, setHover] = useState(false);
     const [active, setActive] = useState(false);
@@ -69,4 +49,30 @@ export const useWrap: (ref: Ref<WrapHandle>) => Wrap = (ref: Ref<WrapHandle>) =>
     return useMemo(() => ({
         hover, active
     }), [hover, active]);
+};
+
+export const useWrap = () => {
+    const ref = useRef<WrapHandle>(null);
+    const state = useWrapState(ref);
+
+    const onPointerEnter = useCallback(() => ref.current!.pointerEnter(), []);
+    const onPointerLeave = useCallback(() => ref.current!.pointerLeave(), []);
+
+    const onPointerDown = useCallback((e: PointerEvent) => {
+        if (!e.isPrimary) {
+            return;
+        }
+        ref.current!.pointerDown();
+    }, []);
+    const onPointerUp = useCallback((e: PointerEvent) => {
+        if (!e.isPrimary) {
+            return;
+        }
+        ref.current!.pointerUp();
+    }, []);
+
+    return {
+        state,
+        cb: { onPointerEnter, onPointerLeave, onPointerDown, onPointerUp }
+    };
 };
