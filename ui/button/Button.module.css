@@ -1,19 +1,14 @@
 .buttonWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: contents;
 }
 .button {
     all: unset;
-
-    cursor: default;
 
     padding-block: calc(0.15 * var(--line));
     margin-block: calc(0.35 * var(--line));
 
     padding-inline: calc(0.3 * var(--line));
     margin-inline: calc(0.5 * var(--line));
-
 
     border-radius: 0.4em;
     outline-style: solid;
@@ -24,34 +19,32 @@
     align-items: center;
 }
 
+.button {
+    background: var(--button-face);
+    color: var(--button-text);
+    outline-color: var(--button-border);
+}
 
 .button:focus {
     outline-width: 3px;
     outline-color: var(--highlight-text);
 }
-
-.button {
-    background: var(--button-face);
-    color: var(--button-text);
-    border-color: var(--button-border);
-}
-
 /* FIXME differentiate states */
 .button[data-hover] {
+    outline-color: var(--button-face);
     background: var(--button-text);
-    border-color: var(--button-face);
     color: var(--button-face);
 }
 
 .button[data-active] {
-    border-color: var(--accent-color-text) ;
+    outline-color: var(--accent-color-text) ;
     background-color: var(--accent-color) ;
     color: var(--accent-color-text) ;
 }
 
-.button[aria-expanded="true"]:not(:active) {
+.button[aria-expanded="true"]:not([data-active]) {
+    outline-color: var(--button-face);
     background: var(--button-text);
-    border-color: var(--button-face);
     color: var(--button-face);
 }
 

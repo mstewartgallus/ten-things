@@ -1,7 +1,10 @@
 'use client';
 
-import type { PointerEvent } from "react";
-import { useCallback, useMemo, useState } from "react";
+import type { PointerEvent, Ref, RefObject } from "react";
+import {
+    useImperativeHandle,
+    useTransition, useCallback, useMemo, useState
+} from "react";
 
 interface Wrap {
     hover: boolean;
@@ -18,38 +21,52 @@ export const toDataProps: (props: Wrap) => DataProps = ({ hover, active }) => ({
     "data-active": active ? "data-active" : undefined
 });
 
-export const useWrap = () => {
-    const [hover, setHover] = useState(false);
-    const [active, setActive] = useState(false);
+export interface WrapHandle {
+    pointerEnter(): void;
+    pointerLeave(): void;
 
-    if (!hover && active) {
-        setActive(false);
-    }
+    pointerDown(): void;
+    pointerUp(): void;
+}
 
-    const onPointerEnter = useCallback(() => setHover(true), []);
-    const onPointerLeave = useCallback(() => setHover(false), []);
+// FIXME this is silly
+export const useWrapCallbacks = (ref: RefObject<WrapHandle | null>) => {
+    const onPointerEnter = useCallback(() => ref.current!.pointerEnter(), []);
+    const onPointerLeave = useCallback(() => ref.current!.pointerLeave(), []);
 
     const onPointerDown = useCallback((e: PointerEvent) => {
         if (!e.isPrimary) {
             return;
         }
-        setActive(true);
+        ref.current!.pointerDown();
     }, []);
     const onPointerUp = useCallback((e: PointerEvent) => {
         if (!e.isPrimary) {
             return;
         }
-        setActive(false);
+        ref.current!.pointerUp();
     }, []);
+    return { onPointerEnter, onPointerLeave, onPointerDown, onPointerUp };
+};
 
-    const state = useMemo(() => ({
+export const useWrap: (ref: Ref<WrapHandle>) => Wrap = (ref: Ref<WrapHandle>) => {
+    const [, startTransition] = useTransition();
+    const [hover, setHover] = useState(false);
+    const [active, setActive] = useState(false);
+
+    if (!hover && active) {
+        startTransition(() => setActive(false));
+    }
+
+    useImperativeHandle(ref, () => ({
+        pointerEnter: () => startTransition(() => setHover(true)),
+        pointerLeave: () => startTransition(() => setHover(false)),
+
+        pointerDown: () => startTransition(() => setActive(true)),
+        pointerUp: () => startTransition(() => setActive(false)),
+    }), []);
+
+    return useMemo(() => ({
         hover, active
     }), [hover, active]);
-
-    const hooks = useMemo(() => ({
-        onPointerEnter, onPointerLeave,
-        onPointerUp, onPointerDown
-    }), [onPointerEnter, onPointerLeave, onPointerUp, onPointerDown]);
-
-    return { state, hooks } ;
 };

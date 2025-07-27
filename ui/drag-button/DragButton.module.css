@@ -6,8 +6,8 @@
     padding-block: calc(0.5 * var(--line));
     margin-block: calc(0.5 * var(--line));
 
-    padding-inline: calc(0.3 * var(--line));
-    margin-inline: calc(0.5 * var(--line));
+    padding-inline: calc(0.2 * var(--line));
+    margin-inline: calc(0.3 * var(--line));
 
     display: flex;
     align-items: center;
