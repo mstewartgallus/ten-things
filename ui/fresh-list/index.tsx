@@ -2,7 +2,7 @@
 
 import type { ReactNode, Ref } from 'react';
 import type { Id, Fresh } from "@/lib";
-import type { DndItemHandle } from '../dnd-list';
+import type { DndListHandle, DndItemHandle } from '../dnd-list';
 import type { SelectionListHandle, SelectionItemHandle } from '../selection-list';
 import { createContext, useContext, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { List, useItem } from '../list';
@@ -10,7 +10,7 @@ import { SelectionList, useSelectionItem } from '../selection-list';
 import { DndList, useDndItem } from '../dnd-list';
 
 export interface FreshItemHandle {
-    drag(): void;
+    dragStart(): void;
     drop(): void;
 
     select(): void;
@@ -21,6 +21,7 @@ export interface FreshItemHandle {
 }
 
 export interface FreshListHandle {
+    dragEnd(): void;
     deselect(): void;
 }
 
@@ -51,7 +52,7 @@ export const useFreshItem = (ref: Ref<FreshItemHandle>) => {
     useImperativeHandle(ref, () => ({
         select: () => fsh.current!.select(),
 
-        drag: () => dnd.current!.drag(),
+        dragStart: () => dnd.current!.dragStart(),
         drop: () => dnd.current!.drop(),
 
         change: (value: string) => {
@@ -89,8 +90,11 @@ export const FreshList = ({
     onCreateIndex, onCompleteIndex,
     onSwapIndices
 }: Props) => {
+    const dndRef = useRef<DndListHandle>(null);
     const selectRef = useRef<SelectionListHandle>(null);
+
     useImperativeHandle(ref, () => ({
+        dragEnd: () => dndRef.current!.dragEnd(),
         deselect: () => selectRef.current!.deselect()
     }), []);
 
@@ -106,7 +110,7 @@ export const FreshList = ({
     }), [onChangeId, onCreateIndex, onCompleteIndex]);
 
     return <SelectionList ref={selectRef} fresh={fresh}>
-                <DndList onSwapIndices={onSwapIndices}>
+                <DndList ref={dndRef} onSwapIndices={onSwapIndices}>
                     <FreshContext value={context}>
                         <List keyAt={keyAt} length={fresh.length}>
                             {children}

@@ -27,12 +27,14 @@ const Heading = () => {
 
 interface ItemProps {
     entryAtId(id: Id): Entry;
+
+    onDragEnd(): void;
     onDeselect(): void;
 }
 
 const iff = <T,>(cond: boolean, val: T) => cond ? val : undefined;
 
-const Item = ({ entryAtId, onDeselect }: ItemProps) => {
+const Item = ({ entryAtId, onDeselect, onDragEnd }: ItemProps) => {
     const ref = useRef<FreshItemHandle>(null);
 
     const { index, dragIndex, selectionId, item } = useFreshItem(ref);
@@ -49,17 +51,18 @@ const Item = ({ entryAtId, onDeselect }: ItemProps) => {
 
     const onSelect = useCallback(() => ref.current!.select(), []);
     const onDragStart = iff(!isDragging,
-                            useCallback(() => ref.current!.drag(), []));
+                            useCallback(() => ref.current!.dragStart(), []));
+
     const onDrop = iff(isDragging && !draggingMe,
                        useCallback(() => ref.current!.drop(), []));
 
-    const onToggle = onDragStart ?? onDrop;
-
     return <li role="listitem" className={styles.item}>
             <DropButton onDrop={onDrop} />
-            <DragButton dragging={isDragging} onDragStart={onDragStart} onToggle={onToggle}>
+            <DragButton dragging={isDragging}
+                onDragStart={onDragStart}
+                onDragEnd={iff(isDragging, onDragEnd)}>
                 <div className={styles.grabberIcon}>&</div>
-        </DragButton>
+            </DragButton>
         {
             item ?
                 <FreshEdit disabled={isDragging}
@@ -86,6 +89,8 @@ const TenFresh = () => {
         ref.current!.swapIndices(leftIndex, rightIndex), []);
 
     const fsh = useRef<FreshListHandle>(null);
+
+    const onDragEnd = useCallback(() => fsh.current!.dragEnd(), []);
     const onDeselect = useCallback(() => {
         fsh.current!.deselect();
     }, []);
@@ -97,7 +102,7 @@ const TenFresh = () => {
                 onCreateIndex={onCreateIndex}
                 onSwapIndices={onSwapIndices}
                 onChangeId={onChangeId} onCompleteIndex={onCompleteIndex}>
-                <Item entryAtId={entryAtId} onDeselect={onDeselect} />
+                <Item entryAtId={entryAtId} onDeselect={onDeselect} onDragEnd={onDragEnd} />
             </FreshList>
         </ul>;
 };

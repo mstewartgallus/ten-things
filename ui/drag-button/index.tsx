@@ -16,12 +16,14 @@ interface Props {
     readonly dragging: boolean;
 
     readonly onDragStart?: () => void;
-    readonly onToggle?: () => void;
+    readonly onDragEnd?: () => void;
 }
 
-export const DragButton = ({ children, dragging, onDragStart, onToggle }: Props) => {
+export const DragButton = ({ children, dragging, onDragStart, onDragEnd }: Props) => {
+    const onToggle = onDragStart || onDragEnd;
+
     const onClick = useMemo(() => {
-        if (!onToggle) {
+        if (!onDragStart) {
             return;
         }
         return (e: MouseEvent<HTMLButtonElement>) => {
@@ -29,9 +31,10 @@ export const DragButton = ({ children, dragging, onDragStart, onToggle }: Props)
                 return;
             }
             e.preventDefault();
-            onToggle();
+            onDragStart();
+            console.log('dragstart');
         };
-    }, [onToggle]);
+    }, [onDragStart]);
 
     const onPointerDown = useMemo(() => {
         if (!onDragStart) {

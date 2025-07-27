@@ -2,7 +2,6 @@
 
 import type { Key, ReactNode, Ref } from 'react';
 import { createContext, useCallback, useContext, useImperativeHandle, useMemo, useState } from 'react';
-import { useIsPrimaryPointerDown } from "../html";
 import { useItem } from "../list";
 import { useCursor } from "../UiProvider";
 
@@ -16,8 +15,12 @@ const ListContext = createContext<ListContext>({
 });
 ListContext.displayName = 'ListContext';
 
+export interface DndListHandle {
+    dragEnd(): void;
+}
+
 export interface DndItemHandle {
-    drag(): void;
+    dragStart(): void;
     drop(): void;
 }
 
@@ -26,7 +29,7 @@ export const useDndItem = (ref: Ref<DndItemHandle>) => {
     const { dragIndex, onDragStart, onDrop } = useContext(ListContext);
 
     useImperativeHandle(ref, () => ({
-        drag: () => {
+        dragStart: () => {
             onDragStart && onDragStart(index);
         },
         drop: () => {
@@ -38,26 +41,32 @@ export const useDndItem = (ref: Ref<DndItemHandle>) => {
 
 interface Props {
     children: ReactNode;
+    ref: Ref<DndListHandle>;
     onSwapIndices?: (dragIndex: number, dropIndex: number) => void;
 }
 
-export const DndList = ({ children, onSwapIndices }: Props) => {
+export const DndList = ({ ref, children, onSwapIndices }: Props) => {
     const [dragIndex, setDragIndex] = useState<number | null>(null);
 
-    const isPrimaryPointerDown = useIsPrimaryPointerDown();
+    useImperativeHandle(ref, () => ({
+        dragEnd: () => {
+            setDragIndex(null);
+        }
+    }), []);
 
-    if (!isPrimaryPointerDown && dragIndex !== null) {
-        setDragIndex(null);
-    }
-
-    const onDragStart = useCallback((index: number) => {
+    const onDragStart = useMemo(() => {
+        if (dragIndex !== null) {
+            return;
+        }
+        return (index: number) => {
             setDragIndex(index);
+        };
     }, []);
-    let onDrop = useMemo(() => {
+    const onDrop = useMemo(() => {
         if (!onSwapIndices) {
             return;
         }
-        if (!dragIndex) {
+        if (dragIndex === null) {
             return;
         }
         return (index: number) => {
@@ -65,10 +74,6 @@ export const DndList = ({ children, onSwapIndices }: Props) => {
             setDragIndex(null);
         };
     }, [dragIndex, onSwapIndices]);
-
-    if (dragIndex === null) {
-        onDrop = undefined;
-    }
 
     useCursor(dragIndex !== null ? 'grabbing' : undefined);
 
