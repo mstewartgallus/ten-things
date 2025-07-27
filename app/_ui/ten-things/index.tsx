@@ -4,12 +4,14 @@ import type { TenHandle, FreshHandle, EntryHandle } from '@/lib';
 
 import { useCallback, useRef } from 'react';
 import { DragButton, DropButton, MainLabel,
-         FreshCreate, FreshEdit,
+         FreshEdit,
          List, useItem,
          H1, Header } from '@/ui';
 import { useTen, useFresh, useEntry } from '@/lib';
 
 import styles from './TenThings.module.css';
+
+const iff = <T,>(cond: boolean, val: T) => cond ? val : undefined;
 
 const useFreshCount = () => {
     const ref = useRef<TenHandle>(null);
@@ -22,48 +24,87 @@ const Heading = () => {
     return <>{count} / 10 Things</>
 };
 
+
+interface EntryProps {
+    id?: EntryId;
+    disabled: boolean;
+    selected: boolean;
+    completeAction?: (value: string) => void;
+    toggleAction?: () => void;
+}
+
+const Entry = ({
+    id, disabled, selected,
+    toggleAction, completeAction
+}: EntryProps) => {
+    const entryRef = useRef<EntryHandle>(null);
+    const entry = useEntry(entryRef, id);
+
+    const changeAction = useCallback(async (value: string) => await entryRef.current!.change(value), []);
+
+    return <FreshEdit disabled={disabled}
+                    entry={entry}
+                    selected={selected}
+                    changeAction={changeAction}
+                    toggleAction={toggleAction}
+                    completeAction={completeAction}
+        />;
+};
+
+
+interface MaybeEntryProps {
+    id?: EntryId;
+    disabled: boolean;
+    selected: boolean;
+    createAction?: (value: string) => void;
+    completeAction?: (value: string) => void;
+    toggleAction?: () => void;
+}
+
+const MaybeEntry = ({
+    id,
+    createAction, completeAction,
+    ...props
+}: MaybeEntryProps) => {
+    if (id === undefined) {
+        return <FreshEdit changeAction={createAction} {...props} />;
+    }
+    return <Entry id={id} completeAction={completeAction} {...props} />;
+};
+
 interface ItemProps {
     anyDragging: boolean;
     deselectAction?: () => Promise<void>;
 }
-
-const iff = <T,>(cond: boolean, val: T) => cond ? val : undefined;
 
 const Item = ({ anyDragging, deselectAction }: ItemProps) => {
     const index = useItem();
     const fsh = useRef<FreshHandle>(null);
     const { item, selected, dragging } = useFresh(fsh, index);
 
-    const entryRef = useRef<EntryHandle>(null);
-    const entry = useEntry(entryRef, (item && item.id) ?? undefined);
-
-    const changeAction = useCallback(async (value: string) => await entryRef.current!.change(value), []);
-
     const completeAction = useCallback(async () => await fsh.current!.complete(), []);
-    const deleteAction = useCallback(async () => await fsh.current!.deleteFresh(), []);
-    const createAction = useCallback(async () => await fsh.current!.create(), []);
+    const createAction = useCallback(async (value: string) => await fsh.current!.create(value), []);
 
     const selectAction = useCallback(async () => await fsh.current!.select(), []);
     const dragStartAction = useCallback(async () => await fsh.current!.drag(), []);
     const dropAction = iff(anyDragging && !dragging,
                        useCallback(async () => await fsh.current!.drop(), []));
 
+    const id = (item && item.id) ?? undefined;
+
+    const toggleAction = iff(!selected, selectAction) ?? deselectAction;
+
     return <li role="listitem" className={styles.item}>
             <DropButton action={dropAction} />
             <DragButton dragging={dragging} dragStartAction={dragStartAction}>
                 <div className={styles.grabberIcon}>&</div>
             </DragButton>
-        {
-            entry ?
-                <FreshEdit disabled={dragging}
-                    {...entry} selected={selected}
-                    changeAction={changeAction}
-                    selectAction={iff(!selected, selectAction)}
-                    deselectAction={deselectAction}
-                    completeAction={completeAction} deleteAction={deleteAction}
-                /> :
-            <FreshCreate disabled={dragging} createAction={createAction} />
-        }
+            <MaybeEntry disabled={dragging}
+                    id={id} selected={selected}
+                    createAction={createAction}
+                    toggleAction={toggleAction}
+                    completeAction={completeAction}
+                />
         </li>;
 };
 

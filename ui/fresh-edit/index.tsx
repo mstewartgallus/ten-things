@@ -1,59 +1,66 @@
 "use client";
 
+import type { Entry } from '@/lib';
 import { useMemo, useId } from 'react';
 
-import { EntryEdit } from "../entry-edit";
+import { EditFormMaybe } from "../edit-form-maybe";
 import { Button } from "../button";
+import { Time } from "../time";
 import { Icon } from "../icon";
 
 import styles from "./FreshEdit.module.css";
 
+const iff = <T,>(cond: boolean, val: T) => cond ? val : undefined;
+
 interface Props {
     disabled: boolean;
 
-    value: string;
-    created: number;
+    entry?: Entry;
 
     selected: boolean;
 
-    // FIXME cleanup into single action hook?
     changeAction?: (value: string) => Promise<void>;
-    selectAction?: () => Promise<void>;
-    deselectAction?: () => Promise<void>;
+    toggleAction?: () => Promise<void>;
 
     completeAction?: () => Promise<void>;
-    deleteAction?: () => Promise<void>;
 }
 
 export const FreshEdit = ({
     disabled,
 
-    value, created,
+    entry,
     selected,
-    changeAction,
-    selectAction, deselectAction,
 
-    completeAction,
-    deleteAction
+    changeAction,
+    toggleAction,
+
+    completeAction
 }: Props) => {
     const id = useId();
-    const emptyValue = value === '';
 
-    return <div className={styles.freshSlot}>
-         <EntryEdit disabled={disabled} value={value} created={created}
-    changeAction={changeAction} selectAction={selectAction} deselectAction={deselectAction} />
-        <form className={styles.form} id={id}>
-        {
-        emptyValue ?
-                <Button disabled={disabled || selected} aria-label="Delete Thing" value="delete"
-            formAction={deleteAction}>
-                <Icon>🗑︎</Icon>
-                </Button> :
-                <Button disabled={disabled || selected} aria-label="Complete Thing" value="complete"
-            formAction={completeAction}>
-                <Icon>✔</Icon>
-            </Button>
-        }
-    </form>
+    const emptyValue = entry === undefined;
+
+    const value = entry && entry.value;
+    const created = entry && entry.created;
+
+    return <div className={styles.freshEdit}>
+            <div className={styles.freshSlot}>
+                <EditFormMaybe value={value} disabled={disabled} selected={selected}
+                    changeAction={changeAction} toggleAction={toggleAction} />
+                <form className={styles.form} id={id} action={completeAction}>
+                {
+                    completeAction &&
+                        <Button disabled={disabled || selected}
+                            aria-label="Complete Thing" value="complete">
+                            <Icon>✔</Icon>
+                        </Button>
+                }
+                </form>
+            </div>
+            <div className={styles.metadata}>
+            {
+                created ? <>Created: <Time>{created}</Time></> : null
+            }
+            </div>
         </div>;
 };

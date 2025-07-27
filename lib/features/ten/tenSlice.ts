@@ -15,10 +15,6 @@ interface CompleteAction {
     completed: number;
 }
 
-interface DeleteAction {
-    id: FreshId;
-}
-
 interface SelectAction {
     id: FreshId;
 }
@@ -29,6 +25,7 @@ interface DragAction {
 
 interface CreateAction {
     id: FreshId;
+    value: string;
     created: number;
 }
 
@@ -89,18 +86,21 @@ export const tenSlice = createSlice({
         edit: create.preparedReducer(
             (id: EntryId, value: string) => ({ payload: { id, value } })
             ,
-            ({ ten: { entry } }, { payload: { id, value } }: PayloadAction<EditAction>) => {
-            checkId(entry, id);
+            ({ ui, ten: { entry } }, { payload: { id, value } }: PayloadAction<EditAction>) => {
+                checkId(entry, id);
 
                 entry[id].value = value;
+
+                ui.selectionId = undefined;
+                console.log('edit');
             }),
 
         create: create.preparedReducer(
-            (id: FreshId) => {
+            (id: FreshId, value: string) => {
                 const created = Date.now();
-                return { payload: { id, created } };
+                return { payload: { id, value, created } };
             },
-            ({ ui, ten: { entry, fresh } }, { payload: { id, created } }: PayloadAction<CreateAction>) => {
+            ({ ui, ten: { entry, fresh } }, { payload: { id, value, created } }: PayloadAction<CreateAction>) => {
                 ui.selectionId = id;
 
                 checkId(fresh, id);
@@ -110,17 +110,10 @@ export const tenSlice = createSlice({
 
                 const entryId = entry.length;
 
-                entry.push({ created, value: '' });
+                entry.push({ created, value });
                 fresh[id] = { id: entryId };
-            }),
 
-        deleteFresh: create.preparedReducer(
-            (id: FreshId) => ({ payload: { id } })
-            ,
-            ({ ten: { fresh } }, { payload: { id } }: PayloadAction<DeleteAction>) => {
-                checkId(fresh, id);
-                // FIXME what to do about the leftover garbage entry?
-                fresh[id] = null;
+                ui.selectionId = undefined;
             }),
 
         complete: create.preparedReducer(
@@ -216,7 +209,6 @@ export const {
     edit,
     create,
     complete,
-    deleteFresh,
 
     select,
     deselect,

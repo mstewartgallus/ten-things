@@ -11,20 +11,19 @@ import styles from "./EditFormMaybe.module.css";
 
 interface Props {
     disabled: boolean;
-    value: string;
+    selected: boolean;
+    value?: string;
     changeAction?: (value: string) => void;
-    selectAction?: () => void;
-    deselectAction?: () => void;
+    toggleAction?: () => void;
 }
 
 export const EditFormMaybe = ({
     disabled,
+    selected,
     value,
-    changeAction, selectAction, deselectAction
+    changeAction, toggleAction
 }: Props) => {
-    const selected = !selectAction;
-
-    const toggleAction = selectAction || deselectAction;
+    const emptyValue = value === undefined;
 
     const onClick = useMemo(() => {
         if (!toggleAction) {
@@ -36,25 +35,18 @@ export const EditFormMaybe = ({
         };
     }, [toggleAction]);
 
-    const editAction = useMemo(() => {
-        if (!changeAction || !deselectAction) {
-            return;
-        }
-        return async (value: string) => {
-            await changeAction(value);
-            await deselectAction();
-        };
-    }, [changeAction, deselectAction]);
-
     const controlId = useId();
+    const label = emptyValue ?
+        (selected ? 'Cancel Create' : 'Create Thing') :
+        (selected ? 'Cancel Edit' : 'Edit Thing');
 
     return <div className={styles.editableTitle}>
-          <Button aria-label={selected ? 'Cancel Edit' : 'Edit'}
+        <Button aria-label={label}
                 disabled={disabled || !onClick}
                 onClick={onClick}
                 aria-expanded={selected}
                 aria-controls={controlId}>
-                <Icon>{selected ? '🗙' : '✎'}</Icon>
+             <Icon>{selected ? '🗙' : emptyValue ? '+' : '✎'}</Icon>
         </Button>
         <div className={styles.titleAndInputWrapper}>
             <div id={controlId} className={styles.titleAndInput}>
@@ -62,7 +54,7 @@ export const EditFormMaybe = ({
                     <div className={styles.title}>{value}</div>
                 </If>
                 <If cond={selected}>
-                    <EditForm disabled={disabled} value={value} changeAction={editAction} />
+                    <EditForm disabled={disabled} value={value} changeAction={changeAction} />
                 </If>
         </div>
         </div>

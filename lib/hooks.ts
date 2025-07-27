@@ -28,7 +28,7 @@ import {
     deselect,
 
     create,
-    edit, complete, deleteFresh
+    edit, complete
 } from "@/lib/features/ten/tenSlice";
 
 export const useAppStore = useStore.withTypes<AppStore>();
@@ -70,7 +70,6 @@ export const useTen = (ref: Ref<TenHandle>) => {
 export interface FreshHandle {
     create(): Promise<void>;
     complete(): Promise<void>;
-    deleteFresh(): Promise<void>;
 
     select(): Promise<void>;
 
@@ -84,16 +83,12 @@ export const useFresh = (ref: Ref<FreshHandle>, id: FreshId) => {
     const dispatch = useAppDispatch();
 
     useImperativeHandle(ref, () => ({
-        create: async () => {
-            await dispatch(create(id));
+        create: async (value: string) => {
+            await dispatch(create(id, value));
         },
 
         complete: async () => {
             await dispatch(complete(id));
-        },
-
-        deleteFresh: async () => {
-            await dispatch(deleteFresh(id));
         },
 
         select: async () => {
@@ -136,19 +131,12 @@ export interface EntryHandle {
     change(value: string): Promise<void>;
 }
 
-export const useEntry = (ref: Ref<EntryHandle>, id?: EntryId) => {
+export const useEntry = (ref: Ref<EntryHandle>, id: EntryId) => {
     usePersist();
 
     const dispatch = useAppDispatch();
 
     useImperativeHandle(ref, () => {
-        if (id === undefined) {
-            return {
-                change: async () => {
-                    throw Error(`Invalid id ${id}`);
-                }
-            };
-        }
         return {
             change: async (value: string) => {
                 await dispatch(edit(id, value));
@@ -156,7 +144,5 @@ export const useEntry = (ref: Ref<EntryHandle>, id?: EntryId) => {
         };
     }, [dispatch, id]);
 
-    const entry = useAppSelector(selectEntry);
-
-    return id !== undefined ? entry(id) : undefined;
+    return useAppSelector(selectEntry)(id);
 };

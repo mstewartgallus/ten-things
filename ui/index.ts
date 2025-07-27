@@ -21,7 +21,6 @@ export { List, useItem } from "./list";
 export { DragButton } from "./drag-button";
 export { DropButton } from "./drop-button";
 export { FreshEdit } from "./fresh-edit";
-export { FreshCreate } from "./fresh-create";
 export { Complete } from "./complete";
 
 // FIXME do these belong here?
