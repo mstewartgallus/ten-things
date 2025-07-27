@@ -2,7 +2,7 @@
 
 import type { TenHandle, FreshHandle, EntryHandle } from '@/lib';
 
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { DragButton, DropButton, MainLabel,
          FreshCreate, FreshEdit,
          List, useItem,

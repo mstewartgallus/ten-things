@@ -2,7 +2,6 @@
 
 import type { Ref } from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
-import { compose } from "redux";
 import { usePersist } from "./LibProvider";
 import { useImperativeHandle } from 'react';
 import type { EntryId, FreshId, CompleteId } from "./definitions";
@@ -108,7 +107,7 @@ export const useFresh = (ref: Ref<FreshHandle>, id: FreshId) => {
         drop: async () => {
             await dispatch(drop(id));
         },
-    }), [id]);
+    }), [dispatch, id]);
 
     const item = useAppSelector(selectFresh)(id);
     const dragging = useAppSelector(selectDragging)(id);
@@ -118,15 +117,13 @@ export const useFresh = (ref: Ref<FreshHandle>, id: FreshId) => {
 };
 
 
-export interface CompleteHandle {
-}
+type CompleteHandle = void;
 
 export const useComplete = (ref: Ref<CompleteHandle>, id: CompleteId) => {
     usePersist();
 
-    const dispatch = useAppDispatch();
     useImperativeHandle(ref, () => ({
-    }), [id]);
+    }), []);
 
     const complete = useAppSelector(selectComplete);
 
@@ -157,7 +154,7 @@ export const useEntry = (ref: Ref<EntryHandle>, id?: EntryId) => {
                 await dispatch(edit(id, value));
             }
         };
-    }, [id]);
+    }, [dispatch, id]);
 
     const entry = useAppSelector(selectEntry);
 

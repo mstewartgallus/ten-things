@@ -4,12 +4,11 @@ import { useRef } from 'react';
 
 import type {
     TenHandle, CompleteHandle, EntryHandle,
-    EntryId, Entry,
-    CompleteId, Complete
+    CompleteId
 } from "@/lib";
 import { useCallback } from 'react';
 import { useTen, useComplete, useEntry } from "@/lib";
-import { List, useItem, Icon, Complete as CompleteComponent } from '@/ui';
+import { List, useItem, Complete as CompleteComponent } from '@/ui';
 
 import styles from "./CompleteList.module.css";
 
