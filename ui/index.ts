@@ -1,6 +1,5 @@
 export type { Cursor, HtmlHandle } from "./html";
-export type { FreshListHandle, FreshItemHandle } from "./fresh-list";
-export type { DndItemHandle } from "./dnd-list";
+export type { FreshItemHandle } from "./fresh-list";
 
 export { UiProvider } from "./UiProvider";
 export { Html } from "./html";
@@ -21,8 +20,6 @@ export { Section } from "./section";
 export { Logo } from "./Logo";
 
 export { List, useItem } from "./list";
-export { DndList, useDndItem } from "./dnd-list";
-export { SelectionList, useSelectionItem } from "./selection-list";
 export { FreshList, useFreshItem } from "./fresh-list";
 
 export { DragButton } from "./drag-button";

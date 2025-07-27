@@ -1,7 +1,7 @@
 'use client';
 
 import type { Id, Entry } from '@/lib';
-import type { FreshListHandle, FreshItemHandle } from '@/ui';
+import type { FreshItemHandle } from '@/ui';
 import type { TenHandle } from '@/lib';
 
 import { useCallback, useMemo, useRef } from 'react';
@@ -37,11 +37,9 @@ const iff = <T,>(cond: boolean, val: T) => cond ? val : undefined;
 const Item = ({ entryAtId, onDeselect, onDragEnd }: ItemProps) => {
     const ref = useRef<FreshItemHandle>(null);
 
-    const { index, dragIndex, selectionId, item } = useFreshItem(ref);
+    const { index, dragIndex, selectionIndex, item } = useFreshItem(ref);
 
-    const id = item && item.id;
-
-    const selected = selectionId === id;
+    const selected = selectionIndex === index;
     const isDragging = dragIndex !== undefined;
     const draggingMe = dragIndex === index;
 
@@ -69,7 +67,7 @@ const Item = ({ entryAtId, onDeselect, onDragEnd }: ItemProps) => {
                     {...entryAtId(item.id)} selected={selected}
                     onChange={onChange}
                     onSelect={iff(!selected, onSelect)}
-                    onDeselect={iff(selectionId !== undefined, onDeselect)}
+                    onDeselect={iff(selectionIndex !== undefined, onDeselect)}
                     onComplete={onComplete}
                 /> :
             <FreshCreate disabled={isDragging} onCreate={onCreate} />
@@ -79,29 +77,34 @@ const Item = ({ entryAtId, onDeselect, onDragEnd }: ItemProps) => {
 
 const TenFresh = () => {
     const ref = useRef<TenHandle>(null);
-    const { fresh, entryAtId } = useTen(ref);
+    const { fresh, entryAtId, selectionIndex, dragIndex } = useTen(ref);
 
     const onCreateIndex = useCallback((index: number) => ref.current!.createIndex(index), []);
 
     const onChangeId = useCallback((id: Id, value: string) => ref.current!.changeId(id, value), []);
     const onCompleteIndex = useCallback((index: number) => ref.current!.completeIndex(index), []);
-    const onSwapIndices = useCallback((leftIndex: number, rightIndex: number) =>
-        ref.current!.swapIndices(leftIndex, rightIndex), []);
 
-    const fsh = useRef<FreshListHandle>(null);
-
-    const onDragEnd = useCallback(() => fsh.current!.dragEnd(), []);
+    const onSelectIndex = useCallback((index: number) => ref.current!.selectIndex(index), []);
     const onDeselect = useCallback(() => {
-        fsh.current!.deselect();
+        ref.current!.deselect();
     }, []);
+
+    const onDragEnd = useCallback(() => ref.current!.dragEnd(), []);
+
+    const onDragStartIndex = useCallback((index: number) => ref.current!.dragStartIndex(index), []);
+    const onDropIndex = useCallback((index: number) => ref.current!.dropIndex(index), []);
 
     return <ul role="list" className={styles.list}>
             <FreshList
-                ref={fsh}
-                fresh={fresh}
+                fresh={fresh} dragIndex={dragIndex}
+                selectionIndex={selectionIndex}
+                onSelectIndex={onSelectIndex}
+                onChangeId={onChangeId}
                 onCreateIndex={onCreateIndex}
-                onSwapIndices={onSwapIndices}
-                onChangeId={onChangeId} onCompleteIndex={onCompleteIndex}>
+                onCompleteIndex={onCompleteIndex}
+                onDragStartIndex={onDragStartIndex}
+                onDropIndex={onDropIndex}
+                >
                 <Item entryAtId={entryAtId} onDeselect={onDeselect} onDragEnd={onDragEnd} />
             </FreshList>
         </ul>;

@@ -2,12 +2,8 @@
 
 import type { ReactNode, Ref } from 'react';
 import type { Id, Fresh } from "@/lib";
-import type { DndListHandle, DndItemHandle } from '../dnd-list';
-import type { SelectionListHandle, SelectionItemHandle } from '../selection-list';
-import { createContext, useContext, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { createContext, useContext, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
 import { List, useItem } from '../list';
-import { SelectionList, useSelectionItem } from '../selection-list';
-import { DndList, useDndItem } from '../dnd-list';
 
 export interface FreshItemHandle {
     dragStart(): void;
@@ -22,38 +18,48 @@ export interface FreshItemHandle {
 
 export interface FreshListHandle {
     dragEnd(): void;
-    deselect(): void;
 }
 
 interface Context {
+    fresh: readonly (Fresh | null)[];
+
+    selectionIndex?: number;
+    onSelectIndex?: (index: number) => void;
+
+    dragIndex?: number;
+    onDragStartIndex?: (index: number) => void;
+    onDropIndex?: (index: number) => void;
     onChangeId?: (id: Id, value: string) => void;
     onCreateIndex?: (index: number) => void;
     onCompleteIndex?: (index: number) => void;
 }
 
 const FreshContext = createContext<Context>({
+    fresh: []
 });
 
 export const useFreshItem = (ref: Ref<FreshItemHandle>) => {
     const {
+        fresh,
+        selectionIndex,
+        dragIndex,
+        onDragStartIndex,
+        onDropIndex,
+        onSelectIndex,
         onChangeId,
         onCreateIndex, onCompleteIndex
     } = useContext(FreshContext);
 
-    const dnd = useRef<DndItemHandle>(null);
-    const fsh = useRef<SelectionItemHandle>(null);
-
     const index = useItem();
-    const dragIndex = useDndItem(dnd);
 
-    const { selectionId, item } = useSelectionItem(fsh);
+    const item = fresh[index];
     const id = item && item.id;
 
     useImperativeHandle(ref, () => ({
-        select: () => fsh.current!.select(),
+        select: onSelectIndex ? () => onSelectIndex(index) : () => {},
 
-        dragStart: () => dnd.current!.dragStart(),
-        drop: () => dnd.current!.drop(),
+        dragStart: () => onDragStartIndex && onDragStartIndex(index),
+        drop: () => onDropIndex && onDropIndex(index),
 
         change: (value: string) => {
             onChangeId && id &&
@@ -67,55 +73,59 @@ export const useFreshItem = (ref: Ref<FreshItemHandle>) => {
             onCompleteIndex &&
                 onCompleteIndex(index);
         },
-    }), [id, index]);
+    }), [id, index, onSelectIndex, onDragStartIndex, onChangeId, onCreateIndex, onCompleteIndex]);
 
-    return { index, dragIndex, selectionId, item };
+    return { index, dragIndex, selectionIndex, item };
 };
 
 interface Props {
     children: ReactNode;
     fresh: readonly (Fresh | null)[];
-    ref: Ref<FreshListHandle>;
+
+    selectionIndex?: number;
+    dragIndex?: number;
+
+    onSelectIndex?: (index: number) => void;
 
     onCreateIndex?: (index: number) => void;
-    onSwapIndices?: (leftIndex: number, rightIndex: number) => void;
     onCompleteIndex?: (index: number) => void;
+
+    onDragStartIndex?: (index: number) => void;
+    onDropIndex?: (index: number) => void;
+
     onChangeId?: (id: Id, value: string) => void;
 }
 
 export const FreshList = ({
-    ref,
     children, fresh,
+    selectionIndex,
+    dragIndex,
+    onDragStartIndex, onDropIndex,
     onChangeId,
-    onCreateIndex, onCompleteIndex,
-    onSwapIndices
+    onSelectIndex,
+    onCreateIndex, onCompleteIndex
 }: Props) => {
-    const dndRef = useRef<DndListHandle>(null);
-    const selectRef = useRef<SelectionListHandle>(null);
-
-    useImperativeHandle(ref, () => ({
-        dragEnd: () => dndRef.current!.dragEnd(),
-        deselect: () => selectRef.current!.deselect()
-    }), []);
-
     const keyAt = useCallback((index: number) => {
         const item = fresh[index];
         return item ? `id-${item.id}` : `indx-${index}`;
     }, [fresh]);
 
     const context = useMemo(() => ({
+        fresh,
+        selectionIndex,
+        dragIndex,
+        onDragStartIndex,
+        onDropIndex,
+        onSelectIndex,
         onChangeId,
         onCreateIndex,
         onCompleteIndex
-    }), [onChangeId, onCreateIndex, onCompleteIndex]);
+    }), [fresh, selectionIndex, dragIndex, onDragStartIndex, onDropIndex,
+         onSelectIndex, onChangeId, onCreateIndex, onCompleteIndex]);
 
-    return <SelectionList ref={selectRef} fresh={fresh}>
-                <DndList ref={dndRef} onSwapIndices={onSwapIndices}>
-                    <FreshContext value={context}>
-                        <List keyAt={keyAt} length={fresh.length}>
-                            {children}
-                        </List>
-                    </FreshContext>
-                </DndList>
-            </SelectionList>;
+    return <FreshContext value={context}>
+        <List keyAt={keyAt} length={fresh.length}>
+           {children}
+         </List>
+        </FreshContext>;
 };

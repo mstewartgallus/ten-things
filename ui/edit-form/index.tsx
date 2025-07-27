@@ -1,5 +1,7 @@
 import type { Ref, ChangeEvent, FormEvent } from "react";
-import { useCallback, useImperativeHandle, useMemo, useId, useRef, useState } from 'react';
+import {
+    useCallback, useImperativeHandle, useMemo, useId, useRef, useState, useEffect
+} from 'react';
 import { Button } from "../button";
 import { Input } from "../input";
 
@@ -10,7 +12,7 @@ interface EditHandle {
 }
 
 const useEdit = (ref: Ref<EditHandle>, initValue: string) => {
-    const [value, setValue] = useState(initValue);
+    const [value, setValue] = useState(initValue ?? '');
 
     useImperativeHandle(ref, () => ({
         change: v => setValue(v)
@@ -20,12 +22,13 @@ const useEdit = (ref: Ref<EditHandle>, initValue: string) => {
 };
 
 interface Props {
+    disabled: boolean;
     value: string;
 
     onChange?: (value: string) => void;
 }
 
-export const EditForm = ({ value, onChange }: Props) => {
+export const EditForm = ({ disabled, value, onChange }: Props) => {
     const ref = useRef<EditHandle>(null);
 
     const editValue = useEdit(ref, value);
@@ -41,19 +44,14 @@ export const EditForm = ({ value, onChange }: Props) => {
         ref.current!.change((target as HTMLInputElement).value);
     }, []);
 
-    const onSubmitForm = useMemo(() => {
-        if (!onChange) {
-            return;
-        }
-        return (e: FormEvent) => {
-            e.preventDefault();
-            onChange(editValue);
-        };
-    }, [editValue, onChange]);
+    const formAction = useCallback((formData: FormData) => {
+        const title = (formData.get('title') ?? '') as string;
+        onChange && onChange(title);
+    }, [onChange]);
 
-    return <form className={styles.formButton} id={formId} action="#" onSubmit={onSubmitForm}>
-            <Input disabled={!onChangeInput} required value={editValue} onChange={onChangeInput} />
-            <Button disabled={!onSubmitForm}>
+    return <form className={styles.formButton} id={formId} action={formAction}>
+            <Input name="title" disabled={disabled} required value={editValue} onChange={onChangeInput} />
+            <Button disabled={disabled}>
                 Submit
             </Button>
         </form>;

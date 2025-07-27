@@ -3,3 +3,9 @@
     justify-content: space-between;
     inline-size: 40em;
 }
+
+.form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

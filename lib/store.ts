@@ -4,13 +4,15 @@ import { persistReducer } from "redux-persist";
 import storage from "./storage";
 import { tenValidate } from "./middleware";
 import { tenSlice } from "./features/ten/tenSlice";
+import { uiSlice } from "./features/ui/uiSlice";
 
 const persistConfig = {
     key: "root10",
-    storage
+    storage,
+    blacklist: ['ui']
 };
 
-const rootReducer = persistReducer(persistConfig, combineSlices(tenSlice));
+const rootReducer = persistReducer(persistConfig, combineSlices(tenSlice, uiSlice));
 
 export type RootState = ReturnType<typeof rootReducer>;
 

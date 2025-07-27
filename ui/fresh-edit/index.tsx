@@ -1,7 +1,10 @@
-import { useMemo } from 'react';
+"use client";
 
-import { CompleteForm } from "../slot-controls";
+import { useId } from 'react';
+
 import { EntryEdit } from "../entry-edit";
+import { Button } from "../button";
+import { Icon } from "../icon";
 
 import styles from "./FreshEdit.module.css";
 
@@ -29,9 +32,15 @@ export const FreshEdit = ({
     onSelect, onDeselect,
 
     onComplete
-}: Props) =>
-    <div className={styles.freshSlot}>
-         <EntryEdit value={value} created={created}
+}: Props) => {
+    const id = useId();
+    return <div className={styles.freshSlot}>
+         <EntryEdit disabled={disabled} value={value} created={created}
     onChange={onChange} onSelect={onSelect} onDeselect={onDeselect} />
-         <CompleteForm disabled={disabled || selected} onComplete={onComplete} />
+         <form className={styles.form} id={id} action={onComplete}>
+             <Button disabled={disabled || selected} aria-label="Complete Thing" value="complete">
+                <Icon>✔</Icon>
+            </Button>
+         </form>
         </div>;
+};

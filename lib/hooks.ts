@@ -12,20 +12,39 @@ import {
     selectFresh,
     selectComplete,
 
-    edit, create, complete, swap
+    edit, complete
 } from "@/lib/features/ten/tenSlice";
+import {
+    selectSelectedIndex,
+    selectDragIndex,
+
+    dragStart,
+    dragEnd,
+
+    setSelectedIndex,
+    deselect,
+
+    create,
+    swap
+} from "@/lib/features/ui/uiSlice";
 
 export const useAppStore = useStore.withTypes<AppStore>();
 const useAppSelector = useSelector.withTypes<RootState>();
 const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 
+// FIXME setup a separate thing for each page
 export interface TenHandle {
     changeId(id: Id, value: string): void;
 
     createIndex(index: number): void;
     completeIndex(index: number): void;
 
-    swapIndices(leftIndex: number, rightIndex: number): void;
+    selectIndex(index: number): void;
+    deselect(): void;
+
+    dragStartIndex(index: number): void;
+    dragEnd(): void;
+    dropIndex(index: number): void;
 }
 
 export const useTen = (ref: Ref<TenHandle>) => {
@@ -33,16 +52,30 @@ export const useTen = (ref: Ref<TenHandle>) => {
 
     const dispatch = useAppDispatch();
 
+    const dragIndex = useAppSelector(selectDragIndex);
+
     useImperativeHandle(ref, () => ({
         changeId: compose(dispatch, edit),
         createIndex: compose(dispatch, create),
         completeIndex: compose(dispatch, complete),
-        swapIndices: compose(dispatch, swap)
-    }), [dispatch]);
+
+        selectIndex: compose(dispatch, setSelectedIndex),
+        deselect: compose(dispatch, deselect),
+
+        dragStartIndex: compose(dispatch, dragStart),
+        dragEnd: compose(dispatch, dragEnd),
+
+        dropIndex: index =>
+            dragIndex !== undefined &&
+                dispatch(swap(dragIndex, index))
+    }), [dispatch, dragIndex]);
 
     return {
         complete: useAppSelector(selectComplete),
         fresh: useAppSelector(selectFresh),
-        entryAtId: useAppSelector(selectEntryAtId)
+        entryAtId: useAppSelector(selectEntryAtId),
+
+        selectionIndex: useAppSelector(selectSelectedIndex),
+        dragIndex
     };
 };

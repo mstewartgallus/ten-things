@@ -10,6 +10,7 @@ import { EditForm } from "../edit-form";
 import styles from "./EditFormMaybe.module.css";
 
 interface Props {
+    disabled: boolean;
     value: string;
     onChange?: (value: string) => void;
     onSelect?: () => void;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export const EditFormMaybe = ({
+    disabled,
     value,
     onChange, onSelect, onDeselect
 }: Props) => {
@@ -49,7 +51,7 @@ export const EditFormMaybe = ({
 
     return <div className={styles.editableTitle}>
           <Button aria-label={selected ? 'Cancel Edit' : 'Edit'}
-                disabled={!onToggleClick}
+                disabled={disabled || !onToggleClick}
                 onClick={onToggleClick}
                 aria-expanded={selected}
                 aria-controls={controlId}>
@@ -60,7 +62,7 @@ export const EditFormMaybe = ({
                     <div className={styles.title}>{value}</div>
                 </If>
                 <If cond={selected}>
-                   <EditForm value={value} onChange={onSubmit} />
+                    <EditForm disabled={disabled} value={value} onChange={onSubmit} />
                 </If>
             </div>
         </div>;

@@ -1,11 +1,7 @@
 import type { PayloadAction, Selector } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import type { Id, Entry, Fresh, Complete } from "@/lib/definitions";
-
-interface CreateAction {
-    index: number;
-    created: number;
-}
+import { swap, create } from "../ui/uiSlice";
 
 interface EditAction {
     id: Id;
@@ -15,11 +11,6 @@ interface EditAction {
 interface CompleteAction {
     index: number;
     completed: number;
-}
-
-interface SwapAction {
-    indexLeft: number;
-    indexRight: number;
 }
 
 export interface TenSliceState {
@@ -63,23 +54,6 @@ export const tenSlice = createSlice({
             entry[id].value = value;
         }),
 
-        create: create.preparedReducer(
-            (index: number) => {
-                const created = Date.now();
-                return { payload: { index, created } };
-            },
-            ({ fresh, entry }, { payload: { index, created } }: PayloadAction<CreateAction>) => {
-                checkIndex(fresh, index);
-                if (fresh[index]) {
-                    throw Error(`fresh ${index} is non-empty`);
-                }
-
-                const id = entry.length;
-
-                entry.push({ created, value: '' });
-                fresh[index] = { id };
-        }),
-
         complete: create.preparedReducer(
             index => {
                 const completed = Date.now();
@@ -94,22 +68,35 @@ export const tenSlice = createSlice({
                 fresh[index] = null;
                 complete.unshift({ ...oldFresh, completed });
             }),
-
-        swap: create.preparedReducer(
-            (indexLeft: number, indexRight: number) => ({ payload: { indexLeft, indexRight }}),
-            ({ fresh }, { payload: { indexLeft, indexRight } }: PayloadAction<SwapAction>) => {
-                checkIndex(fresh, indexLeft);
-                checkIndex(fresh, indexRight);
-
-                const leftFresh = fresh[indexLeft];
-                fresh[indexLeft] = fresh[indexRight];
-                fresh[indexRight] = leftFresh;
-            })
     }),
 
-    selectors: {
-        selectNewEntryId: ten => ten.entry.length,
+    extraReducers: builder => {
+        builder
+            .addCase(swap,
+                     ({ fresh }, { payload: { indexLeft, indexRight } }) => {
+                         checkIndex(fresh, indexLeft);
+                         checkIndex(fresh, indexRight);
 
+                         const leftFresh = fresh[indexLeft];
+                         fresh[indexLeft] = fresh[indexRight];
+                         fresh[indexRight] = leftFresh;
+                     })
+            .addCase(create,
+                     ({ fresh, entry }, { payload: { index, created } }) => {
+                         checkIndex(fresh, index);
+                         if (fresh[index]) {
+                             throw Error(`fresh ${index} is non-empty`);
+                         }
+
+                         const id = entry.length;
+
+                         entry.push({ created, value: '' });
+                         fresh[index] = { id };
+                     })
+
+    },
+
+    selectors: {
         selectEntryAtId: createSelector([selectEntry], entry => (id: Id) => entry[id]),
 
         selectFresh: ten => ten.fresh,
@@ -118,15 +105,11 @@ export const tenSlice = createSlice({
 });
 
 export const {
-    create,
     edit,
-    complete,
-    swap,
+    complete
 } = tenSlice.actions;
 
 export const {
-    selectNewEntryId,
-
     selectEntryAtId,
     selectFresh,
     selectComplete

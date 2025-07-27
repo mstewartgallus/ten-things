@@ -37,8 +37,6 @@
 
 .button:focus-visible {
     border-color: var(--accent-color-text) ;
-    background-color: var(--accent-color) ;
-    color: var(--accent-color-text) ;
 }
 
 .button:active {
