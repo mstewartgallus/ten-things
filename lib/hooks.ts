@@ -12,7 +12,7 @@ import {
     selectFresh,
     selectComplete,
 
-    edit, complete
+    edit, complete, deleteIndex
 } from "@/lib/features/ten/tenSlice";
 import {
     selectSelectedIndex,
@@ -38,6 +38,7 @@ export interface TenHandle {
 
     createIndex(index: number): void;
     completeIndex(index: number): void;
+    deleteIndex(index: number): void;
 
     selectIndex(index: number): void;
     deselect(): void;
@@ -58,6 +59,7 @@ export const useTen = (ref: Ref<TenHandle>) => {
         changeId: compose(dispatch, edit),
         createIndex: compose(dispatch, create),
         completeIndex: compose(dispatch, complete),
+        deleteIndex: compose(dispatch, deleteIndex),
 
         selectIndex: compose(dispatch, setSelectedIndex),
         deselect: compose(dispatch, deselect),

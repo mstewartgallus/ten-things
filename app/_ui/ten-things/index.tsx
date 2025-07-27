@@ -45,6 +45,7 @@ const Item = ({ entryAtId, onDeselect, onDragEnd }: ItemProps) => {
 
     const onChange = useCallback((value: string) => ref.current!.change(value), []);
     const onComplete = useCallback(() => ref.current!.complete(), []);
+    const onDelete = useCallback(() => ref.current!.deleteIndex(), []);
     const onCreate = useCallback(() => ref.current!.create(), []);
 
     const onSelect = useCallback(() => ref.current!.select(), []);
@@ -68,7 +69,7 @@ const Item = ({ entryAtId, onDeselect, onDragEnd }: ItemProps) => {
                     onChange={onChange}
                     onSelect={iff(!selected, onSelect)}
                     onDeselect={iff(selectionIndex !== undefined, onDeselect)}
-                    onComplete={onComplete}
+                    onComplete={onComplete} onDelete={onDelete}
                 /> :
             <FreshCreate disabled={isDragging} onCreate={onCreate} />
         }
@@ -83,6 +84,7 @@ const TenFresh = () => {
 
     const onChangeId = useCallback((id: Id, value: string) => ref.current!.changeId(id, value), []);
     const onCompleteIndex = useCallback((index: number) => ref.current!.completeIndex(index), []);
+    const onDeleteIndex = useCallback((index: number) => ref.current!.deleteIndex(index), []);
 
     const onSelectIndex = useCallback((index: number) => ref.current!.selectIndex(index), []);
     const onDeselect = useCallback(() => {
@@ -102,6 +104,7 @@ const TenFresh = () => {
                 onChangeId={onChangeId}
                 onCreateIndex={onCreateIndex}
                 onCompleteIndex={onCompleteIndex}
+                onDeleteIndex={onDeleteIndex}
                 onDragStartIndex={onDragStartIndex}
                 onDropIndex={onDropIndex}
                 >

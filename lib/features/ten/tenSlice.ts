@@ -13,6 +13,10 @@ interface CompleteAction {
     completed: number;
 }
 
+interface DeleteAction {
+    index: number;
+}
+
 export interface TenSliceState {
     entry: Entry[],
     fresh: (Fresh | null)[],
@@ -52,6 +56,15 @@ export const tenSlice = createSlice({
             checkIndex(entry, id);
 
             entry[id].value = value;
+        }),
+
+        deleteIndex: create.preparedReducer(
+            (index: number) => ({ payload: { index } })
+            ,
+            ({ fresh }, { payload: { index } }: PayloadAction<DeleteAction>) => {
+                checkIndex(fresh, index);
+                // FIXME what to do about the leftover garbage entry?
+                fresh[index] = null;
         }),
 
         complete: create.preparedReducer(
@@ -106,7 +119,8 @@ export const tenSlice = createSlice({
 
 export const {
     edit,
-    complete
+    complete,
+    deleteIndex
 } = tenSlice.actions;
 
 export const {

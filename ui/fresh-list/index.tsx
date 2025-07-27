@@ -14,6 +14,7 @@ export interface FreshItemHandle {
     change(value: string): void;
     create(): void;
     complete(): void;
+    deleteIndex(): void;
 }
 
 export interface FreshListHandle {
@@ -47,7 +48,8 @@ export const useFreshItem = (ref: Ref<FreshItemHandle>) => {
         onDropIndex,
         onSelectIndex,
         onChangeId,
-        onCreateIndex, onCompleteIndex
+        onCreateIndex, onCompleteIndex,
+        onDeleteIndex
     } = useContext(FreshContext);
 
     const index = useItem();
@@ -73,7 +75,14 @@ export const useFreshItem = (ref: Ref<FreshItemHandle>) => {
             onCompleteIndex &&
                 onCompleteIndex(index);
         },
-    }), [id, index, onSelectIndex, onDragStartIndex, onChangeId, onCreateIndex, onCompleteIndex]);
+        deleteIndex: () => {
+            onDeleteIndex &&
+                onDeleteIndex(index);
+        },
+    }), [
+        id, index, onSelectIndex, onDragStartIndex, onChangeId,
+        onCreateIndex, onCompleteIndex,
+        onDeleteIndex]);
 
     return { index, dragIndex, selectionIndex, item };
 };
@@ -89,6 +98,7 @@ interface Props {
 
     onCreateIndex?: (index: number) => void;
     onCompleteIndex?: (index: number) => void;
+    onDeleteIndex?: (index: number) => void;
 
     onDragStartIndex?: (index: number) => void;
     onDropIndex?: (index: number) => void;
@@ -103,7 +113,8 @@ export const FreshList = ({
     onDragStartIndex, onDropIndex,
     onChangeId,
     onSelectIndex,
-    onCreateIndex, onCompleteIndex
+    onCreateIndex, onCompleteIndex,
+    onDeleteIndex
 }: Props) => {
     const keyAt = useCallback((index: number) => {
         const item = fresh[index];
@@ -119,9 +130,10 @@ export const FreshList = ({
         onSelectIndex,
         onChangeId,
         onCreateIndex,
-        onCompleteIndex
+        onCompleteIndex,
+        onDeleteIndex
     }), [fresh, selectionIndex, dragIndex, onDragStartIndex, onDropIndex,
-         onSelectIndex, onChangeId, onCreateIndex, onCompleteIndex]);
+         onSelectIndex, onChangeId, onCreateIndex, onCompleteIndex, onDeleteIndex]);
 
     return <FreshContext value={context}>
         <List keyAt={keyAt} length={fresh.length}>
