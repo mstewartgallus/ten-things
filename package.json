@@ -1,10 +1,10 @@
 {
     "private": true,
     "scripts": {
-        "dev": "next dev",
+        "dev": "next dev --turbo",
+        "build": "next build  --turbo",
         "start": "next start",
         "serve": "npx serve out",
-        "build": "next build",
         "lint": "next lint",
         "tsc": "tsc"
     },
