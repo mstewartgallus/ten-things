@@ -5,17 +5,17 @@ import { Time } from "../time";
 
 type Props = Entry & {
     disabled: boolean;
-    onChange?: (value: string) => void;
-    onSelect?: () => void;
-    onDeselect?: () => void;
+    changeAction?: (value: string) => void;
+    selectAction?: () => void;
+    deselectAction?: () => void;
 }
 
 export const EntryEdit = ({
     disabled, value, created,
-    onChange, onSelect, onDeselect
+    changeAction, selectAction, deselectAction
 }: Props) =>
     <div>
         <EditFormMaybe value={value} disabled={disabled}
-            onChange={onChange} onSelect={onSelect} onDeselect={onDeselect} />
+            changeAction={changeAction} selectAction={selectAction} deselectAction={deselectAction} />
         <div>Created: <Time>{created}</Time></div>
     </div>;

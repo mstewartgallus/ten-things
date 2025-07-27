@@ -25,10 +25,10 @@ interface Props {
     disabled: boolean;
     value: string;
 
-    onChange?: (value: string) => void;
+    changeAction?: (value: string) => void;
 }
 
-export const EditForm = ({ disabled, value, onChange }: Props) => {
+export const EditForm = ({ disabled, value, changeAction }: Props) => {
     const ref = useRef<EditHandle>(null);
 
     const editValue = useEdit(ref, value);
@@ -44,10 +44,15 @@ export const EditForm = ({ disabled, value, onChange }: Props) => {
         ref.current!.change((target as HTMLInputElement).value);
     }, []);
 
-    const formAction = useCallback((formData: FormData) => {
-        const title = (formData.get('title') ?? '') as string;
-        onChange && onChange(title);
-    }, [onChange]);
+    const formAction = useMemo(() => {
+        if (!changeAction) {
+            return;
+        }
+        return async (formData: FormData) => {
+            const title = (formData.get('title') ?? '') as string;
+            await changeAction(title);
+        };
+    }, [changeAction]);
 
     return <form className={styles.formButton} id={formId} action={formAction}>
             <Input name="title" disabled={disabled} required value={editValue} onChange={onChangeInput} />

@@ -7,44 +7,40 @@ import styles from './DropButton.module.css';
 
 interface Props {
     readonly children?: ReactNode;
-    readonly onDrop?: () => void;
+    readonly action?: () => Promise<void>;
 }
 
-export const DropButton = ({ children, onDrop }: Props) => {
+export const DropButton = ({ children, action }: Props) => {
     const { state, hooks } = useWrap();
 
     const onPointerUp = useMemo(() => {
-        if (!onDrop) {
+        if (!action) {
             return;
         }
 
-        return (e: PointerEvent<HTMLButtonElement>) => {
+        return async (e: PointerEvent<HTMLButtonElement>) => {
             if (!e.isPrimary) {
                 return;
             }
-            onDrop();
+            await action();
         };
-    }, [onDrop]);
+    }, [action]);
 
-    const onClick = useMemo(() => {
-        if (!onDrop) {
+    const clickAction = useMemo(() => {
+        if (!action) {
             return;
         }
 
-        return (e: MouseEvent<HTMLButtonElement>) => {
-            if (e.button !== 0) {
-                return;
-            }
-            e.preventDefault();
-            onDrop();
+        return async () => {
+            await action();
         };
-    }, [onDrop]);
+    }, [action]);
 
     return <div className={styles.wrapper} {...hooks}>
             <button className={styles.dropZone} {...toDataProps(state)}
                 onPointerUp={onPointerUp}
-                onClick={onClick}
-                disabled={!onClick ? true : undefined}>
+                formAction={clickAction}
+                disabled={!action ? true : undefined}>
                 {children}
             </button>
         </div>;

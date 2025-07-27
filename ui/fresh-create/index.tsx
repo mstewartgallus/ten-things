@@ -9,13 +9,13 @@ import styles from "./FreshCreate.module.css";
 
 interface Props {
     disabled: boolean;
-    onCreate?: () => void;
+    createAction?: () => Promise<void>;
 }
 
-export const FreshCreate = ({ disabled, onCreate }: Props) => {
+export const FreshCreate = ({ disabled, createAction }: Props) => {
     const id = useId();
     return <div className={styles.create}>
-        <form className={styles.form} id={id} action={onCreate}>
+        <form className={styles.form} id={id} action={createAction}>
             <Button disabled={disabled} aria-label="Create Thing" value="create">
                 <Icon>+</Icon>
             </Button>

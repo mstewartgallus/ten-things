@@ -1,6 +1,6 @@
 "use client";
 
-import { useId } from 'react';
+import { useMemo, useId } from 'react';
 
 import { EntryEdit } from "../entry-edit";
 import { Button } from "../button";
@@ -16,13 +16,13 @@ interface Props {
 
     selected: boolean;
 
-    // FIXME cleanup into single action hook
-    onChange?: (value: string) => void;
-    onSelect?: () => void;
-    onDeselect?: () => void;
+    // FIXME cleanup into single action hook?
+    changeAction?: (value: string) => Promise<void>;
+    selectAction?: () => Promise<void>;
+    deselectAction?: () => Promise<void>;
 
-    onDelete?: () => void;
-    onComplete?: () => void;
+    completeAction?: () => Promise<void>;
+    deleteAction?: () => Promise<void>;
 }
 
 export const FreshEdit = ({
@@ -30,28 +30,30 @@ export const FreshEdit = ({
 
     value, created,
     selected,
-    onChange,
-    onSelect, onDeselect,
+    changeAction,
+    selectAction, deselectAction,
 
-    onComplete,
-    onDelete
+    completeAction,
+    deleteAction
 }: Props) => {
     const id = useId();
     const emptyValue = value === '';
+
     return <div className={styles.freshSlot}>
          <EntryEdit disabled={disabled} value={value} created={created}
-    onChange={onChange} onSelect={onSelect} onDeselect={onDeselect} /> {
+    changeAction={changeAction} selectAction={selectAction} deselectAction={deselectAction} />
+        <form className={styles.form} id={id}>
+        {
         emptyValue ?
-         <form className={styles.form} id={id} action={onDelete}>
-             <Button disabled={disabled || selected} aria-label="Delete Thing" value="delete">
+                <Button disabled={disabled || selected} aria-label="Delete Thing" value="delete"
+            formAction={deleteAction}>
                 <Icon>🗑︎</Icon>
-            </Button>
-            </form> :
-         <form className={styles.form} id={id} action={onComplete}>
-             <Button disabled={disabled || selected} aria-label="Complete Thing" value="complete">
+                </Button> :
+                <Button disabled={disabled || selected} aria-label="Complete Thing" value="complete"
+            formAction={completeAction}>
                 <Icon>✔</Icon>
             </Button>
-            </form>
-    }
+        }
+    </form>
         </div>;
 };

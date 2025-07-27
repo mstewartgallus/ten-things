@@ -12,47 +12,46 @@ import styles from "./EditFormMaybe.module.css";
 interface Props {
     disabled: boolean;
     value: string;
-    onChange?: (value: string) => void;
-    onSelect?: () => void;
-    onDeselect?: () => void;
+    changeAction?: (value: string) => void;
+    selectAction?: () => void;
+    deselectAction?: () => void;
 }
 
 export const EditFormMaybe = ({
     disabled,
     value,
-    onChange, onSelect, onDeselect
+    changeAction, selectAction, deselectAction
 }: Props) => {
-    const selected = !onSelect;
+    const selected = !selectAction;
 
-    const onToggle = onSelect || onDeselect;
+    const toggleAction = selectAction || deselectAction;
 
-    const onSubmit = useMemo(() => {
-        if (!onChange || !onDeselect) {
+    const onClick = useMemo(() => {
+        if (!toggleAction) {
             return;
         }
-        return (value: string) => {
-            onChange(value);
-            onDeselect();
+        return async (e: MouseEvent<HTMLButtonElement>) => {
+            e.preventDefault();
+            await toggleAction();
         };
-    }, [onChange, onDeselect]);
+    }, [toggleAction]);
+
+    const editAction = useMemo(() => {
+        if (!changeAction || !deselectAction) {
+            return;
+        }
+        return async (value: string) => {
+            await changeAction(value);
+            await deselectAction();
+        };
+    }, [changeAction, deselectAction]);
 
     const controlId = useId();
 
-    const onToggleClick = useMemo(() => {
-        if (!onToggle) {
-            return;
-        }
-        return (e: MouseEvent<HTMLButtonElement>) => {
-            e.preventDefault();
-
-            onToggle();
-        };
-    }, [onToggle]);
-
     return <div className={styles.editableTitle}>
           <Button aria-label={selected ? 'Cancel Edit' : 'Edit'}
-                disabled={disabled || !onToggleClick}
-                onClick={onToggleClick}
+                disabled={disabled || !onClick}
+                onClick={onClick}
                 aria-expanded={selected}
                 aria-controls={controlId}>
                 <Icon>{selected ? '🗙' : '✎'}</Icon>
@@ -62,7 +61,7 @@ export const EditFormMaybe = ({
                     <div className={styles.title}>{value}</div>
                 </If>
                 <If cond={selected}>
-                    <EditForm disabled={disabled} value={value} onChange={onSubmit} />
+                    <EditForm disabled={disabled} value={value} changeAction={editAction} />
                 </If>
             </div>
         </div>;

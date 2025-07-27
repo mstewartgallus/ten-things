@@ -34,18 +34,18 @@ const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 
 // FIXME setup a separate thing for each page
 export interface TenHandle {
-    changeId(id: Id, value: string): void;
+    changeId(id: Id, value: string): Promise<void>;
 
-    createIndex(index: number): void;
-    completeIndex(index: number): void;
-    deleteIndex(index: number): void;
+    createIndex(index: number): Promise<void>;
+    completeIndex(index: number): Promise<void>;
+    deleteIndex(index: number): Promise<void>;
 
-    selectIndex(index: number): void;
-    deselect(): void;
+    selectIndex(index: number): Promise<void>;
+    deselect(): Promise<void>;
 
-    dragStartIndex(index: number): void;
-    dragEnd(): void;
-    dropIndex(index: number): void;
+    dragStartIndex(index: number): Promise<void>;
+    dragEnd(): Promise<void>;
+    dropIndex(index: number): Promise<void>;
 }
 
 export const useTen = (ref: Ref<TenHandle>) => {
@@ -56,20 +56,39 @@ export const useTen = (ref: Ref<TenHandle>) => {
     const dragIndex = useAppSelector(selectDragIndex);
 
     useImperativeHandle(ref, () => ({
-        changeId: compose(dispatch, edit),
-        createIndex: compose(dispatch, create),
-        completeIndex: compose(dispatch, complete),
-        deleteIndex: compose(dispatch, deleteIndex),
+        changeId: async (...x) => {
+            await dispatch(edit(...x));
+        },
+        createIndex: async (...x) => {
+            await dispatch(create(...x));
+        },
+        completeIndex: async (...x) => {
+            await dispatch(complete(...x));
+        },
+        deleteIndex: async (...x) => {
+            await dispatch(deleteIndex(...x));
+        },
 
-        selectIndex: compose(dispatch, setSelectedIndex),
-        deselect: compose(dispatch, deselect),
+        selectIndex: async (...x) => {
+            await dispatch(setSelectedIndex(...x));
+        },
+        deselect: async (...x) => {
+            await dispatch(deselect(...x));
+        },
 
-        dragStartIndex: compose(dispatch, dragStart),
-        dragEnd: compose(dispatch, dragEnd),
+        dragStartIndex: async (...x) => {
+            await dispatch(dragStart(...x));
+        },
+        dragEnd: async (...x) => {
+            await dispatch(dragEnd(...x));
+        },
 
-        dropIndex: index =>
-            dragIndex !== undefined &&
-                dispatch(swap(dragIndex, index))
+        dropIndex: async index => {
+            if (dragIndex === undefined) {
+                return;
+            }
+            await dispatch(swap(dragIndex, index));
+        }
     }), [dispatch, dragIndex]);
 
     return {

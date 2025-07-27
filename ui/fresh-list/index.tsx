@@ -6,15 +6,15 @@ import { createContext, useContext, useCallback, useImperativeHandle, useMemo, u
 import { List, useItem } from '../list';
 
 export interface FreshItemHandle {
-    dragStart(): void;
-    drop(): void;
+    dragStart(): Promise<void>;
+    drop(): Promise<void>;
 
-    select(): void;
+    select(): Promise<void>;
 
-    change(value: string): void;
-    create(): void;
-    complete(): void;
-    deleteIndex(): void;
+    change(value: string): Promise<void>;
+    create(): Promise<void>;
+    complete(): Promise<void>;
+    deleteIndex(): Promise<void>;
 }
 
 export interface FreshListHandle {
@@ -25,14 +25,15 @@ interface Context {
     fresh: readonly (Fresh | null)[];
 
     selectionIndex?: number;
-    onSelectIndex?: (index: number) => void;
+    selectAction?: (index: number) => Promise<void>;
 
     dragIndex?: number;
-    onDragStartIndex?: (index: number) => void;
-    onDropIndex?: (index: number) => void;
-    onChangeId?: (id: Id, value: string) => void;
-    onCreateIndex?: (index: number) => void;
-    onCompleteIndex?: (index: number) => void;
+    dragStartAction?: (index: number) => Promise<void>;
+    dropAction?: (index: number) => Promise<void>;
+    changeAction?: (id: Id, value: string) => Promise<void>;
+    createAction?: (index: number) => Promise<void>;
+    deleteAction?: (index: number) => Promise<void>;
+    completeAction?: (index: number) => Promise<void>;
 }
 
 const FreshContext = createContext<Context>({
@@ -44,12 +45,12 @@ export const useFreshItem = (ref: Ref<FreshItemHandle>) => {
         fresh,
         selectionIndex,
         dragIndex,
-        onDragStartIndex,
-        onDropIndex,
-        onSelectIndex,
-        onChangeId,
-        onCreateIndex, onCompleteIndex,
-        onDeleteIndex
+        dragStartAction,
+        dropAction,
+        selectAction,
+        changeAction,
+        createAction, completeAction,
+        deleteAction
     } = useContext(FreshContext);
 
     const index = useItem();
@@ -57,32 +58,40 @@ export const useFreshItem = (ref: Ref<FreshItemHandle>) => {
     const item = fresh[index];
     const id = item && item.id;
 
-    useImperativeHandle(ref, () => ({
-        select: onSelectIndex ? () => onSelectIndex(index) : () => {},
+    useImperativeHandle(ref, () => {
+        const noop = async () => {};
 
-        dragStart: () => onDragStartIndex && onDragStartIndex(index),
-        drop: () => onDropIndex && onDropIndex(index),
+        return {
+            select: selectAction ?
+                async () => await selectAction(index) :
+                noop,
 
-        change: (value: string) => {
-            onChangeId && id &&
-                onChangeId(id, value);
-        },
-        create: () => {
-            onCreateIndex &&
-                onCreateIndex(index);
-        },
-        complete: () => {
-            onCompleteIndex &&
-                onCompleteIndex(index);
-        },
-        deleteIndex: () => {
-            onDeleteIndex &&
-                onDeleteIndex(index);
-        },
-    }), [
-        id, index, onSelectIndex, onDragStartIndex, onChangeId,
-        onCreateIndex, onCompleteIndex,
-        onDeleteIndex]);
+            dragStart: dragStartAction ?
+                async () => await dragStartAction(index) :
+                noop,
+            drop: dropAction ?
+                async () => await dropAction(index) :
+                noop,
+
+            change: (changeAction && id) ?
+                async (value: string) => await changeAction(id, value) :
+            noop,
+
+            create: createAction ?
+                async () => await createAction(index) :
+                noop,
+            complete: completeAction ?
+                async () => await completeAction(index) :
+                noop,
+
+            deleteIndex: deleteAction ?
+                async () => await deleteAction(index) :
+                noop
+        };
+    }, [
+        id, index, selectAction, dragStartAction, changeAction,
+        createAction, completeAction, deleteAction
+    ]);
 
     return { index, dragIndex, selectionIndex, item };
 };
@@ -94,27 +103,27 @@ interface Props {
     selectionIndex?: number;
     dragIndex?: number;
 
-    onSelectIndex?: (index: number) => void;
+    selectAction?: (index: number) => Promise<void>;
 
-    onCreateIndex?: (index: number) => void;
-    onCompleteIndex?: (index: number) => void;
-    onDeleteIndex?: (index: number) => void;
+    createAction?: (index: number) => Promise<void>;
+    completeAction?: (index: number) => Promise<void>;
+    deleteAction?: (index: number) => Promise<void>;
 
-    onDragStartIndex?: (index: number) => void;
-    onDropIndex?: (index: number) => void;
+    dragStartAction?: (index: number) => Promise<void>;
+    dropAction?: (index: number) => Promise<void>;
 
-    onChangeId?: (id: Id, value: string) => void;
+    changeAction?: (id: Id, value: string) => Promise<void>;
 }
 
 export const FreshList = ({
     children, fresh,
     selectionIndex,
     dragIndex,
-    onDragStartIndex, onDropIndex,
-    onChangeId,
-    onSelectIndex,
-    onCreateIndex, onCompleteIndex,
-    onDeleteIndex
+    dragStartAction, dropAction,
+    changeAction,
+    selectAction,
+    createAction, completeAction,
+    deleteAction
 }: Props) => {
     const keyAt = useCallback((index: number) => {
         const item = fresh[index];
@@ -125,15 +134,15 @@ export const FreshList = ({
         fresh,
         selectionIndex,
         dragIndex,
-        onDragStartIndex,
-        onDropIndex,
-        onSelectIndex,
-        onChangeId,
-        onCreateIndex,
-        onCompleteIndex,
-        onDeleteIndex
-    }), [fresh, selectionIndex, dragIndex, onDragStartIndex, onDropIndex,
-         onSelectIndex, onChangeId, onCreateIndex, onCompleteIndex, onDeleteIndex]);
+        dragStartAction,
+        dropAction,
+        selectAction,
+        changeAction,
+        createAction,
+        completeAction,
+        deleteAction
+    }), [fresh, selectionIndex, dragIndex, dragStartAction, dropAction,
+         selectAction, changeAction, createAction, completeAction, deleteAction]);
 
     return <FreshContext value={context}>
         <List keyAt={keyAt} length={fresh.length}>

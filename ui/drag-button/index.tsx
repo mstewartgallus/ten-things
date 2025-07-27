@@ -15,46 +15,38 @@ interface Props {
     readonly children?: ReactNode;
     readonly dragging: boolean;
 
-    readonly onDragStart?: () => void;
-    readonly onDragEnd?: () => void;
+    readonly dragStartAction?: () => Promise<void>;
 }
 
-export const DragButton = ({ children, dragging, onDragStart, onDragEnd }: Props) => {
-    const onToggle = onDragStart || onDragEnd;
-
-    const onClick = useMemo(() => {
-        if (!onDragStart) {
+export const DragButton = ({ children, dragging, dragStartAction }: Props) => {
+    const action = useMemo(() => {
+        if (!dragStartAction) {
             return;
         }
-        return (e: MouseEvent<HTMLButtonElement>) => {
-            if (e.button !== 0) {
-                return;
-            }
-            e.preventDefault();
-            onDragStart();
-            console.log('dragstart');
+        return async () => {
+            await dragStartAction();
         };
-    }, [onDragStart]);
+    }, [dragStartAction]);
 
     const onPointerDown = useMemo(() => {
-        if (!onDragStart) {
+        if (!dragStartAction) {
             return;
         }
-        return (e: PointerEvent<HTMLButtonElement>) => {
+        return async (e: PointerEvent<HTMLButtonElement>) => {
             if (!e.isPrimary) {
                 return;
             }
             (e.target as Element).releasePointerCapture(e.pointerId);
-            onDragStart()
+            await dragStartAction()
         };
-    }, [onDragStart]);
+    }, [dragStartAction]);
 
     return <RawButton
                  aria-label="Reorder"
                  aria-expanded={dragging}
                  onPointerDown={onPointerDown}
-                 onClick={onClick}
-                 disabled={!onClick} >
+                 formAction={action}
+                 disabled={!action} >
                  {children}
     </RawButton>;
 };
