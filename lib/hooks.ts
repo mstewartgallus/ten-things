@@ -117,7 +117,7 @@ export const useFresh = (ref: Ref<FreshHandle>, id: FreshId) => {
 };
 
 
-type CompleteHandle = void;
+export type CompleteHandle = void;
 
 export const useComplete = (ref: Ref<CompleteHandle>, id: CompleteId) => {
     usePersist();
