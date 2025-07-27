@@ -1,6 +1,6 @@
 import type { JSX } from "react";
-import { withClassServer } from "../with-class-server";
+import { withClass } from "../with-class";
 
 import styles from "./Header.module.css";
 
-export const Header = withClassServer<HTMLElement, JSX.IntrinsicElements['header']>('header', styles.header);
+export const Header = withClass<HTMLElement, JSX.IntrinsicElements['header']>('header', styles.header);

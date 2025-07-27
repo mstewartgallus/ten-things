@@ -1,40 +1,33 @@
-'use client';
-
 import type {
-    ForwardedRef, PropsWithoutRef,
     ElementType,
     ComponentType
 } from "react";
-import { createElement, forwardRef } from "react";
+import { createElement } from "react";
 import { componentName } from "./component-name";
 
 const j = (x: string, y: string) => [x, y].join(' ');
 
 interface Props<T> {
     className?: string;
-    ref?: ForwardedRef<T>;
 }
 
-// FIXME react 19 shouldn't need forwardRef anymore and this could
-// probably work for both client and server.
-const withClassImpl = <T, P extends Props<T>>(
-    Component: ElementType<PropsWithoutRef<P> & { ref: ForwardedRef<T>}>,
+const withClassImpl: <T, P extends Props<T>>(
+    Component: ElementType<P>,
     className: string
-) =>
-    forwardRef<T, P>((props, ref) => {
-        const clazz = props.className ?? '';
-        const theClass = j(clazz, className);
-        return createElement(Component, {
-            ...props,
-            className: theClass,
-            ref: ref
-        });
+) => ComponentType<P> = <T, P extends Props<T>>(
+    Component: ElementType<P>,
+    className: string
+) => (props: P) => {
+    const clazz = props.className ?? '';
+    const theClass = j(clazz, className);
+    return createElement(Component, {
+        ...props,
+        className: theClass
     });
+};
 
-// FIXME awkward
-// doesn't handle CSS conflicts
-export const withClass  = <T, P extends Props<T>>(
-    Component: ElementType<PropsWithoutRef<P> & { ref: ForwardedRef<T>}>,
+export const withClass = <T, P extends Props<T>>(
+    Component: ElementType<P>,
     className: string
 ) => {
     const Classy = withClassImpl<T, P>(Component, className);

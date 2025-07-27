@@ -35,7 +35,7 @@ const useWrapState: (ref: Ref<WrapHandle>) => Wrap = (ref: Ref<WrapHandle>) => {
     const [active, setActive] = useState(false);
 
     if (!hover && active) {
-        startTransition(() => setActive(false));
+        setActive(false);
     }
 
     useImperativeHandle(ref, () => ({
