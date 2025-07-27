@@ -55,7 +55,8 @@ export const EditFormMaybe = ({
                 aria-expanded={selected}
                 aria-controls={controlId}>
                 <Icon>{selected ? '🗙' : '✎'}</Icon>
-            </Button>
+        </Button>
+        <div className={styles.titleAndInputWrapper}>
             <div id={controlId} className={styles.titleAndInput}>
                 <If cond={!selected}>
                     <div className={styles.title}>{value}</div>
@@ -63,6 +64,7 @@ export const EditFormMaybe = ({
                 <If cond={selected}>
                     <EditForm disabled={disabled} value={value} changeAction={editAction} />
                 </If>
-            </div>
+        </div>
+        </div>
         </div>;
 };

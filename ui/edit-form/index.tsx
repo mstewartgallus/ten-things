@@ -54,10 +54,10 @@ export const EditForm = ({ disabled, value, changeAction }: Props) => {
         };
     }, [changeAction]);
 
-    return <form className={styles.formButton} id={formId} action={formAction}>
+    return <form className={styles.editForm} id={formId} action={formAction}>
             <Input name="title" disabled={disabled} required value={editValue} onChange={onChangeInput} />
-            <Button disabled={disabled}>
-                Submit
-            </Button>
+               <Button disabled={disabled} className={styles.float}>
+                   Submit
+              </Button>
         </form>;
 };

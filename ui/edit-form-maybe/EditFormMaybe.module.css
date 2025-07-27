@@ -2,10 +2,11 @@
     display: flex;
 }
 
-.titleAndInput {
-
+.titleAndInputWrapper {
+    position: relative;
 }
-.title, .titleAndInput {
+
+.titleAndInputWrapper, .title, .titleAndInput {
     display: flex;
     align-items: center;
 }
