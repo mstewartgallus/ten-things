@@ -31,7 +31,7 @@ const useEdit = (ref: Ref<EditHandle>, initValue?: string) => {
 
 interface Props {
     listItemMarker: ReactNode;
-    children: ReactNode;
+    children?: ReactNode;
 
     disabled: boolean;
 
