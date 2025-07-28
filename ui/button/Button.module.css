@@ -22,34 +22,46 @@
 .button {
     background: var(--button-face);
     color: var(--button-text);
-    outline-color: var(--button-border);
 }
 
-.button:focus {
-    outline-width: 3px;
-    outline-color: var(--highlight-text) !important;
-}
-/* FIXME differentiate states */
 .button[data-hover] {
-    outline-color: var(--button-face);
     background: var(--button-text);
     color: var(--button-face);
 }
 
 .button[data-active] {
-    outline-color: var(--accent-color-text) ;
     background-color: var(--accent-color) ;
     color: var(--accent-color-text) ;
 }
 
 .button[aria-expanded="true"] {
-    outline-color: var(--button-face);
     background: var(--button-text);
     color: var(--button-face);
 }
 
 .button[disabled] {
     background: var(--button-text);
-    border-color: var(--button-face);
     color: var(--button-face);
+}
+
+.button:focus {
+    outline-width: 3px;
+    outline-color: var(--highlight-text);
+}
+.button:not(:focus) {
+    &[data-hover] {
+        outline-color: var(--button-face);
+    }
+
+    &[data-active] {
+        outline-color: var(--accent-color-text) ;
+    }
+
+    &[aria-expanded="true"] {
+        outline-color: var(--button-face);
+    }
+
+    &[disabled] {
+        outline-color: var(--button-face);
+    }
 }
