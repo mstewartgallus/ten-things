@@ -29,14 +29,14 @@
     color: var(--button-face);
 }
 
-.button[data-active] {
-    background-color: var(--accent-color) ;
-    color: var(--accent-color-text) ;
-}
-
 .button[aria-expanded="true"] {
     background: var(--button-text);
     color: var(--button-face);
+}
+
+.button[data-active] {
+    background-color: var(--accent-color) ;
+    color: var(--accent-color-text) ;
 }
 
 .button[disabled] {

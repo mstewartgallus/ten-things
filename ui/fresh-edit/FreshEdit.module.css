@@ -1,57 +1,69 @@
 .metadata {
-    padding-inline: 1ch;
+    padding-inline: 4ch;
 }
 
+.disclosure {
 
-.inputForm {
+}
+.disclosureButton {
+    float: left;
     display: flex;
+    align-items: start;
+    margin-block-end: calc(-0.5 * var(--line));
 }
-.titleAndInput {
-    flex-grow: 4;
-}
-.title, .titleAndInput {
-    display: block;
+.floatRight {
+    align-self: start;
 }
 
+.disclosure {
+    flex-grow: 1;
+}
+
+.inputWrapper {
+    display: flow-root;
+    flex-grow: 1;
+    overflow: visible;
+}
 
 .input {
     all: unset;
-    flex-grow: 4;
-    display: flex;
-    padding-block: calc(0.1 * var(--line));
-    margin-block: calc(0.4 * var(--line));
-    min-block-size: var(--line);
-    background-color: var(--field);
-    cursor: text;
+    font-size: 1.25rem;
+    display: block;
+    min-inline-size: 100%;
+    min-block-size: calc(2 * var(--line));
+    overflow: visible;
+    overflow-wrap: break-wrod;
+    white-space: wrap;
+    word-break: break-all;
     caret-color: var(--highlight-text) ;
+    cursor: text;
 }
 
-
-.input {
-    padding-inline: calc(0.2 * var(--line));
+.editForm {
+    margin-block: calc(0.5 * var(--line));
+    padding-block: calc(0.5 * var(--line));
+    padding-inline: 1em;
+    margin-inline: 1em;
 }
-.title {
-    margin-inline: calc(0.2 * var(--line));
-}
-
-.input {
-    border-radius: 0.8ch;
-
-    color: var(--field-text);
-
+.editForm[data-selected="true"] {
+    background-color: var(--field);
     outline-style: solid;
     outline-width: 0.15rem;
     outline-color: var(--button-border);
+
+    border-radius: 0.8ch;
+
+    color: var(--field-text);
 }
 
-
-.input[data-focus="true"] {
+.editForm[data-focus] {
     outline-width: 0.2rem;
     outline-color: var(--highlight-text);
 }
 
 .fresh {
     display: flex;
+    align-items: start;
     inline-size: 40em;
 }
 .freshItem {
@@ -59,9 +71,6 @@
 }
 .editForm {
     display: flex;
-    align-items: center;
+    align-items: start;
     justify-content: space-between;
-}
-.input {
-    inline-size: 8em;
 }
