@@ -1,6 +1,6 @@
 'use client';
 
-import type { TenHandle, FreshHandle, EntryHandle } from '@/lib';
+import type { EntryId, TenHandle, FreshHandle, EntryHandle } from '@/lib';
 
 import { useCallback, useRef } from 'react';
 import { DragButton, DropButton, MainLabel,
@@ -26,11 +26,11 @@ const Heading = () => {
 
 
 interface EntryProps {
-    id?: EntryId;
+    id: EntryId;
     disabled: boolean;
     selected: boolean;
-    completeAction?: (value: string) => void;
-    toggleAction?: () => void;
+    completeAction?: () => Promise<void>;
+    toggleAction?: () => Promise<void>;
 }
 
 const Entry = ({
@@ -56,9 +56,9 @@ interface MaybeEntryProps {
     id?: EntryId;
     disabled: boolean;
     selected: boolean;
-    createAction?: (value: string) => void;
-    completeAction?: (value: string) => void;
-    toggleAction?: () => void;
+    createAction?: (value: string) => Promise<void>;
+    completeAction?: () => Promise<void>;
+    toggleAction?: () => Promise<void>;
 }
 
 const MaybeEntry = ({

@@ -11,7 +11,7 @@ interface EditHandle {
     change(value: string): void;
 }
 
-const useEdit = (ref: Ref<EditHandle>, initValue: string) => {
+const useEdit = (ref: Ref<EditHandle>, initValue?: string) => {
     const [value, setValue] = useState(initValue ?? '');
 
     useImperativeHandle(ref, () => ({
@@ -23,7 +23,7 @@ const useEdit = (ref: Ref<EditHandle>, initValue: string) => {
 
 interface Props {
     disabled: boolean;
-    value: string;
+    value?: string;
 
     changeAction?: (value: string) => void;
 }

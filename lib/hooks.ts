@@ -68,7 +68,7 @@ export const useTen = (ref: Ref<TenHandle>) => {
 };
 
 export interface FreshHandle {
-    create(): Promise<void>;
+    create(value: string): Promise<void>;
     complete(): Promise<void>;
 
     select(): Promise<void>;
