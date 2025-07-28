@@ -55,10 +55,13 @@ export const useTen = (ref: Ref<TenHandle>) => {
     const selected = useAppSelector(selectHasSelection);
     const dragging = useAppSelector(selectHasDragging);
     const freshNonNull = useAppSelector(selectFreshNonNull);
+    const freshAtId = useAppSelector(selectFresh);
 
     return {
         completeLength: useAppSelector(selectCompleteLength),
         freshLength: useAppSelector(selectFreshLength),
+
+        freshAtId,
 
         freshNonNull,
 

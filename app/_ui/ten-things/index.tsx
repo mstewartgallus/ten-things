@@ -112,18 +112,17 @@ const Item = ({ anyDragging, deselectAction }: ItemProps) => {
 
 const TenFresh = () => {
     const ref = useRef<TenHandle>(null);
-    const { freshLength, dragging } = useTen(ref);
+    const { freshAtId, freshLength, dragging } = useTen(ref);
 
     const deselectAction = useCallback(async () => {
         await ref.current!.deselect();
     }, []);
 
-    // FIXME
     const keyAt = useCallback((index: number) => {
-        // const item = fresh[index];
-        // return item ? `id-${item.id}` : `indx-${index}`;
+        const item = freshAtId(index);
+        return item ? `id-${item.id}` : `indx-${index}`;
         return index;
-    }, []);
+    }, [freshAtId]);
 
     return <ul role="list" className={styles.list}>
             <List length={freshLength} keyAt={keyAt}>
