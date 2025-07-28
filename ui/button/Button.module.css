@@ -27,7 +27,7 @@
 
 .button:focus {
     outline-width: 3px;
-    outline-color: var(--highlight-text);
+    outline-color: var(--highlight-text) !important;
 }
 /* FIXME differentiate states */
 .button[data-hover] {
@@ -42,7 +42,7 @@
     color: var(--accent-color-text) ;
 }
 
-.button[aria-expanded="true"]:not([data-active]) {
+.button[aria-expanded="true"] {
     outline-color: var(--button-face);
     background: var(--button-text);
     color: var(--button-face);
