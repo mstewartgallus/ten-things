@@ -6,20 +6,21 @@
 
 }
 .disclosureButton {
-    position: absolute;
     left: 0;
     display: flex;
     align-items: start;
     margin-inline-start: calc(-0.5 * var(--line));
-    margin-block-start: calc(-1.5 * var(--line));
+}
+
+.floatRight, .disclosureButton {
+    position: absolute;
+    margin-block-start: calc(-1.4 * var(--line));
     z-index: 1000;
 }
+
 .floatRight {
-    position: absolute;
-    left: 100%;
-    margin-block-start: calc(-1 * var(--line));
     margin-inline-start: calc(-1 * var(--line));
-    align-self: start;
+    left: 100%;
 }
 
 .disclosure {
@@ -35,26 +36,29 @@
 .input {
     all: unset;
     padding-block: calc(0.5 * var(--line));
+    padding-inline: 1em;
+    box-sizing: border-box;
+
     border-radius: 0.5em;
     resize: none;
     font-size: 1.25rem;
     display: block;
     min-inline-size: 100%;
-    min-block-size: var(--line);
-    overflow: visible;
+
     overflow-wrap: break-wrod;
     white-space: wrap;
     word-break: break-all;
     caret-color: var(--highlight-text) ;
     cursor: text;
+
+    min-block-size: calc(2 * var(--line));
+
 }
 
 .editForm {
     margin-block-start: calc(1.5 * var(--line));
     margin-block-end: calc(0.5 * var(--line));
-    padding-block: calc(0.5 * var(--line));
-    padding-inline: 1em;
-    margin-inline: 1em;
+    margin-inline:1em;
     position: relative;
 }
 .editForm[data-selected="true"] {

@@ -22,20 +22,24 @@ interface InputProps {
 }
 
 const Input = ({ value = '', focusAction, blurAction, inputAction }: InputProps) => {
+    const [editValue, setEditValue] = useState(value);
+
     const ref = useRef<HTMLDivElement>(null);
     const onInput = useMemo(() => {
         if (!inputAction) {
             return;
         }
         return async (e: InputEvent<HTMLDivElement>) => {
-            let text = ref.current!.value;
+            const text = ref.current!.value;
+            setEditValue(text);
             await inputAction(text);
         };
     }, [inputAction]);
 
-    return <textarea ref={ref} maxLength={300} required defaultValue={value}
+    return <textarea ref={ref} maxLength={300} required value={editValue}
      aria-label="Title"  data-selected={true}
     onFocus={focusAction} onBlur={blurAction} className={styles.input} onInput={onInput} />;
+
 };
 
 interface Props {
