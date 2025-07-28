@@ -1,18 +1,66 @@
-.freshEdit {
+.fresh {
     inline-size: 40em;
 }
 
-.freshSlot {
+.buttonAndInput {
+    flex-grow: 4;
+    align-items: center;
     display: flex;
-    justify-content: space-between;
-}
-
-.form {
-    display: flex;
-    justify-content: center;
-    align-items: start;
 }
 
 .metadata {
     padding-inline: 1ch;
 }
+
+
+.inputForm {
+    display: flex;
+}
+.titleAndInput {
+    flex-grow: 4;
+}
+.title, .titleAndInput {
+    display: block;
+}
+
+.editForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.input {
+    all: unset;
+    flex-grow: 4;
+    display: flex;
+    padding-block: calc(0.1 * var(--line));
+    margin-block: calc(0.4 * var(--line));
+    min-block-size: var(--line);
+    background-color: var(--field);
+    cursor: text;
+    caret-color: var(--highlight-text) ;
+}
+
+.input {
+    padding-inline: calc(0.2 * var(--line));
+}
+.title {
+    margin-inline: calc(0.2 * var(--line));
+}
+
+.input {
+    border-radius: 0.8ch;
+
+    color: var(--field-text);
+
+    outline-style: solid;
+    outline-width: 0.15rem;
+    outline-color: var(--button-border);
+}
+
+
+.input[data-focus="true"] {
+    outline-width: 0.2rem;
+    outline-color: var(--highlight-text);
+}
+

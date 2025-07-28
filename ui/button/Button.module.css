@@ -8,7 +8,7 @@
     margin-block: calc(0.35 * var(--line));
 
     padding-inline: calc(0.3 * var(--line));
-    margin-inline: calc(0.5 * var(--line));
+    margin-inline: calc(0.32 * var(--line));
 
     border-radius: 0.4em;
     outline-style: solid;
