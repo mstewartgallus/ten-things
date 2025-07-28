@@ -49,6 +49,8 @@
     outline-color: var(--highlight-text);
 }
 .button:not(:focus) {
+    outline-color: var(--button-border);
+
     &[data-hover] {
         outline-color: var(--button-face);
     }
