@@ -1,11 +1,12 @@
 'use client';
 
 import type { EntryId, TenHandle, FreshHandle, EntryHandle } from '@/lib';
+import type { ReactNode } from 'react';
 
 import { useCallback, useRef } from 'react';
 import { DragButton, DropButton, MainLabel,
          FreshEdit,
-         List, useItem,
+         List, useItem, Time,
          H1, Header } from '@/ui';
 import { useTen, useFresh, useEntry } from '@/lib';
 
@@ -24,8 +25,8 @@ const Heading = () => {
     return <>{count} / 10 Things</>
 };
 
-
 interface EntryProps {
+    listItemMarker: ReactNode;
     id: EntryId;
     disabled: boolean;
     selected: boolean;
@@ -33,26 +34,22 @@ interface EntryProps {
     toggleAction?: () => Promise<void>;
 }
 
-const Entry = ({
-    id, disabled, selected,
-    toggleAction, completeAction
-}: EntryProps) => {
+const Entry = ({ id, ...props }: EntryProps) => {
     const entryRef = useRef<EntryHandle>(null);
     const entry = useEntry(entryRef, id);
 
     const changeAction = useCallback(async (value: string) => await entryRef.current!.change(value), []);
 
-    return <FreshEdit disabled={disabled}
-                    entry={entry}
-                    selected={selected}
-                    changeAction={changeAction}
-                    toggleAction={toggleAction}
-                    completeAction={completeAction}
-        />;
+    const created = entry && entry.created;
+
+    return <FreshEdit entry={entry} changeAction={changeAction} {...props}>
+        {created ? <>Created: <Time>{created}</Time></> : null}
+    </FreshEdit>;
 };
 
 
 interface MaybeEntryProps {
+    listItemMarker: ReactNode;
     id?: EntryId;
     disabled: boolean;
     selected: boolean;
@@ -66,9 +63,11 @@ const MaybeEntry = ({
     createAction, completeAction,
     ...props
 }: MaybeEntryProps) => {
+
     if (id === undefined) {
         return <FreshEdit changeAction={createAction} {...props} />;
     }
+
     return <Entry id={id} completeAction={completeAction} {...props} />;
 };
 
@@ -94,12 +93,14 @@ const Item = ({ anyDragging, deselectAction }: ItemProps) => {
 
     const toggleAction = iff(!selected, selectAction) ?? deselectAction;
 
+    const dragButton = <DragButton dragging={dragging} dragStartAction={dragStartAction}>
+                <div className={styles.grabberIcon}>&</div>
+            </DragButton>;
+
     return <li role="listitem" className={styles.item}>
             <DropButton action={dropAction} />
-            <DragButton dragging={dragging} dragStartAction={dragStartAction}>
-                <div className={styles.grabberIcon}>&</div>
-            </DragButton>
-            <MaybeEntry disabled={dragging}
+            <MaybeEntry listItemMarker={dragButton}
+                    disabled={dragging}
                     id={id} selected={selected}
                     createAction={createAction}
                     toggleAction={toggleAction}

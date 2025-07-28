@@ -1,3 +1,7 @@
+.buttonWrapper {
+    display: contents;
+}
+
 .button {
     all: unset;
     user-select: none;
@@ -12,44 +16,59 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.7em;
+    border-radius: 0.4em;
 
     font-size: 1.5625rem;
 }
 
-.button {
+.button:not([data-active]) {
     cursor: grab;
 }
-.button:active {
-    cursor: grabbing;
-}
 
 .button {
-    background-color: var(--canvas);
-    color: var(--emphasis-text);
-    outline-color: var(--button-border);
-}
-.button:hover {
-    outline-style: solid;
-    background: var(--button-face);
-    color: var(--button-text);
+    &[data-hover], &[data-active], &[aria-expanded="true"], &:focus {
+        outline-style: solid;
+    }
 }
 
-.button:focus-visible {
-    border-color: var(--accent-color-text) ;
+.button[data-hover] {
+    background: var(--button-text);
+    color: var(--button-face);
 }
 
-.button:active {
-    background-color: var(--button-text) ;
-    color: var(--button-face) ;
+.button[data-active] {
+    background-color: var(--accent-color) ;
+    color: var(--accent-color-text) ;
 }
 
 .button[aria-expanded="true"] {
-    background-color: var(--button-text) ;
-    color: var(--button-face) ;
+    background: var(--button-text);
+    color: var(--button-face);
 }
+
+.button[disabled] {
+    background: var(--button-text);
+    color: var(--button-face);
+}
+
 .button:focus {
-    outline-style: solid;
-    outline-color: var(--highlight-text) ;
     outline-width: 3px;
+    outline-color: var(--highlight-text);
+}
+.button:not(:focus) {
+    &[data-hover] {
+        outline-color: var(--button-face);
+    }
+
+    &[data-active] {
+        outline-color: var(--accent-color-text) ;
+    }
+
+    &[aria-expanded="true"] {
+        outline-color: var(--button-face);
+    }
+
+    &[disabled] {
+        outline-color: var(--button-face);
+    }
 }

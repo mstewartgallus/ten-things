@@ -1,12 +1,11 @@
 "use client";
 
-import type { Ref, ChangeEvent, FormEvent, JSX, MouseEvent } from "react";
+import type { ReactNode, Ref, ChangeEvent, FormEvent, JSX, MouseEvent } from "react";
 import type { Entry } from '@/lib';
 import {
     useTransition, useCallback, useImperativeHandle, useMemo,
     useId, useRef, useState, useEffect
 } from 'react';
-
 import { Button } from "../button";
 import { Time } from "../time";
 import { Icon } from "../icon";
@@ -15,7 +14,6 @@ import { If } from "../If";
 import styles from "./FreshEdit.module.css";
 
 const iff = <T,>(cond: boolean, val: T) => cond ? val : undefined;
-
 
 interface EditHandle {
     change(value: string): void;
@@ -32,6 +30,9 @@ const useEdit = (ref: Ref<EditHandle>, initValue?: string) => {
 };
 
 interface Props {
+    listItemMarker: ReactNode;
+    children: ReactNode;
+
     disabled: boolean;
 
     entry?: Entry;
@@ -45,6 +46,9 @@ interface Props {
 }
 
 export const FreshEdit = ({
+    listItemMarker,
+    children,
+
     disabled,
 
     entry,
@@ -106,10 +110,10 @@ export const FreshEdit = ({
     const formId = useId();
     const id = useId();
 
-
     return <div className={styles.fresh}>
-            <div className={styles.editForm} data-editing={selected} data-focus={focus}>
-                <div className={styles.buttonAndInput}>
+        {listItemMarker}
+        <div className={styles.freshItem}>
+        <div className={styles.editForm}>
                     <Button aria-label={label}
                                 disabled={disabled || !onClick}
                                 onClick={onClick}
@@ -117,10 +121,11 @@ export const FreshEdit = ({
                                 aria-controls={controlId}>
                              <Icon>{selected ? '🗙' : emptyValue ? '+' : '✎'}</Icon>
                     </Button>
-                        <div id={controlId} className={styles.titleAndInput}>
-                            <If cond={!selected}>
-                                <div className={styles.title}>{value}</div>
-                            </If>
+
+                    <div id={controlId} className={styles.titleAndInput}>
+                        <If cond={!selected}>
+                            <div className={styles.title}>{value ?? '...'}</div>
+                        </If>
                             <If cond={selected}>
         <form id={formId} action={formAction} className={styles.inputForm}>
                 <input name="title" required
@@ -130,7 +135,6 @@ export const FreshEdit = ({
                                 </form>
                             </If>
                     </div>
-                </div>
 
                 <If cond={selected}>
                     <Button form={formId} disabled={disabled}>
@@ -145,12 +149,10 @@ export const FreshEdit = ({
                         </Button>
                     </form>
                 </If>
-
            </div>
-           <div className={styles.metadata}>
-            {
-                created ? <>Created: <Time>{created}</Time></> : null
-            }
+            <div className={styles.metadata}>
+                {children}
             </div>
+          </div>
         </div>;
 };

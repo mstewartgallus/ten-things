@@ -14,6 +14,7 @@ export { Nav } from "./nav";
 export { Bag } from "./bag";
 export { P } from "./p";
 export { Section } from "./section";
+export { Time } from "./time";
 
 export { Icon } from "./icon";
 export { List, useItem } from "./list";

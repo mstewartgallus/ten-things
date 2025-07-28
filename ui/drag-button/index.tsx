@@ -2,6 +2,8 @@
 
 import type { JSX, MouseEvent, PointerEvent, ReactNode } from 'react';
 import { useMemo } from 'react';
+import { useWrap, toDataProps } from "../wrap";
+import { useCursor } from "../UiProvider";
 import { withClass } from "../with-class";
 
 import styles from './DragButton.module.css';
@@ -41,12 +43,17 @@ export const DragButton = ({ children, dragging, dragStartAction }: Props) => {
         };
     }, [dragStartAction]);
 
-    return <RawButton
+    useCursor(dragging ? 'grabbing' : undefined);
+
+    const { state, cb } = useWrap();
+    return <div className={styles.buttonWrapper} {...cb}>
+            <RawButton
                  aria-label="Reorder"
                  aria-expanded={dragging}
                  onPointerDown={onPointerDown}
                  formAction={action}
-                 disabled={!action} >
+                 disabled={!action} {...toDataProps(state)}>
                  {children}
-    </RawButton>;
+            </RawButton>
+        </div>;
 };
