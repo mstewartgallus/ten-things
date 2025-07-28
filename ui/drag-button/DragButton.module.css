@@ -23,6 +23,11 @@
     color: var(--emphasis-text);
 }
 
+.button:focus {
+    background: var(--button-face);
+    color: var(--button-text);
+}
+
 .button:not([data-active]) {
     cursor: grab;
 }

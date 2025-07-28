@@ -21,23 +21,19 @@ interface InputProps {
     inputAction?: (value: string) => Promise<void>;
 }
 
-const Input = ({ value, focusAction, blurAction, inputAction }: InputProps) => {
+const Input = ({ value = '', focusAction, blurAction, inputAction }: InputProps) => {
     const ref = useRef<HTMLDivElement>(null);
-
     const onInput = useMemo(() => {
         if (!inputAction) {
             return;
         }
         return async (e: InputEvent<HTMLDivElement>) => {
-            let text = ref.current!.innerText;
+            let text = ref.current!.value;
             await inputAction(text);
         };
     }, [inputAction]);
 
-    useEffect(() => {
-        ref.current!.innerText = value ?? '';
-    }, [value]);
-    return <div ref={ref} contentEditable={true}
+    return <textarea ref={ref} maxLength={300} required defaultValue={value}
      aria-label="Title"  data-selected={true}
     onFocus={focusAction} onBlur={blurAction} className={styles.input} onInput={onInput} />;
 };

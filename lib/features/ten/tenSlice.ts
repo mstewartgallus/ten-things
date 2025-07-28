@@ -113,6 +113,7 @@ export const tenSlice = createSlice({
                 entry.push({ created, value });
                 fresh[id] = { id: entryId };
 
+                ui.dragId = undefined;
                 ui.selectionId = undefined;
             }),
 
@@ -134,11 +135,13 @@ export const tenSlice = createSlice({
         select: create.preparedReducer(
             (id: FreshId) => ({ payload: { id } }),
             ({ ui }, { payload: { id } }: PayloadAction<SelectAction>) => {
+                ui.dragId = undefined;
                 ui.selectionId = id;
             }),
         deselect: create.preparedReducer(
             () => ({ payload: null }),
             ({ ui }) => {
+                ui.dragId = undefined;
                 ui.selectionId = undefined;
             }),
 
@@ -146,6 +149,7 @@ export const tenSlice = createSlice({
             (id: FreshId) => ({ payload: { id } }),
             ({ ui }, { payload: { id } }: PayloadAction<DragAction>) => {
                 ui.dragId = id;
+                ui.selectionId = undefined;
             }),
 
         // Not sure if this is a sensible way of organizing things
@@ -165,6 +169,7 @@ export const tenSlice = createSlice({
                 fresh[id] = old;
 
                 ui.dragId = undefined;
+                ui.selectionId = undefined;
             })
     }),
     selectors: {
