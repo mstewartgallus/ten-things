@@ -48,10 +48,10 @@
     color: var(--button-face);
 }
 
-.button[disabled] {
-    background: var(--button-text);
-    color: var(--button-face);
-}
+/* .button[disabled] { */
+/*     background: var(--button-text); */
+/*     color: var(--button-face); */
+/* } */
 
 .button:focus {
     outline-width: 3px;
