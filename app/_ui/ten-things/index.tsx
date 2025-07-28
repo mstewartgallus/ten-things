@@ -93,14 +93,15 @@ const Item = ({ anyDragging, deselectAction }: ItemProps) => {
 
     const toggleAction = iff(!selected, selectAction) ?? deselectAction;
 
-    const dragButton = <DragButton dragging={dragging} dragStartAction={dragStartAction}>
-                <div className={styles.grabberIcon}>&</div>
-            </DragButton>;
-
     return <li role="listitem" className={styles.item}>
             <DropButton action={dropAction} />
-            <MaybeEntry listItemMarker={dragButton}
-                    disabled={dragging}
+            <MaybeEntry
+                listItemMarker={
+                    <DragButton disabled={anyDragging}
+                        dragging={dragging} dragStartAction={dragStartAction}>
+                        <div className={styles.grabberIcon}>&</div>
+                    </DragButton>}
+                    disabled={anyDragging}
                     id={id} selected={selected}
                     createAction={createAction}
                     toggleAction={toggleAction}

@@ -14,18 +14,23 @@ export const RawButton =
         styles.button);
 
 interface Props {
+    disabled: boolean;
     readonly children?: ReactNode;
     readonly dragging: boolean;
 
     readonly dragStartAction?: () => Promise<void>;
 }
 
-export const DragButton = ({ children, dragging, dragStartAction }: Props) => {
-    const action = useMemo(() => {
+export const DragButton = ({ disabled, children, dragging, dragStartAction }: Props) => {
+    const onClick = useMemo(() => {
         if (!dragStartAction) {
             return;
         }
-        return async () => {
+        return async (e: MouseEvent<HTMLButtonElement>) => {
+            if (e.button !== 0) {
+                return;
+            }
+            e.preventDefault();
             await dragStartAction();
         };
     }, [dragStartAction]);
@@ -48,11 +53,11 @@ export const DragButton = ({ children, dragging, dragStartAction }: Props) => {
     const { state, cb } = useWrap();
     return <div className={styles.buttonWrapper} {...cb}>
             <RawButton
+                 disabled={disabled}
                  aria-label="Reorder"
                  aria-expanded={dragging}
                  onPointerDown={onPointerDown}
-                 formAction={action}
-                 disabled={!action} {...toDataProps(state)}>
+                 onClick={onClick} {...toDataProps(state)}>
                  {children}
             </RawButton>
         </div>;

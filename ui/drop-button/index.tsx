@@ -27,12 +27,16 @@ export const DropButton = ({ children, action }: Props) => {
         };
     }, [action]);
 
-    const clickAction = useMemo(() => {
+    const onClick = useMemo(() => {
         if (!action) {
             return;
         }
 
-        return async () => {
+        return async (e: MouseEvent<HTMLButtonElement>) => {
+            if (e.button !== 0) {
+                return;
+            }
+            e.preventDefault();
             await action();
         };
     }, [action]);
@@ -40,8 +44,8 @@ export const DropButton = ({ children, action }: Props) => {
     return <div className={styles.wrapper} {...cb}>
             <button className={styles.dropZone} {...toDataProps(state)}
                 onPointerUp={onPointerUp}
-                formAction={clickAction}
-                disabled={!action ? true : undefined}>
+                onClick={onClick}
+                disabled={!onClick ? true : undefined}>
                 {children}
             </button>
         </div>;
