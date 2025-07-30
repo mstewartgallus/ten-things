@@ -74,8 +74,8 @@ export const FreshEdit = ({
         };
     }, [changeAction]);
 
-    const onFocus = useCallback(async() => startTransition(() => setFocus(true)), []);
-    const onBlur = useCallback(async() => startTransition(() => setFocus(false)), []);
+    const onFocus = useCallback(() => startTransition(() => setFocus(true)), []);
+    const onBlur = useCallback(() => startTransition(() => setFocus(false)), []);
 
     const controlId = useId();
     const formId = useId();

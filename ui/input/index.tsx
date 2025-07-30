@@ -6,7 +6,6 @@ import type {
     StrictMode, ReactNode, Ref, RefObject
 } from "react";
 import { createContext, useContext, createElement, useEffect, useRef, useState } from "react";
-import type { ReactRoot } from "react-dom";
 import { createPortal } from "react-dom";
 import { InputImpl, InputInternalsProvider } from "./InputImpl";
 
@@ -130,16 +129,20 @@ const getElement = async () => {
     };
 };
 
-interface Props {
+const InputContext = createContext<TenInputElement | null>(null);
+InputContext.displayName = `InputContext`;
+
+type Props =
+    DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
+& {
     name?: string;
     value?: string;
     maxLength?: number;
+    required?: boolean;
 
-    required: boolean;
+    className?: string;
+    "aria-label"?: string;
 }
-
-const InputContext = createContext<TenInputElement | null>(null);
-InputContext.displayName = `InputContext`;
 
 const Inner = (props: Props) => {
     const inputElement = useContext(InputContext);
@@ -147,7 +150,7 @@ const Inner = (props: Props) => {
         throw Error("no input element context");
     }
 
-    const [mounted, setMounted] = useState<boolean>(null);
+    const [mounted, setMounted] = useState<boolean>(false);
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -161,19 +164,17 @@ const Inner = (props: Props) => {
 export const Input = (props: Props) => {
     useCustomElement('ten-input', getElement);
 
-    const [mounted, setMounted] = useState<boolean>(null);
+    const [mounted, setMounted] = useState<boolean>(false);
     useEffect(() => {
         setMounted(true);
     }, []);
 
     const ref = useRef<TenInputElement>(null);
-    return <ten-input ref={ref} { ...props}>
-        {
-            mounted
-                ? <InputContext value={ref.current!}>
-                    <Inner {...props} />
-                </InputContext>
-                : props.value
-        }
-    </ten-input>;
+    return createElement('ten-input', {
+        ...props,
+        ref,
+        children: mounted
+            ? <InputContext value={ref.current!}><Inner {...props} /></InputContext>
+            : props.value
+    });
 };
