@@ -41,7 +41,7 @@
     display: block;
 
     padding-block: calc(0.5 * var(--line));
-    padding-inline-start: 1ch;
+    padding-inline: 1ch;
     box-sizing: border-box;
 
     font-size: 1.25rem;

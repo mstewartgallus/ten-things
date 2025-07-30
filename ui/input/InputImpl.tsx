@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode, Ref, InputEvent } from "react";
+import type { ReactNode, Ref, KeyEvent, InputEvent } from "react";
 import {
     createContext,
     useContext,
@@ -15,6 +15,8 @@ export const InputInternalsProvider = ({ children, internals }: {
     internals: ElementInternals
 }) =>
     <InputInternalsContext value={internals}>{children}</InputInternalsContext>;
+
+type SelectionDirection = 'none' | 'forward' | 'backward';
 
 interface ImplProps {
     name?: string;
@@ -38,11 +40,38 @@ export const InputImpl = ({
     const [value, setValue] = useState<string | null>(initValue ?? null);
     const [maxLength, setMaxLength] = useState<number | null>(initMaxLength ?? null);
 
+    const onKeyDown = useCallback((e: KeyEvent<HTMLDivElement>) => {
+        if (e.key !== 'Enter') {
+            return;
+        }
+        e.preventDefault();
+
+        const { form } = internals;
+        if (!form) {
+            return;
+        }
+
+        form.requestSubmit();
+    }, [internals, maxLength]);
+
+    // FIXME handle copy/pasting, etc...
     const contentRef = useRef<HTMLDivElement>(null);
-    const onInput = useCallback(async (e: InputEvent<HTMLDivElement>) => {
-        const text = contentRef.current!.innerText;
-        setValue(text);
-    }, []);
+
+    const onBeforeInput = useCallback((e: InputEvent<HTMLDivElement>) => {
+        const data = e.data;
+
+        if (data.includes('\n')) {
+            e.preventDefault();
+            return;
+        }
+
+        if (value.length + data.length >= maxLength) {
+            e.preventDefault();
+            return;
+        }
+
+        setValue(contentRef.current!.textContent);
+    }, [value, maxLength]);
 
     useEffect(() => {
         internals.role = 'textbox';
@@ -58,28 +87,10 @@ export const InputImpl = ({
     }, [internals, value]);
 
     useEffect(() => {
-        const flags: ValidityStateFlags = {};
-        const messages = [];
+        contentRef.current!.textContent = initValue ?? '';
+    }, [initValue]);
 
-        const { length } = value ?? '';
-        if (maxLength !== null && length >= maxLength) {
-            flags.tooLong = true;
-            messages.push(`${length} >= ${maxLength}`);
-        }
-        // FIXME anchor?
-        internals.setValidity(flags, messages.join('\n'));
-    }, [internals, value, maxLength]);
-
-    useEffect(() => {
-        const newValue = value ?? '';
-
-        const oldValue = contentRef.current!.innerText;
-        if (oldValue === newValue) {
-            return;
-        }
-        // FIXME preserve cursor
-        contentRef.current!.innerText = newValue;
-    }, [value]);
-
-    return <div ref={contentRef} contentEditable={true} onInput={onInput} className="input" />;
+    // FIXME handle paste event
+    return <div ref={contentRef} contentEditable={true} className="input" inputMode="text"
+        onKeyDown={onKeyDown} onBeforeInput={onBeforeInput} />;
 };
