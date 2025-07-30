@@ -6,21 +6,9 @@
 
 }
 .disclosureButton {
-    left: 0;
+    float: left;
     display: flex;
     align-items: start;
-    margin-inline-start: calc(-0.5 * var(--line));
-}
-
-.floatRight, .disclosureButton {
-    position: absolute;
-    margin-block-start: calc(-1.4 * var(--line));
-    z-index: 1000;
-}
-
-.floatRight {
-    margin-inline-start: calc(-1 * var(--line));
-    left: 100%;
 }
 
 .disclosure {
@@ -35,30 +23,23 @@
 
 .input {
     all: unset;
+    flex-grow: 1;
     padding-block: calc(0.5 * var(--line));
-    padding-inline: 1em;
+    padding-inline-start: 1ch;
     box-sizing: border-box;
 
-    border-radius: 0.5em;
-    resize: none;
     font-size: 1.25rem;
     display: block;
-    min-inline-size: 100%;
-
-    overflow-wrap: break-wrod;
+    overflow-wrap: anywhere;
     white-space: wrap;
     word-break: break-all;
-    caret-color: var(--highlight-text) ;
-    cursor: text;
-
-    min-block-size: calc(2 * var(--line));
-
 }
 
 .editForm {
-    margin-block-start: calc(1.5 * var(--line));
+    inline-size: 40em;
+
+    margin-block-start: calc(0.5 * var(--line));
     margin-block-end: calc(0.5 * var(--line));
-    margin-inline:1em;
     position: relative;
 }
 .editForm[data-selected="true"] {
@@ -79,14 +60,15 @@
 
 .fresh {
     display: flex;
-    align-items: start;
-    inline-size: 40em;
+    flex-direction: column;
 }
 .freshItem {
+    display: flex;
     flex-grow: 1;
+    align-items: center;
 }
 .editForm {
     display: flex;
-    align-items: start;
+    align-items: end;
     justify-content: space-between;
 }

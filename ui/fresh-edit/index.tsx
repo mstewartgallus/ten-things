@@ -9,38 +9,11 @@ import {
 import { Button } from "../button";
 import { Time } from "../time";
 import { Icon } from "../icon";
+import { Input } from "../input";
 
 import styles from "./FreshEdit.module.css";
 
 const iff = <T,>(cond: boolean, val: T) => cond ? val : undefined;
-
-interface InputProps {
-    value?: string;
-    focusAction?: () => Promise<void>;
-    blurAction?: () => Promise<void>;
-    inputAction?: (value: string) => Promise<void>;
-}
-
-const Input = ({ value = '', focusAction, blurAction, inputAction }: InputProps) => {
-    const [editValue, setEditValue] = useState(value);
-
-    const ref = useRef<HTMLDivElement>(null);
-    const onInput = useMemo(() => {
-        if (!inputAction) {
-            return;
-        }
-        return async (e: InputEvent<HTMLDivElement>) => {
-            const text = ref.current!.value;
-            setEditValue(text);
-            await inputAction(text);
-        };
-    }, [inputAction]);
-
-    return <textarea ref={ref} maxLength={300} required value={editValue}
-     aria-label="Title"  data-selected={true}
-    onFocus={focusAction} onBlur={blurAction} className={styles.input} onInput={onInput} />;
-
-};
 
 interface Props {
     listItemMarker: ReactNode;
@@ -77,7 +50,6 @@ export const FreshEdit = ({
     const emptyValue = value === undefined;
 
     const [, startTransition] = useTransition();
-    const [editValue, setEditValue] = useState(value ?? '');
 
     const onClick = useMemo(() => {
         if (!toggleAction) {
@@ -95,20 +67,15 @@ export const FreshEdit = ({
         if (!changeAction) {
             return;
         }
-        return async () => {
-            await changeAction(editValue);
+        return async (d: FormData) => {
+            // FIXME verify
+            const title = d.get('title') as string;
+            await changeAction(title);
         };
-    }, [changeAction, editValue]);
+    }, [changeAction]);
 
-    const focusAction = useCallback(async() => startTransition(() => setFocus(true)), []);
-    const blurAction = useCallback(async() => startTransition(() => setFocus(false)), []);
-
-    useEffect(() => {
-        setEditValue(value ?? '');
-    }, [value]);
-    const inputAction = useCallback(async (value: string) => {
-        setEditValue(value ?? '');
-    }, []);
+    const onFocus = useCallback(async() => startTransition(() => setFocus(true)), []);
+    const onBlur = useCallback(async() => startTransition(() => setFocus(false)), []);
 
     const controlId = useId();
     const formId = useId();
@@ -126,8 +93,11 @@ export const FreshEdit = ({
             <Icon>{selected ? '🗙' : emptyValue ? '+' : '✎'}</Icon>
         </Button>;
     const disclosure = selected
-        ? <form id={formId} action={formAction}>
-            <Input value={value} focusAction={focusAction} blurAction={blurAction} inputAction={inputAction} />
+        ? <form id={formId} action={formAction} className={styles.inputForm}>
+           <Input name="title" value={value} maxLength={300} required
+               onFocus={onFocus} onBlur={onBlur}
+               className={styles.input} aria-label="title"
+            />
           </form>
         : <div className={styles.input}>{value ?? '...'}</div>;
 
@@ -144,10 +114,11 @@ export const FreshEdit = ({
 
     return <div className={styles.fresh}>
             <div className={styles.freshItem}>
+                    {listItemMarker}
+
                 <div className={styles.editForm} data-focus={focus} data-selected={selected}>
                     <div className={styles.inputWrapper} data-focus={focus} data-selected={selected}>
                         <div className={styles.disclosureButton}>
-                        {listItemMarker}
                         {disclosureButton}
                         </div>
 
@@ -159,10 +130,10 @@ export const FreshEdit = ({
                          {completeButton}
                     </div>
                 </div>
+            </div>
 
                 <div className={styles.metadata}>
                     {children}
                 </div>
-            </div>
         </div>;
 };

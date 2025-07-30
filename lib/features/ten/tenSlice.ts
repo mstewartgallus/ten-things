@@ -92,7 +92,6 @@ export const tenSlice = createSlice({
                 entry[id].value = value;
 
                 ui.selectionId = undefined;
-                console.log('edit');
             }),
 
         create: create.preparedReducer(
