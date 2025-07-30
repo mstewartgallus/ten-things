@@ -1,10 +1,21 @@
+.item {
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: flex;
+    align-items: center;
+}
+.itemContent {
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
 .metadata {
-    padding-inline: 4ch;
+    padding-inline-start: 4ch;
 }
 
-.disclosure {
-
-}
 .disclosureButton {
     float: left;
     display: flex;
@@ -15,60 +26,50 @@
     flex-grow: 1;
 }
 
+
 .inputWrapper {
     display: flow-root;
     flex-grow: 1;
-    overflow: visible;
+    flex-shrink: 1;
 }
-
 .input {
     all: unset;
-    flex-grow: 1;
+
+    display: block;
+
     padding-block: calc(0.5 * var(--line));
     padding-inline-start: 1ch;
     box-sizing: border-box;
 
     font-size: 1.25rem;
-    display: block;
     overflow-wrap: anywhere;
     white-space: wrap;
     word-break: break-all;
 }
 
-.editForm {
-    inline-size: 40em;
 
-    margin-block-start: calc(0.5 * var(--line));
-    margin-block-end: calc(0.5 * var(--line));
-    position: relative;
-}
-.editForm[data-selected="true"] {
-    background-color: var(--field);
-    outline-style: solid;
-    outline-width: 0.15rem;
-    outline-color: var(--button-border);
-
-    border-radius: 0.8ch;
-
-    color: var(--field-text);
-}
-
-.editForm[data-focus="true"] {
-    outline-width: 0.2rem;
-    outline-color: var(--highlight-text);
-}
-
-.fresh {
-    display: flex;
-    flex-direction: column;
-}
 .freshItem {
     display: flex;
-    flex-grow: 1;
     align-items: center;
-}
-.editForm {
+
     display: flex;
-    align-items: end;
+    align-items: start;
     justify-content: space-between;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-block-start: calc(0.5 * var(--line));
+    margin-block-end: calc(0.5 * var(--line));
+
+    border-radius: 0.8ch;
+    outline-width: 0.15rem;
+    outline-color: var(--button-border);
+}
+.freshItem[data-selected="true"] {
+    background-color: var(--field);
+    color: var(--field-text);
+    outline-style: solid;
+}
+.freshItem[data-focus="true"] {
+    outline-width: 0.2rem;
+    outline-color: var(--highlight-text);
 }

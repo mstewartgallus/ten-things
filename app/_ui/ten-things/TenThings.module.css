@@ -5,6 +5,7 @@
 }
 .item {
     all: unset;
+    max-inline-size: 30em;
     position: relative;
     display: flex;
     justify-content: start;

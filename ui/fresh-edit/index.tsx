@@ -112,28 +112,27 @@ export const FreshEdit = ({
             </Button>
         </form>;
 
-    return <div className={styles.fresh}>
-            <div className={styles.freshItem}>
-                    {listItemMarker}
+    return <div className={styles.item}>
+            {listItemMarker}
 
-                <div className={styles.editForm} data-focus={focus} data-selected={selected}>
-                    <div className={styles.inputWrapper} data-focus={focus} data-selected={selected}>
+            <div className={styles.itemContent}>
+                <div className={styles.freshItem} data-focus={focus} data-selected={selected}>
+                    <div className={styles.inputWrapper}>
                         <div className={styles.disclosureButton}>
-                        {disclosureButton}
+                            {disclosureButton}
                         </div>
 
                         <div id={controlId}>
                             {disclosure}
                         </div>
                     </div>
-                    <div className={styles.floatRight}>
-                         {completeButton}
-                    </div>
+
+                    {completeButton}
                 </div>
-            </div>
 
                 <div className={styles.metadata}>
                     {children}
                 </div>
+            </div>
         </div>;
 };
