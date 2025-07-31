@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode, Ref, KeyboardEvent, InputEvent, ClipboardEvent } from "react";
+import { createPortal } from "react-dom";
 import {
     createContext,
     useContext,
@@ -27,48 +28,8 @@ export const InputInternalsProvider = ({
 };
 
 const select = (shadowRoot: ShadowRoot, node: Node, offset: number) => {
-    // FIXME use shadowroot
     shadowRoot.getSelection()!.collapse(node, offset);
 }
-
-interface TextProps {
-    ref?: Ref<Text>;
-    value?: string;
-    selectionStart?: number;
-}
-
-const TextNode = ({
-    ref,
-    value = '', selectionStart
-}: TextProps) => {
-    // FIXME...
-    const { shadowRoot } = useContext(InputInternalsContext)!;
-    const textRef = useRef<Text>(null);
-    const divRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const elem = divRef.current!;
-        const text = document.createTextNode('');
-        elem.appendChild(text);
-        textRef.current = text;
-        return () => {
-            elem.removeChild(text);
-        };
-    }, []);
-
-    // FIXME handle whitespace appropriately
-    useEffect(() => {
-        const text = textRef.current!;
-        text.nodeValue = value;
-        if (selectionStart) {
-            select(shadowRoot, text, selectionStart);
-        }
-    }, [shadowRoot, value, selectionStart]);
-
-    useImperativeHandle(ref, () => textRef.current!, []);
-
-    return <div ref={divRef} />;
-};
 
 interface ImplProps {
     name?: string;
@@ -89,7 +50,6 @@ export const InputImpl = ({
     }
     const { internals, shadowRoot } = context;
 
-    const textRef = useRef<Text>(null);
     const [name, setName] = useState<string | null>(initName ?? null);
     const [value, setValue] = useState<string>(initValue ?? '');
     const [maxLength, setMaxLength] = useState<number | null>(initMaxLength ?? null);
@@ -123,7 +83,6 @@ export const InputImpl = ({
 
     const backspaceAction = useCallback(async () => {
         let [selectionStart, selectionEnd] = getCaret();
-        // FIXME... get selection....
         if (selectionStart === selectionEnd) {
             selectionStart -= 1;
         }
@@ -133,7 +92,6 @@ export const InputImpl = ({
 
     const deleteAction = useCallback(async () => {
         let [selectionStart, selectionEnd] = getCaret();
-        // FIXME... get selection....
         if (selectionStart === selectionEnd) {
             selectionEnd += 1;
         }
@@ -145,9 +103,6 @@ export const InputImpl = ({
         data: string
     ) => {
         data = data.replace('\n', ' ');
-        if (maxLength) {
-            data = data.substring(0, maxLength - value.length);
-        }
 
         const [selectionStart, selectionEnd] = getCaret();
         const newValue =
@@ -156,7 +111,7 @@ export const InputImpl = ({
             value.substring(selectionEnd);
         const newSelection = selectionStart + data.length;
         await changeAction(newValue, newSelection);
-    }, [changeAction, value, maxLength]);
+    }, [changeAction, value]);
 
     const onBeforeInput = useCallback((e: InputEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -205,15 +160,50 @@ export const InputImpl = ({
         }
     }, [internals, backspaceAction, deleteAction]);
 
+    const errorRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const messages = [];
+        const flags: ValidityStateFlags = {
+            valueMissing: required && value.length === 0,
+            tooLong: !!maxLength && value.length >= maxLength
+        };
+        if (flags.valueMissing) {
+            // FIXME put cleaner error messages
+            messages.push('Value Missing');
+        }
+        if (flags.tooLong) {
+            // FIXME put cleaner error messages
+            messages.push('Too long value');
+        }
+
+        internals.setValidity(
+            flags,
+            messages.join('\n'),
+            errorRef.current!);
+    }, [internals, required, value]);
+
+    const ref = useRef<HTMLDivElement>(null);
+    const textRef = useRef<Text>(null);
+    useEffect(() => {
+        const elem = ref.current!;
+        const text = document.createTextNode(value);
+
+        elem.appendChild(text);
+        if (selectionStart && selectionStart >= 0) {
+            select(shadowRoot, text, selectionStart);
+        }
+        return () => {
+            elem.removeChild(text);
+        };
+    }, [shadowRoot, value, selectionStart]);
+
     // FIXME handle cut event
-    return <div
-        onBeforeInput={onBeforeInput}
-        onPaste={onPaste} onKeyDown={onKeyDown}
-         className="input" inputMode="text"
-        tabIndex={0} contentEditable={true} suppressContentEditableWarning={true}
-              >
-             <TextNode ref={textRef} value={value}
-               selectionStart={selectionStart ?? undefined}
-        />
+    return <div className="inputWrapper">
+           <div ref={ref} onBeforeInput={onBeforeInput}
+           onPaste={onPaste} onKeyDown={onKeyDown}
+           className="input" inputMode="text"
+           tabIndex={0} contentEditable={true} suppressContentEditableWarning={true} />
+           <div ref={errorRef} className="error" />
         </div>;
 };

@@ -32,11 +32,22 @@ export interface TenInputElement extends HTMLElement {
 const styleSheetSrc = `
 .input {
     all: unset;
-
     display: block;
+    white-space: pre-wrap;
     min-block-size: var(--line);
     caret-color: var(--highlight-text);
     cursor: text;
+}
+.inputWrapper {
+    position: relative;
+}
+
+.error {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 1px;
+    height: 1px;
 }
 `;
 
@@ -60,9 +71,14 @@ const getElement = async () => {
         }
 
         connectedCallback() {
+            if (!this.getAttribute('tabindex')) {
+                this.setAttribute('tabindex', '0');
+            }
             // Insert into the slot as default to implement flicker
             // free rendering
-            const shadowRoot = this.attachShadow({ mode: 'closed' });
+            const shadowRoot = this.attachShadow({
+                mode: 'closed'
+            });
             const slot = document.createElement('slot');
             shadowRoot.appendChild(slot);
             shadowRoot.adoptedStyleSheets.push(styleSheet);

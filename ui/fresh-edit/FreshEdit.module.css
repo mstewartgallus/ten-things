@@ -46,7 +46,7 @@
 
     font-size: 1.25rem;
     overflow-wrap: anywhere;
-    white-space: wrap;
+    white-space: pre-wrap;
     word-break: break-all;
 }
 .input[data-selected] {
@@ -63,17 +63,6 @@
     outline-color: var(--highlight-text);
 }
 
-/* .freshItem { */
-/*     border-radius: 0.8ch; */
-/*     outline-width: 0.15rem; */
-/*     outline-color: var(--button-border); */
-/* } */
-/* .freshItem[data-selected="true"] { */
-/*     background-color: var(--field); */
-/*     color: var(--field-text); */
-/*     /\* outline-style: solid; *\/ */
-/* } */
-/* .freshItem[data-focus="true"] { */
-/*     outline-width: 0.2rem; */
-/*     outline-color: var(--highlight-text); */
-/* } */
+.input:invalid {
+    outline-color: red;
+}
