@@ -30,24 +30,8 @@ export interface TenInputElement extends HTMLElement {
 }
 
 const styleSheetSrc = `
-.input {
-    all: unset;
-    display: block;
-    white-space: pre-wrap;
-    min-block-size: var(--line);
-    caret-color: var(--highlight-text);
-    cursor: text;
-}
 .inputWrapper {
     position: relative;
-}
-
-.error {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 1px;
-    height: 1px;
 }
 `;
 

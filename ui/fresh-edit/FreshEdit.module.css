@@ -49,6 +49,22 @@
     white-space: pre-wrap;
     word-break: break-all;
 }
+/* FIXME */
+.input::part(input) {
+    all: unset;
+    display: block;
+    white-space: pre-wrap;
+    min-block-size: var(--line);
+    caret-color: var(--highlight-text);
+    cursor: text;
+}
+.input::part(error-anchor) {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 1px;
+    height: 1px;
+}
 .input[data-selected] {
     background-color: var(--field);
     color: var(--field-text);

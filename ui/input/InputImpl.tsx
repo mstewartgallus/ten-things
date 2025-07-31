@@ -215,10 +215,9 @@ export const InputImpl = ({
 
     // FIXME handle cut event
     return <div className="inputWrapper">
-           <div ref={ref} onBeforeInput={onBeforeInput}
-           onPaste={onPaste} onKeyDown={onKeyDown}
-           className="input" inputMode="text"
+           <div part="input" ref={ref} onBeforeInput={onBeforeInput}
+           onPaste={onPaste} onKeyDown={onKeyDown} inputMode="text"
            tabIndex={0} contentEditable={true} suppressContentEditableWarning={true} />
-           <div ref={errorRef} className="error" />
+           <div ref={errorRef} part="error-anchor" />
         </div>;
 };
