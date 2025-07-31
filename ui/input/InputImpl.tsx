@@ -37,11 +37,13 @@ declare global {
 const select = (shadowRoot: ShadowRoot, node: Node, offset: number) => {
     if (shadowRoot.getSelection) {
         shadowRoot.getSelection()!.collapse(node, offset);
+        return;
     }
     throw Error("no shadowroot selection polyfill");
 }
 
 const getCaret = (shadowRoot: ShadowRoot) => {
+    // FIXME make work in Firefox
     if (shadowRoot.getSelection) {
         const range = shadowRoot.getSelection().getRangeAt(0);
         return [range.startOffset, range.endOffset];
