@@ -1,7 +1,7 @@
 'use client';
 
 import type { JSX, MouseEvent, PointerEvent, ReactNode } from 'react';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useWrap, toDataProps } from "../wrap";
 import { useCursor } from "../UiProvider";
 import { withClass } from "../with-class";
@@ -35,8 +35,22 @@ export const DragButton = ({ disabled, children, dragging, dragStartAction }: Pr
         };
     }, [dragStartAction]);
 
-    const onPointerDown = useMemo(() => {
-        if (!dragStartAction) {
+    const [pointerDown, setPointerDown] = useState(false);
+    const onPointerDown = useCallback((e: PointerEvent<HTMLButtonElement>) => {
+        if (!e.isPrimary) {
+            return;
+        }
+        setPointerDown(true);
+    }, []);
+    const onPointerUp = useCallback((e: PointerEvent<HTMLButtonElement>) => {
+        if (!e.isPrimary) {
+            return;
+        }
+        setPointerDown(false);
+    }, []);
+
+    const onPointerMove = useMemo(() => {
+        if (!pointerDown || !dragStartAction) {
             return;
         }
         return async (e: PointerEvent<HTMLButtonElement>) => {
@@ -44,9 +58,9 @@ export const DragButton = ({ disabled, children, dragging, dragStartAction }: Pr
                 return;
             }
             (e.target as Element).releasePointerCapture(e.pointerId);
-            await dragStartAction()
+            await dragStartAction();
         };
-    }, [dragStartAction]);
+    }, [pointerDown, dragStartAction]);
 
     useCursor(dragging ? 'grabbing' : undefined);
 
@@ -56,7 +70,9 @@ export const DragButton = ({ disabled, children, dragging, dragStartAction }: Pr
                  disabled={disabled}
                  aria-label="Reorder"
                  aria-expanded={dragging}
+                 onPointerMove={onPointerMove}
                  onPointerDown={onPointerDown}
+                 onPointerUp={onPointerUp}
                  onClick={onClick} {...toDataProps(state)}>
                  {children}
             </RawButton>
