@@ -40,28 +40,40 @@
     all: unset;
     display: block;
 
-    padding-block: calc(0.5 * var(--line));
-    padding-inline: 1ch;
     box-sizing: border-box;
+    padding-inline: 1ch;
+    padding-block: calc(0.5 * var(--line));
 
     font-size: 1.25rem;
     overflow-wrap: anywhere;
     white-space: wrap;
     word-break: break-all;
 }
-
-
-.freshItem {
-    border-radius: 0.8ch;
-    outline-width: 0.15rem;
-    outline-color: var(--button-border);
-}
-.freshItem[data-selected="true"] {
+.input[data-selected] {
     background-color: var(--field);
     color: var(--field-text);
     outline-style: solid;
+    outline-width: 0.15rem;
+    outline-color: var(--button-border);
+    border-radius: 0.8ch;
 }
-.freshItem[data-focus="true"] {
+.input:focus {
+    outline-style: solid;
     outline-width: 0.2rem;
     outline-color: var(--highlight-text);
 }
+
+/* .freshItem { */
+/*     border-radius: 0.8ch; */
+/*     outline-width: 0.15rem; */
+/*     outline-color: var(--button-border); */
+/* } */
+/* .freshItem[data-selected="true"] { */
+/*     background-color: var(--field); */
+/*     color: var(--field-text); */
+/*     /\* outline-style: solid; *\/ */
+/* } */
+/* .freshItem[data-focus="true"] { */
+/*     outline-width: 0.2rem; */
+/*     outline-color: var(--highlight-text); */
+/* } */

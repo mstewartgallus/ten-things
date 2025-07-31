@@ -96,7 +96,7 @@ export const FreshEdit = ({
         ? <form id={formId} action={formAction} className={styles.inputForm}>
            <Input name="title" value={value} maxLength={300} required
                onFocus={onFocus} onBlur={onBlur}
-               className={styles.input} aria-label="title"
+               className={styles.input} aria-label="title" data-selected={selected}
             />
           </form>
         : <div className={styles.input}>{value ?? '...'}</div>;
@@ -115,7 +115,7 @@ export const FreshEdit = ({
     return <div className={styles.item}>
             <div className={styles.marker}>{listItemMarker}</div>
 
-            <div className={styles.freshItem} data-focus={focus} data-selected={selected}>
+            <div className={styles.freshItem} data-focus={focus}>
                 <div className={styles.inputWrapper}>
                     <div className={styles.disclosureButton}>
                         {disclosureButton}

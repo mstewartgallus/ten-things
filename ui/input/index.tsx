@@ -51,6 +51,7 @@ const getElement = async () => {
         static observedAttributes = ['name', 'value', 'maxlength', 'required'];
 
         #internals: ElementInternals;
+        #shadowRoot?: ShadowRoot;
         #root: HTMLElement | null = null;
 
         constructor() {
@@ -65,6 +66,7 @@ const getElement = async () => {
             const slot = document.createElement('slot');
             shadowRoot.appendChild(slot);
             shadowRoot.adoptedStyleSheets.push(styleSheet);
+            this.#shadowRoot = shadowRoot;
             this.#root = slot;
         }
 
@@ -78,7 +80,9 @@ const getElement = async () => {
                 return;
             }
             return createPortal(
-                <InputInternalsProvider internals={this.#internals}>
+                <InputInternalsProvider
+                    internals={this.#internals}
+                    shadowRoot={this.#shadowRoot!}>
                     {node}
                 </InputInternalsProvider>,
                 root);
@@ -142,6 +146,8 @@ type Props =
 
     className?: string;
     "aria-label"?: string;
+
+    "data-selected"?: boolean;
 }
 
 const Inner = (props: Props) => {
