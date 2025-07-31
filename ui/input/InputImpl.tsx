@@ -27,9 +27,27 @@ export const InputInternalsProvider = ({
     </InputInternalsContext>;
 };
 
-const select = (shadowRoot: ShadowRoot, node: Node, offset: number) => {
-    shadowRoot.getSelection()!.collapse(node, offset);
+// FIXME.. do something better
+declare global {
+    interface ShadowRoot {
+        getSelection?: () => Selection;
+    }
 }
+
+const select = (shadowRoot: ShadowRoot, node: Node, offset: number) => {
+    if (shadowRoot.getSelection) {
+        shadowRoot.getSelection()!.collapse(node, offset);
+    }
+    throw Error("no shadowroot selection polyfill");
+}
+
+const getCaret = (shadowRoot: ShadowRoot) => {
+    if (shadowRoot.getSelection) {
+        const range = shadowRoot.getSelection().getRangeAt(0);
+        return [range.startOffset, range.endOffset];
+    }
+    throw Error("no shadowroot selection polyfill");
+};
 
 interface ImplProps {
     name?: string;
@@ -67,11 +85,6 @@ export const InputImpl = ({
         internals.setFormValue(value ?? '');
     }, [internals, value]);
 
-    const getCaret = useCallback(() => {
-        const range = shadowRoot.getSelection().getRangeAt(0);
-        return [range.startOffset, range.endOffset];
-    }, [shadowRoot]);
-
     const changeAction = useCallback(async (
         value: string,
         selectionStart: number
@@ -82,36 +95,36 @@ export const InputImpl = ({
 
 
     const backspaceAction = useCallback(async () => {
-        let [selectionStart, selectionEnd] = getCaret();
+        let [selectionStart, selectionEnd] = getCaret(shadowRoot);
         if (selectionStart === selectionEnd) {
             selectionStart -= 1;
         }
         const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
         changeAction(newValue, selectionStart);
-    }, [value]);
+    }, [shadowRoot, value]);
 
     const deleteAction = useCallback(async () => {
-        let [selectionStart, selectionEnd] = getCaret();
+        let [selectionStart, selectionEnd] = getCaret(shadowRoot);
         if (selectionStart === selectionEnd) {
             selectionEnd += 1;
         }
         const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
         changeAction(newValue, selectionStart);
-    }, [value]);
+    }, [shadowRoot, value]);
 
     const inputAction = useCallback(async (
         data: string
     ) => {
         data = data.replace('\n', ' ');
 
-        const [selectionStart, selectionEnd] = getCaret();
+        const [selectionStart, selectionEnd] = getCaret(shadowRoot);
         const newValue =
             value.substring(0, selectionStart) +
             data +
             value.substring(selectionEnd);
         const newSelection = selectionStart + data.length;
         await changeAction(newValue, newSelection);
-    }, [changeAction, value]);
+    }, [shadowRoot, changeAction, value]);
 
     const onBeforeInput = useCallback((e: InputEvent<HTMLDivElement>) => {
         e.preventDefault();
