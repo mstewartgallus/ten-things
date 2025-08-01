@@ -36,28 +36,30 @@
 .inputWrapper {
     display: flow-root;
 }
-.input {
+
+/* FIXME: covers over button */
+.input::part(input-wrapper) {
+    /* position: relative; */
+}
+
+.input::part(input-inner) {
+    all: unset;
+}
+
+.title, .input::part(input) {
     all: unset;
     display: block;
-
     box-sizing: border-box;
     padding-inline: 1ch;
     padding-block: calc(0.5 * var(--line));
-
-    font-size: 1.25rem;
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
-    word-break: break-all;
-}
-/* FIXME */
-.input::part(input) {
-    all: unset;
-    display: block;
-    white-space: pre-wrap;
-    min-block-size: var(--line);
+    min-block-size: calc(2 * var(--line));
     caret-color: var(--highlight-text);
     cursor: text;
+    font-size: 1.25rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
+
 .input::part(error-anchor) {
     position: absolute;
     bottom: 0;
@@ -65,7 +67,7 @@
     width: 1px;
     height: 1px;
 }
-.input[data-selected] {
+.input::part(input) {
     background-color: var(--field);
     color: var(--field-text);
     outline-style: solid;

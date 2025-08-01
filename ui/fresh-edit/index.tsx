@@ -93,13 +93,13 @@ export const FreshEdit = ({
             <Icon>{selected ? '🗙' : emptyValue ? '+' : '✎'}</Icon>
         </Button>;
     const disclosure = selected
-        ? <form id={formId} action={formAction} className={styles.inputForm}>
+        ? <form id={formId} action={formAction}>
            <Input name="title" value={value} maxLength={300} required
                onFocus={onFocus} onBlur={onBlur}
-               className={styles.input} aria-label="title" data-selected={selected}
+               className={styles.input} aria-label="title"
             />
           </form>
-        : <div className={styles.input}>{value ?? '...'}</div>;
+        : <div className={styles.title}>{value ?? '...'}</div>;
 
     const completeButton = selected
         ? <Button form={formId} disabled={disabled} aria-label="Edit Thing">

@@ -3,29 +3,10 @@
 import type { ReactNode, Ref, KeyboardEvent, InputEvent, ClipboardEvent } from "react";
 import { createPortal } from "react-dom";
 import {
-    createContext,
-    useContext,
     useEffect,
-    useImperativeHandle,
     useCallback, useMemo, useRef, useState
 } from "react";
 
-interface Context {
-    internals: ElementInternals;
-    shadowRoot: ShadowRoot;
-}
-const InputInternalsContext = createContext<Context | null>(null);
-
-export const InputInternalsProvider = ({
-    children, internals, shadowRoot
-}: { children: ReactNode } & Context) => {
-    const context = useMemo(
-        () => ({ internals, shadowRoot }),
-        [internals, shadowRoot]);
-    return <InputInternalsContext value={context}>
-        {children}
-    </InputInternalsContext>;
-};
 
 // FIXME.. do something better
 declare global {
@@ -34,7 +15,8 @@ declare global {
     }
 }
 
-const select = (shadowRoot: ShadowRoot, node: Node, offset: number) => {
+const select = (node: Node, offset: number) => {
+    const shadowRoot = node.getRootNode();
     if (shadowRoot.getSelection) {
         shadowRoot.getSelection()!.collapse(node, offset);
         return;
@@ -42,7 +24,8 @@ const select = (shadowRoot: ShadowRoot, node: Node, offset: number) => {
     throw Error("no shadowroot selection polyfill");
 }
 
-const getCaret = (shadowRoot: ShadowRoot) => {
+const getCaret = (node: Node) => {
+    const shadowRoot = node.getRootNode();
     // FIXME make work in Firefox
     if (shadowRoot.getSelection) {
         const range = shadowRoot.getSelection().getRangeAt(0);
@@ -52,6 +35,7 @@ const getCaret = (shadowRoot: ShadowRoot) => {
 };
 
 interface ImplProps {
+    internals: ElementInternals;
     name?: string;
     value?: string;
     maxLength?: number;
@@ -59,16 +43,13 @@ interface ImplProps {
 }
 
 export const InputImpl = ({
+    internals,
     name: initName,
     value: initValue,
     maxLength: initMaxLength,
     required = false
 }: ImplProps) => {
-    const context = useContext(InputInternalsContext);
-    if (!context) {
-        throw Error("no context");
-    }
-    const { internals, shadowRoot } = context;
+    const ref = useRef<HTMLDivElement>(null);
 
     const [name, setName] = useState<string | null>(initName ?? null);
     const [value, setValue] = useState<string>(initValue ?? '');
@@ -76,11 +57,7 @@ export const InputImpl = ({
     const [selectionStart, setSelectionStart] = useState<number | null>(null);
 
     useEffect(() => {
-        internals.role = 'textbox';
-    }, [internals]);
-
-    useEffect(() => {
-        internals.ariaRequired = required.toString();
+        internals.required = required.toString();
     }, [internals, required]);
 
     useEffect(() => {
@@ -95,38 +72,37 @@ export const InputImpl = ({
         setSelectionStart(selectionStart);
     }, []);
 
-
     const backspaceAction = useCallback(async () => {
-        let [selectionStart, selectionEnd] = getCaret(shadowRoot);
+        let [selectionStart, selectionEnd] = getCaret(ref.current!);
         if (selectionStart === selectionEnd) {
             selectionStart -= 1;
         }
         const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
         changeAction(newValue, selectionStart);
-    }, [shadowRoot, value]);
+    }, [value]);
 
     const deleteAction = useCallback(async () => {
-        let [selectionStart, selectionEnd] = getCaret(shadowRoot);
+        let [selectionStart, selectionEnd] = getCaret(ref.current!);
         if (selectionStart === selectionEnd) {
             selectionEnd += 1;
         }
         const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
         changeAction(newValue, selectionStart);
-    }, [shadowRoot, value]);
+    }, [value]);
 
     const inputAction = useCallback(async (
         data: string
     ) => {
         data = data.replace('\n', ' ');
 
-        const [selectionStart, selectionEnd] = getCaret(shadowRoot);
+        const [selectionStart, selectionEnd] = getCaret(ref.current!);
         const newValue =
             value.substring(0, selectionStart) +
             data +
             value.substring(selectionEnd);
         const newSelection = selectionStart + data.length;
         await changeAction(newValue, newSelection);
-    }, [shadowRoot, changeAction, value]);
+    }, [changeAction, value]);
 
     const onBeforeInput = useCallback((e: InputEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -178,6 +154,10 @@ export const InputImpl = ({
     const errorRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        if (!internals) {
+            return;
+        }
+
         const messages = [];
         const flags: ValidityStateFlags = {
             valueMissing: required && value.length === 0,
@@ -198,7 +178,6 @@ export const InputImpl = ({
             errorRef.current!);
     }, [internals, required, value]);
 
-    const ref = useRef<HTMLDivElement>(null);
     const textRef = useRef<Text>(null);
     useEffect(() => {
         const elem = ref.current!;
@@ -206,18 +185,21 @@ export const InputImpl = ({
 
         elem.appendChild(text);
         if (selectionStart && selectionStart >= 0) {
-            select(shadowRoot, text, selectionStart);
+            select(text, selectionStart);
         }
         return () => {
             elem.removeChild(text);
         };
-    }, [shadowRoot, value, selectionStart]);
+    }, [value, selectionStart]);
 
-    // FIXME handle cut event
-    return <div className="inputWrapper">
-           <div part="input" ref={ref} onBeforeInput={onBeforeInput}
-           onPaste={onPaste} onKeyDown={onKeyDown} inputMode="text"
-           tabIndex={0} contentEditable={true} suppressContentEditableWarning={true} />
+    return <div part="input-wrapper">
+           <div part="input">
+              <slot>
+                  <div part="input-inner" ref={ref} onBeforeInput={onBeforeInput}
+                      onPaste={onPaste} onKeyDown={onKeyDown} inputMode="text"
+                      tabIndex={0} contentEditable={true} suppressContentEditableWarning={true} />
+              </slot>
+           </div>
            <div ref={errorRef} part="error-anchor" />
         </div>;
 };

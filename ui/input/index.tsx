@@ -5,16 +5,39 @@ import type {
     HTMLAttributes,
     StrictMode, ReactNode, Ref, RefObject
 } from "react";
-import { createContext, useContext, createElement, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { InputImpl, InputInternalsProvider } from "./InputImpl";
+import {
+    createContext, useCallback,
+    useContext, createElement, useEffect, useRef, useState
+} from "react";
+import { Portal } from "../Portal";
+import { InputImpl } from "./InputImpl";
 
 interface CustomConstructor {
     new (): HTMLElement;
 }
 
 const useCustomElement = (name: string, getCustomElement: () => Promise<CustomConstructor>) => {
+    const [defined, setDefined] = useState(false);
+
     useEffect(() => {
+        if (defined) {
+            return;
+        }
+
+        if (customElements.get(name)) {
+            return;
+        }
+
+        customElements.whenDefined(name, () => {
+            setDefined(true);
+        });
+    }, [defined]);
+
+    useEffect(() => {
+        if (defined) {
+            return;
+        }
+
         (async () => {
             const custom = await getCustomElement();
             if (customElements.get(name)) {
@@ -22,32 +45,37 @@ const useCustomElement = (name: string, getCustomElement: () => Promise<CustomCo
             }
             customElements.define(name, custom);
         })();
-    }, [getCustomElement]);
+    }, [defined, getCustomElement]);
+
+    return defined;
 };
 
+
 export interface TenInputElement extends HTMLElement {
-    createPortal(node: ReactNode): ReactNode;
+
 }
 
-const styleSheetSrc = `
-.inputWrapper {
-    position: relative;
+interface TenConnectedEvent extends CustomEvent {
+    detail: {
+        internals: ElementInternals;
+    }
+    currentTarget: TenInputElement;
 }
-`;
 
 const filter = (value: string) => value === 'maxlength' ? 'maxLength' : value;
 
 const getElement = async () => {
-    const styleSheet = new CSSStyleSheet();
-    await styleSheet.replace(styleSheetSrc);
+    class ImplTenConnectedEvent extends CustomEvent implements TenConnectedEvent {
+        constructor(internals: ElementInternals) {
+            super('TenConnected', { detail: { internals } });
+        }
+    }
 
     return class ImplTenInputElement extends HTMLElement implements TenInputElement {
         static formAssociated = true;
         static observedAttributes = ['name', 'value', 'maxlength', 'required'];
 
         #internals: ElementInternals;
-        #shadowRoot?: ShadowRoot;
-        #root: HTMLElement | null = null;
 
         constructor() {
             super();
@@ -55,37 +83,10 @@ const getElement = async () => {
         }
 
         connectedCallback() {
-            if (!this.getAttribute('tabindex')) {
-                this.setAttribute('tabindex', '0');
-            }
-            // Insert into the slot as default to implement flicker
-            // free rendering
-            const shadowRoot = this.attachShadow({
-                mode: 'closed'
+            // FIXME... not sure this is quite right
+            queueMicrotask(() => {
+                this.dispatchEvent(new ImplTenConnectedEvent(this.#internals));
             });
-            const slot = document.createElement('slot');
-            shadowRoot.appendChild(slot);
-            shadowRoot.adoptedStyleSheets.push(styleSheet);
-            this.#shadowRoot = shadowRoot;
-            this.#root = slot;
-        }
-
-        disconnectedCallback() {
-            this.#root = null;
-        }
-
-        createPortal(node: ReactNode) {
-            const root = this.#root;
-            if (!root) {
-                return;
-            }
-            return createPortal(
-                <InputInternalsProvider
-                    internals={this.#internals}
-                    shadowRoot={this.#shadowRoot!}>
-                    {node}
-                </InputInternalsProvider>,
-                root);
         }
 
         set name(v: string | null) {
@@ -123,18 +124,15 @@ const getElement = async () => {
             return parseInt(attr);
         }
 
-        get form() { return this.#internals.form; }
-        get validity() { return this.#internals.validity; }
-        get validationMessage() { return this.#internals.validationMessage; }
-        get willValidate() { return this.#internals.willValidate; }
+        get form() { return this.internals.form; }
+        get validity() { return this.internals.validity; }
+        get validationMessage() { return this.internals.validationMessage; }
+        get willValidate() { return this.internals.willValidate; }
 
-        checkValidity() { return this.#internals.checkValidity(); }
-        reportValidity() { return this.#internals.reportValidity(); }
+        checkValidity() { return this.internals.checkValidity(); }
+        reportValidity() { return this.internals.reportValidity(); }
     };
 };
-
-const InputContext = createContext<TenInputElement | null>(null);
-InputContext.displayName = `InputContext`;
 
 type Props =
     DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
@@ -150,37 +148,34 @@ type Props =
     "data-selected"?: boolean;
 }
 
-const Inner = (props: Props) => {
-    const inputElement = useContext(InputContext);
-    if (!inputElement) {
-        throw Error("no input element context");
-    }
-
-    const [mounted, setMounted] = useState<boolean>(false);
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    return <>
-        { inputElement.createPortal(<InputImpl {...props} />) }
-        { !mounted && props.value}
-    </>;
-};
-
 export const Input = (props: Props) => {
     useCustomElement('ten-input', getElement);
 
-    const [mounted, setMounted] = useState<boolean>(false);
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const [attached, setAttached] = useState(false);
 
     const ref = useRef<TenInputElement>(null);
-    return createElement('ten-input', {
-        ...props,
-        ref,
-        children: mounted
-            ? <InputContext value={ref.current!}><Inner {...props} /></InputContext>
-            : props.value
-    });
+    const internalsRef = useRef<ElementInternals>(null);
+    const shadowRootRef = useRef<ShadowRoot>(null);
+
+    const onTenConnected = useCallback((e: TenConnectedEvent) => {
+        const elem = e.currentTarget;
+        const internals = e.detail.internals;
+        const shadowRoot = elem.attachShadow({ mode: 'closed' });
+
+        internals.role = 'textbox';
+
+        ref.current = elem;
+        internalsRef.current = internals;
+        shadowRootRef.current = shadowRoot;
+        setAttached(true);
+    }, []);
+
+    return <ten-input {...props} onTenConnected={onTenConnected}>
+        {
+            attached &&
+                <Portal domNode={shadowRootRef.current}>
+                   <InputImpl {...props} internals={internalsRef.current} />
+                </Portal>
+        }
+        </ten-input>;
 };
