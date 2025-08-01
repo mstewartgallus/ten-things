@@ -81,7 +81,6 @@ export interface FreshHandle {
     select(): Promise<void>;
 
     drag(): Promise<void>;
-    dragEnd(): Promise<void>;
     drop(): Promise<void>;
 }
 

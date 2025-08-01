@@ -152,7 +152,7 @@ export const tenSlice = createSlice({
             }),
         dragEnd: create.preparedReducer(
             () => ({ payload: null }),
-            ({ ui }: PayloadAction<null>) => {
+            ({ ui }) => {
                 ui.dragId = undefined;
             }),
 

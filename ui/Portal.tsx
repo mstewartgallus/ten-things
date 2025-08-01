@@ -3,10 +3,10 @@ import { createPortal } from "react-dom";
 
 interface Props {
     readonly children: ReactNode;
-    readonly domNode?: Node;
+    readonly domNode?: Element | DocumentFragment;
 }
 
-export const Portal = ({ children, domNode }: PortalProps) => {
+export const Portal = ({ children, domNode }: Props) => {
     if (!domNode) {
         return;
     }

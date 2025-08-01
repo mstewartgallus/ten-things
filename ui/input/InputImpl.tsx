@@ -17,7 +17,7 @@ declare global {
 
 const select = (node: Node, offset: number) => {
     const shadowRoot = node.getRootNode();
-    if (shadowRoot.getSelection) {
+    if (shadowRoot instanceof ShadowRoot && shadowRoot.getSelection) {
         shadowRoot.getSelection()!.collapse(node, offset);
         return;
     }
@@ -27,7 +27,7 @@ const select = (node: Node, offset: number) => {
 const getCaret = (node: Node) => {
     const shadowRoot = node.getRootNode();
     // FIXME make work in Firefox
-    if (shadowRoot.getSelection) {
+    if (shadowRoot instanceof ShadowRoot && shadowRoot.getSelection) {
         const range = shadowRoot.getSelection().getRangeAt(0);
         return [range.startOffset, range.endOffset];
     }
@@ -57,7 +57,7 @@ export const InputImpl = ({
     const [selectionStart, setSelectionStart] = useState<number | null>(null);
 
     useEffect(() => {
-        internals.required = required.toString();
+        internals.ariaRequired = required.toString();
     }, [internals, required]);
 
     useEffect(() => {
