@@ -19,10 +19,25 @@ interface Props {
     readonly dragging: boolean;
 
     readonly dragStartAction?: () => Promise<void>;
+    readonly dragEndAction?: () => Promise<void>;
 }
 
-export const DragButton = ({ disabled, children, dragging, dragStartAction }: Props) => {
-    const onClick = useMemo(() => {
+export const DragButton = ({ disabled, children, dragging, dragStartAction, dragEndAction }: Props) => {
+    const onClickDragEnd = useMemo(() => {
+        if (!dragEndAction) {
+            return;
+        }
+        return async (e: MouseEvent<HTMLButtonElement>) => {
+            if (e.button !== 0) {
+                return;
+            }
+            console.log('drag end');
+            e.preventDefault();
+            await dragEndAction();
+        };
+    }, [dragEndAction]);
+
+    const onClickDragStart = useMemo(() => {
         if (!dragStartAction) {
             return;
         }
@@ -30,10 +45,12 @@ export const DragButton = ({ disabled, children, dragging, dragStartAction }: Pr
             if (e.button !== 0) {
                 return;
             }
+            console.log('drag start');
             e.preventDefault();
             await dragStartAction();
         };
     }, [dragStartAction]);
+    const onClick = dragging ? dragEndAction : dragStartAction;
 
     const [pointerDown, setPointerDown] = useState(false);
     const onPointerDown = useCallback((e: PointerEvent<HTMLButtonElement>) => {
@@ -46,6 +63,9 @@ export const DragButton = ({ disabled, children, dragging, dragStartAction }: Pr
         if (!e.isPrimary) {
             return;
         }
+        setPointerDown(false);
+    }, []);
+    const onPointerLeave = useCallback(() => {
         setPointerDown(false);
     }, []);
 
@@ -73,6 +93,7 @@ export const DragButton = ({ disabled, children, dragging, dragStartAction }: Pr
                  onPointerMove={onPointerMove}
                  onPointerDown={onPointerDown}
                  onPointerUp={onPointerUp}
+                 onPointerLeave={onPointerLeave}
                  onClick={onClick} {...toDataProps(state)}>
                  {children}
             </RawButton>

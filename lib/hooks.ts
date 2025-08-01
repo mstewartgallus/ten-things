@@ -23,6 +23,7 @@ import {
     selectDragging,
 
     drag,
+    dragEnd,
     drop,
     select,
     deselect,
@@ -38,7 +39,7 @@ const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 // FIXME setup a separate thing for each page?
 export interface TenHandle {
     deselect(): Promise<void>;
-    // dragEnd(): Promise<void>;
+    dragEnd(): Promise<void>;
 }
 
 export const useTen = (ref: Ref<TenHandle>) => {
@@ -49,6 +50,9 @@ export const useTen = (ref: Ref<TenHandle>) => {
     useImperativeHandle(ref, () => ({
         deselect: async () => {
             await dispatch(deselect());
+        },
+        dragEnd: async () => {
+            await dispatch(dragEnd());
         }
     }), [dispatch]);
 
@@ -77,6 +81,7 @@ export interface FreshHandle {
     select(): Promise<void>;
 
     drag(): Promise<void>;
+    dragEnd(): Promise<void>;
     drop(): Promise<void>;
 }
 

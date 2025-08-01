@@ -74,9 +74,10 @@ const MaybeEntry = ({
 interface ItemProps {
     anyDragging: boolean;
     deselectAction?: () => Promise<void>;
+    dragEndAction?: () => Promise<void>;
 }
 
-const Item = ({ anyDragging, deselectAction }: ItemProps) => {
+const Item = ({ anyDragging, deselectAction, dragEndAction }: ItemProps) => {
     const index = useItem();
     const fsh = useRef<FreshHandle>(null);
     const { item, selected, dragging } = useFresh(fsh, index);
@@ -97,8 +98,10 @@ const Item = ({ anyDragging, deselectAction }: ItemProps) => {
             <DropButton action={dropAction} />
             <MaybeEntry
                 listItemMarker={
-                    <DragButton disabled={anyDragging}
-                        dragging={dragging} dragStartAction={dragStartAction}>
+                    <DragButton disabled={anyDragging && !dragging} dragging={dragging}
+                    dragStartAction={dragStartAction}
+                    dragEndAction={dragEndAction}
+                        >
                         <div className={styles.grabberIcon}>&</div>
                     </DragButton>}
                     disabled={anyDragging}
@@ -117,6 +120,9 @@ const TenFresh = () => {
     const deselectAction = useCallback(async () => {
         await ref.current!.deselect();
     }, []);
+    const dragEndAction = useCallback(async () => {
+        await ref.current!.dragEnd();
+    }, []);
 
     const keyAt = useCallback((index: number) => {
         const item = freshAtId(index);
@@ -126,7 +132,7 @@ const TenFresh = () => {
 
     return <ul role="list" className={styles.list}>
             <List length={freshLength} keyAt={keyAt}>
-                <Item anyDragging={dragging} deselectAction={deselectAction} />
+               <Item anyDragging={dragging} deselectAction={deselectAction} dragEndAction={dragEndAction} />
             </List>
         </ul>;
 };

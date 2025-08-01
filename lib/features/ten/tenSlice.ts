@@ -150,6 +150,11 @@ export const tenSlice = createSlice({
                 ui.dragId = id;
                 ui.selectionId = undefined;
             }),
+        dragEnd: create.preparedReducer(
+            () => ({ payload: null }),
+            ({ ui }: PayloadAction<null>) => {
+                ui.dragId = undefined;
+            }),
 
         // Not sure if this is a sensible way of organizing things
         drop: create.preparedReducer(
@@ -218,6 +223,7 @@ export const {
     deselect,
 
     drag,
+    dragEnd,
     drop
 } = tenSlice.actions;
 
