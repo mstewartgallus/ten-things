@@ -62,6 +62,7 @@ interface TenConnectedEvent extends CustomEvent<{ internals: ElementInternals }>
 
 interface TenInputElementAttributes extends HTMLAttributes<TenInputElement> {
     onTenConnected?: (event: TenConnectedEvent) => void;
+    value?: string;
 }
 
 // FIXME...
@@ -186,11 +187,18 @@ export const Input = (props: Props) => {
         startTransition(() => setAttached(true));
     }, [connected]);
 
-    return <ten-input {...props} ref={ref} onTenConnected={onTenConnected}>
+    const [value, setValue] = useState(props.value);
+    const [selectionStart, setSelectionStart] = useState<number | null>(null);
+    const changeAction = useCallback(async (value: string, selectionStart: number) => {
+        setValue(value);
+        setSelectionStart(selectionStart);
+    }, []);
+
+    return <ten-input {...props} value={value} ref={ref} onTenConnected={onTenConnected}>
         {
             attached &&
                 createPortal(
-                    <InputImpl {...props} internals={internalsRef.current!} />,
+                    <InputImpl {...props} value={value} selectionStart={selectionStart ?? undefined} internals={internalsRef.current!} changeAction={changeAction} />,
                     shadowRootRef.current!)
         }
     </ten-input>;

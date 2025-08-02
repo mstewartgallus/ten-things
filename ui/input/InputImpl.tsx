@@ -37,24 +37,26 @@ const getCaret = (node: Node) => {
 interface ImplProps {
     internals: ElementInternals;
     name?: string;
-    value?: string;
     maxLength?: number;
     required?: boolean;
+
+    value?: string;
+    selectionStart?: number;
+
+    changeAction?: (value: string, selectionStart: number) => Promise<void>;
 }
 
 export const InputImpl = ({
     internals,
-    name: initName,
-    value: initValue,
-    maxLength: initMaxLength,
-    required = false
+    name,
+    value = '',
+    selectionStart,
+    maxLength,
+    required = false,
+
+    changeAction
 }: ImplProps) => {
     const ref = useRef<HTMLDivElement>(null);
-
-    const [name, setName] = useState<string | null>(initName ?? null);
-    const [value, setValue] = useState<string>(initValue ?? '');
-    const [maxLength, setMaxLength] = useState<number | null>(initMaxLength ?? null);
-    const [selectionStart, setSelectionStart] = useState<number | null>(null);
 
     useEffect(() => {
         internals.ariaRequired = required.toString();
@@ -64,64 +66,75 @@ export const InputImpl = ({
         internals.setFormValue(value ?? '');
     }, [internals, value]);
 
-    const changeAction = useCallback(async (
-        value: string,
-        selectionStart: number
-    ) => {
-        setValue(value);
-        setSelectionStart(selectionStart);
-    }, []);
-
-    const backspaceAction = useCallback(async () => {
-        let [selectionStart, selectionEnd] = getCaret(ref.current!);
-        if (selectionStart === selectionEnd) {
-            selectionStart -= 1;
+    const backspaceAction = useMemo(() => {
+        if (!changeAction) {
+            return;
         }
-        const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
-        changeAction(newValue, selectionStart);
+        return async () => {
+            let [selectionStart, selectionEnd] = getCaret(ref.current!);
+            if (selectionStart === selectionEnd) {
+                selectionStart -= 1;
+            }
+            const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
+            await changeAction(newValue, selectionStart);
+        };
     }, [value]);
 
-    const deleteAction = useCallback(async () => {
-        let [selectionStart, selectionEnd] = getCaret(ref.current!);
-        if (selectionStart === selectionEnd) {
-            selectionEnd += 1;
+    const deleteAction = useMemo(() => {
+        if (!changeAction) {
+            return;
         }
-        const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
-        changeAction(newValue, selectionStart);
+        return async () => {
+            let [selectionStart, selectionEnd] = getCaret(ref.current!);
+            if (selectionStart === selectionEnd) {
+                selectionEnd += 1;
+            }
+            const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
+            await changeAction(newValue, selectionStart);
+        };
     }, [value]);
 
-    const inputAction = useCallback(async (
-        data: string
-    ) => {
-        data = data.replace('\n', ' ');
+    const inputAction = useMemo(() => {
+        if (!changeAction) {
+            return;
+        }
+        return async (data: string) => {
+            data = data.replace('\n', ' ');
 
-        const [selectionStart, selectionEnd] = getCaret(ref.current!);
-        const newValue =
-            value.substring(0, selectionStart) +
-            data +
-            value.substring(selectionEnd);
-        const newSelection = selectionStart + data.length;
-        await changeAction(newValue, newSelection);
+            const [selectionStart, selectionEnd] = getCaret(ref.current!);
+            const newValue =
+                value.substring(0, selectionStart) +
+                data +
+                value.substring(selectionEnd);
+            const newSelection = selectionStart + data.length;
+            await changeAction(newValue, newSelection);
+        }
     }, [changeAction, value]);
 
-    const onBeforeInput = useCallback((e: InputEvent<HTMLDivElement>) => {
-        e.preventDefault();
-
+    const onBeforeInput = useMemo(() => {
         if (!inputAction) {
             return;
         }
+        return (e: InputEvent<HTMLDivElement>) => {
+            e.preventDefault();
 
-        inputAction(e.data);
+            if (!inputAction) {
+                return;
+            }
+
+            inputAction(e.data);
+        };
     }, [inputAction]);
 
-    const onPaste = useCallback((e: ClipboardEvent<HTMLDivElement>) => {
-        e.preventDefault();
-
+    const onPaste = useMemo(() => {
         if (!inputAction) {
             return;
         }
 
-        inputAction(e.clipboardData.getData('text'));
+        return (e: ClipboardEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            inputAction(e.clipboardData.getData('text'));
+        };
     }, [inputAction]);
 
     // FIXME handle deletion better, also cut
@@ -143,10 +156,14 @@ export const InputImpl = ({
                 break;
 
             case 'Backspace':
-                backspaceAction();
+                if (backspaceAction) {
+                    backspaceAction();
+                }
                 break;
             case 'Delete':
-                deleteAction();
+                if (deleteAction) {
+                    deleteAction();
+                }
                 break;
         }
     }, [internals, backspaceAction, deleteAction]);
