@@ -1,4 +1,5 @@
 .bag {
     display: flex;
+    margin-inline: 1em;
     gap: 3em;
 }

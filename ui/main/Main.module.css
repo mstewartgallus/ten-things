@@ -1,0 +1,4 @@
+.main {
+    margin-block-start: calc(2 * var(--line));
+    margin-block-end: calc(4 * var(--line));
+}

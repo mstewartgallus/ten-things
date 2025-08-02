@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { useCallback, useRef } from "react";
 import type { Store } from "redux";
 import type { Cursor, HtmlHandle } from "@/ui";
-import { UiProvider, A, Bag, Html, Body, Main, Nav, Footer } from "@/ui";
+import { UiProvider, A, Bag, H2, Html, Header, Body, Main, Nav, SkipA, Footer } from "@/ui";
 import { LibProvider, StoreProvider } from "@/lib";
 import { persistStore } from "redux-persist";
 
@@ -62,6 +62,7 @@ const RootLayout = ({ children }: Props) => {
                 <Bag>
                     <A href="/">Fresh Things</A>
                     <A href="/complete">Complete Things</A>
+                    <SkipA href="#footer">Skip to Footer</SkipA>
                 </Bag>
             </Nav>
             <Main>
@@ -74,6 +75,9 @@ const RootLayout = ({ children }: Props) => {
                 </StoreProvider>
             </Main>
             <Footer>
+                <Header>
+                   <H2><A id="footer" href="#footer">About This Website</A></H2>
+                </Header>
                 <Bag>
                     <A href="/about">About Ten Things</A>
                 </Bag>

@@ -13,6 +13,7 @@ export { Footer } from "./footer";
 export { Nav } from "./nav";
 export { Bag } from "./bag";
 export { P } from "./p";
+export { SkipA } from "./skip-a";
 export { Section } from "./section";
 export { Time } from "./time";
 

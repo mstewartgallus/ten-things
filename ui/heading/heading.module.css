@@ -7,6 +7,7 @@
     color: var(--emphasis-text);
     font-variant-numeric: proportional-nums lining-nums;
     border-radius: 0.001ch;
+    margin-inline: 1em;
 }
 
 .heading1 {
