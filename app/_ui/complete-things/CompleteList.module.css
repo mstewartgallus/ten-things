@@ -5,10 +5,10 @@
 .list {
     display: flex;
     flex-direction: column;
+    gap:  var(--line);
 }
 .item {
     display: flex;
-    margin-block: calc(0.5 * var(--line));
 }
 
 .tick {
