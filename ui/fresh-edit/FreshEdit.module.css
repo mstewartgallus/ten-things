@@ -1,16 +1,13 @@
 .item {
+    flex-grow: 1;
     display: grid;
     align-items: center;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto;
     grid-template-rows: auto 1fr auto;
     grid-template-areas:
-        "marker title    title"
-        ".      title    title"
-        ".      metadata widgets";
-}
-
-.marker {
-    grid-area: marker;
+        "title    title"
+        "title    title"
+        "metadata widgets";
 }
 .metadata {
     grid-area: metadata;

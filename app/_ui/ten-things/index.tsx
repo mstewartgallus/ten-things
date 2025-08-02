@@ -26,7 +26,6 @@ const Heading = () => {
 };
 
 interface EntryProps {
-    listItemMarker: ReactNode;
     id: EntryId;
     disabled: boolean;
     selected: boolean;
@@ -49,7 +48,6 @@ const Entry = ({ id, ...props }: EntryProps) => {
 
 
 interface MaybeEntryProps {
-    listItemMarker: ReactNode;
     id?: EntryId;
     disabled: boolean;
     selected: boolean;
@@ -96,15 +94,13 @@ const Item = ({ anyDragging, deselectAction, dragEndAction }: ItemProps) => {
 
     return <li role="listitem" className={styles.item}>
             <DropButton action={dropAction} />
-            <MaybeEntry
-                listItemMarker={
-                    <DragButton disabled={anyDragging && !dragging} dragging={dragging}
-                    dragStartAction={dragStartAction}
-                    dragEndAction={dragEndAction}
-                        >
-                        <div className={styles.grabberIcon}>&</div>
-                    </DragButton>}
-                    disabled={anyDragging}
+            <div className={styles.itemMarker}>
+                <DragButton disabled={anyDragging && !dragging} dragging={dragging}
+                    dragStartAction={dragStartAction} dragEndAction={dragEndAction}>
+                    <div className={styles.grabberIcon}>&</div>
+                </DragButton>
+            </div>
+            <MaybeEntry disabled={anyDragging}
                     id={id} selected={selected}
                     createAction={createAction}
                     toggleAction={toggleAction}

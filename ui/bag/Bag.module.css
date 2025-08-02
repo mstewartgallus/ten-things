@@ -1,5 +1,16 @@
 .bag {
     display: flex;
-    margin-inline: 1em;
     gap: 3em;
+}
+
+@media screen {
+    .bag {
+        margin-inline-start: calc(1.5 * var(--s));
+        margin-inline-end: calc(0.5 * var(--s));
+    }
+}
+
+.bag {
+    /* default ratio on browsers is 1rem = 16px */
+    --s: clamp(0rem, (1600vw - 600rem) / 100, 1rem) ;
 }

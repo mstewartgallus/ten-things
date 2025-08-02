@@ -4,7 +4,10 @@ import type { ReactNode } from "react";
 import { useCallback, useRef } from "react";
 import type { Store } from "redux";
 import type { Cursor, HtmlHandle } from "@/ui";
-import { UiProvider, A, Bag, H2, Html, Header, Body, Main, Nav, SkipA, Footer } from "@/ui";
+import {
+    UiProvider, A, Bag, H2, Html, Header, Body, Main, Nav, SkipA,
+    SubtleA, Footer, P
+} from "@/ui";
 import { LibProvider, StoreProvider } from "@/lib";
 import { persistStore } from "redux-persist";
 
@@ -76,11 +79,11 @@ const RootLayout = ({ children }: Props) => {
             </Main>
             <Footer>
                 <Header>
-                   <H2><A id="footer" href="#footer">About This Website</A></H2>
+                    <H2>
+                        <SubtleA id="footer" href="#footer">About This Website</SubtleA>
+                    </H2>
                 </Header>
-                <Bag>
-                    <A href="/about">About Ten Things</A>
-                </Bag>
+                <P>Just a little demo app by Molly Stewart-Gallus.</P>
             </Footer>
          </Body>
     </Html>;

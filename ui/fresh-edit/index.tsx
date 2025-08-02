@@ -16,7 +16,6 @@ import styles from "./FreshEdit.module.css";
 const iff = <T,>(cond: boolean, val: T) => cond ? val : undefined;
 
 interface Props {
-    listItemMarker: ReactNode;
     children?: ReactNode;
 
     disabled: boolean;
@@ -32,7 +31,6 @@ interface Props {
 }
 
 export const FreshEdit = ({
-    listItemMarker,
     children,
 
     disabled,
@@ -113,8 +111,6 @@ export const FreshEdit = ({
         </form>;
 
     return <div className={styles.item}>
-            <div className={styles.marker}>{listItemMarker}</div>
-
             <div className={styles.freshItem} data-focus={focus}>
                 <div className={styles.inputWrapper}>
                     <div className={styles.disclosureButton}>

@@ -7,7 +7,6 @@
     color: var(--emphasis-text);
     font-variant-numeric: proportional-nums lining-nums;
     border-radius: 0.001ch;
-    margin-inline: 1em;
 }
 
 .heading1 {
@@ -16,4 +15,16 @@
 
 .heading2 {
     font-size: 1.25rem;
+}
+
+@media screen {
+    .heading, .heading1, .heading2 {
+        margin-inline-start: calc(1.5 * var(--s));
+        margin-inline-end: calc(0.5 * var(--s));
+    }
+}
+
+.heading, .heading1, .heading2 {
+    /* default ratio on browsers is 1rem = 16px */
+    --s: clamp(0rem, (1600vw - 600rem) / 100, 1rem) ;
 }
