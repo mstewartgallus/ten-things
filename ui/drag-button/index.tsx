@@ -9,7 +9,7 @@ import { withClass } from "../with-class";
 import styles from './DragButton.module.css';
 
 export const RawButton =
-    withClass<HTMLButtonElement, JSX.IntrinsicElements["button"]>(
+    withClass<JSX.IntrinsicElements["button"]>(
         'button',
         styles.button);
 

@@ -7,30 +7,27 @@ import { componentName } from "./component-name";
 
 const j = (x: string, y: string) => [x, y].join(' ');
 
-interface Props<T> {
+interface Props {
     className?: string;
 }
 
-const withClassImpl: <T, P extends Props<T>>(
+const withClassImpl: <P extends Props,>(
     Component: ElementType<P>,
     className: string
-) => ComponentType<P> = <T, P extends Props<T>>(
+) => ComponentType<P> = <P extends Props,>(
     Component: ElementType<P>,
     className: string
 ) => (props: P) => {
     const clazz = props.className ?? '';
     const theClass = j(clazz, className);
-    return createElement(Component, {
-        ...props,
-        className: theClass
-    });
+    return createElement(Component, { ...props, className: theClass });
 };
 
-export const withClass = <T, P extends Props<T>>(
+export const withClass = <P extends Props,>(
     Component: ElementType<P>,
     className: string
 ) => {
-    const Classy = withClassImpl<T, P>(Component, className);
+    const Classy = withClassImpl(Component, className);
     const name = componentName(Component);
     Classy.displayName = `.${className}(${name})`;
     return Classy;

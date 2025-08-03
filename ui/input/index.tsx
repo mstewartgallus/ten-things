@@ -281,7 +281,7 @@ export const Input = (props: Props) => {
 
     const getInternals = useCallback(() => ref.current!.internals, []);
     const dispatchEvent = useCallback(
-        (e: NativeEvent) => {
+        (e: Event) => {
             return ref.current!.dispatchEvent(e);
         }, []);
 

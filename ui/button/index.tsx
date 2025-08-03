@@ -8,7 +8,7 @@ import styles from "./Button.module.css";
 
 type Props = JSX.IntrinsicElements["button"];
 
-const RawButton = withClass<HTMLButtonElement, Props>('button', styles.button);
+const RawButton = withClass<Props>('button', styles.button);
 
 export const Button = ({children, ...props}: Props) => {
     const { state, cb } = useWrap();

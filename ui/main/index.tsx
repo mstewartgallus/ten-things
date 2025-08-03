@@ -7,7 +7,7 @@ import styles from "./Main.module.css";
 
 type Props = JSX.IntrinsicElements['main'];
 
-const RawMain = withClass('main', styles.main);
+const RawMain = withClass<Props>('main', styles.main);
 
 export const Main = ({ children, ...props }: Props) => {
     const id = useId();
