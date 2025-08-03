@@ -9,9 +9,6 @@
     max-inline-size: 40em;
     position: relative;
 }
-.itemMarker {
-    margin-inline-start: -1em;
-}
 
 .grabberIcon {
     user-select: none;

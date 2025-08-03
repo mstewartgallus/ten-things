@@ -60,6 +60,9 @@ export const FreshEdit = ({
     }, [toggleAction]);
 
     const [focus, setFocus] = useState(false);
+    if (!selected && focus) {
+        setFocus(false);
+    }
 
     const formAction = useMemo(() => {
         if (!changeAction) {
@@ -94,10 +97,10 @@ export const FreshEdit = ({
         ? <form id={formId} action={formAction}>
            <Input name="title" value={value} maxLength={300} required
                onFocus={onFocus} onBlur={onBlur}
-               className={styles.input} aria-label="title"
+               aria-label="title"
             />
           </form>
-        : <div className={styles.title}>{value ?? '...'}</div>;
+        : value ?? '...';
 
     const completeButton = selected
         ? <Button form={formId} disabled={disabled} aria-label="Edit Thing">
@@ -112,12 +115,12 @@ export const FreshEdit = ({
 
     return <div className={styles.item}>
             <div className={styles.freshItem} data-focus={focus}>
-                <div className={styles.inputWrapper}>
+              <div className={styles.inputWrapper} data-selected={selected} data-focus={focus}>
                     <div className={styles.disclosureButton}>
                         {disclosureButton}
                     </div>
 
-                    <div id={controlId}>
+                    <div id={controlId} className={styles.title}>
                         {disclosure}
                     </div>
                 </div>

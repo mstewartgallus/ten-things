@@ -17,8 +17,6 @@
     /* Make the caret seeable with caret browsing?  Need to figure out */
     /* a better UX here/experiment on different platforms */
     caret-color: var(--highlight-text) ;
-
-    padding-inline-start: 1em;
 }
 
 /* Debug text grid */

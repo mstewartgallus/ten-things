@@ -34,50 +34,35 @@
     display: flow-root;
 }
 
-/* FIXME: covers over button */
-.input::part(input-wrapper) {
-    /* position: relative; */
-}
-
-.input::part(input-inner) {
-    all: unset;
-}
-
-.title, .input::part(input) {
-    all: unset;
-    display: block;
-    box-sizing: border-box;
-    padding-inline: 1ch;
-    padding-block: calc(0.5 * var(--line));
-    min-block-size: calc(2 * var(--line));
-    caret-color: var(--highlight-text);
-    cursor: text;
-    font-size: 1.25rem;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-}
-
-.input::part(error-anchor) {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 1px;
-    height: 1px;
-}
-.input::part(input) {
+.inputWrapper[data-selected="true"] {
     background-color: var(--field);
-    color: var(--field-text);
     outline-style: solid;
     outline-width: 0.15rem;
     outline-color: var(--button-border);
     border-radius: 0.8ch;
 }
-.input:focus {
+
+.inputWrapper[data-focus="true"] {
     outline-style: solid;
     outline-width: 0.2rem;
     outline-color: var(--highlight-text);
 }
 
-.input:invalid {
+.inputWrapper[data-selected="true"]:invalid {
     outline-color: red;
+}
+
+.input::part(input) {
+    color: var(--field-text);
+}
+
+.title {
+    all: unset;
+    display: block;
+    box-sizing: border-box;
+    font-size: 1.25rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    padding-inline: 1ch;
+    padding-block: calc(0.5 * var(--line));
 }

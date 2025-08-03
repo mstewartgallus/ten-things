@@ -1,36 +1,30 @@
 "use client";
 
-import type { ReactNode, Ref, KeyboardEvent, InputEvent, ClipboardEvent } from "react";
+type NativeEvent = Event;
+type NativeInputEvent = InputEvent;
+type NativeClipboardEvent = ClipboardEvent;
+type NativeKeyboardEvent = KeyboardEvent;
+
+import type { ReactNode, Ref, UIEvent, KeyboardEvent, InputEvent, ClipboardEvent } from "react";
 import { createPortal } from "react-dom";
 import {
     useEffect,
     useCallback, useMemo, useRef, useState
 } from "react";
 
-
-// FIXME.. do something better
-declare global {
-    interface ShadowRoot {
-        getSelection?: () => Selection;
-    }
+export interface TenInputElement extends HTMLElement {
+    internals: ElementInternals;
+    form: HTMLFormElement | null;
 }
 
 const select = (node: Node, offset: number) => {
     document.getSelection()!.collapse(node, offset);
 }
 
-const getCaret = (node: Node) => {
-    const shadowRoot = node.getRootNode();
-    // FIXME make work in Firefox
-    if (shadowRoot instanceof ShadowRoot && shadowRoot.getSelection) {
-        const range = shadowRoot.getSelection().getRangeAt(0);
-        return [range.startOffset, range.endOffset];
-    }
-    throw Error("no shadowroot selection method");
-};
-
 interface ImplProps {
-    internals: ElementInternals;
+    getInternals(): ElementInternals;
+    dispatchEvent(e: NativeEvent): boolean;
+
     name?: string;
     maxLength?: number;
     required?: boolean;
@@ -42,7 +36,9 @@ interface ImplProps {
 }
 
 export const InputImpl = ({
-    internals,
+    getInternals,
+    dispatchEvent,
+
     name,
     value = '',
     selectionStart,
@@ -53,123 +49,34 @@ export const InputImpl = ({
 }: ImplProps) => {
     const ref = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        internals.ariaRequired = required.toString();
-    }, [internals, required]);
-
-    useEffect(() => {
-        internals.setFormValue(value ?? '');
-    }, [internals, value]);
-
-    const backspaceAction = useMemo(() => {
-        if (!changeAction) {
-            return;
-        }
-        return async () => {
-            let [selectionStart, selectionEnd] = getCaret(ref.current!);
-            if (selectionStart === selectionEnd) {
-                selectionStart -= 1;
-            }
-            const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
-            await changeAction(newValue, selectionStart);
-        };
-    }, [value]);
-
-    const deleteAction = useMemo(() => {
-        if (!changeAction) {
-            return;
-        }
-        return async () => {
-            let [selectionStart, selectionEnd] = getCaret(ref.current!);
-            if (selectionStart === selectionEnd) {
-                selectionEnd += 1;
-            }
-            const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
-            await changeAction(newValue, selectionStart);
-        };
-    }, [value]);
-
-    const inputAction = useMemo(() => {
-        if (!changeAction) {
-            return;
-        }
-        return async (data: string) => {
-            data = data.replace('\n', ' ');
-
-            const [selectionStart, selectionEnd] = getCaret(ref.current!);
-            const newValue =
-                value.substring(0, selectionStart) +
-                data +
-                value.substring(selectionEnd);
-            const newSelection = selectionStart + data.length;
-            await changeAction(newValue, newSelection);
-        }
-    }, [changeAction, value]);
-
-    const onBeforeInput = useMemo(() => {
-        if (!inputAction) {
-            return;
-        }
-        return (e: InputEvent<HTMLDivElement>) => {
+    const onBeforeInput = useCallback((e: InputEvent<HTMLDivElement>) => {
+        const event = e.nativeEvent;
+        if (!dispatchEvent(new InputEvent(event.type, event))) {
             e.preventDefault();
-
-            if (!inputAction) {
-                return;
-            }
-
-            inputAction(e.data);
-        };
-    }, [inputAction]);
-
-    const onPaste = useMemo(() => {
-        if (!inputAction) {
-            return;
         }
-
-        return (e: ClipboardEvent<HTMLDivElement>) => {
+    }, [dispatchEvent]);
+    const onInput = useCallback((e: InputEvent<HTMLDivElement>) => {
+        const event = e.nativeEvent;
+        if (!dispatchEvent(new InputEvent(event.type, event))) {
             e.preventDefault();
-            inputAction(e.clipboardData.getData('text'));
-        };
-    }, [inputAction]);
-
-    // FIXME handle deletion better, also cut
+        }
+    }, [dispatchEvent]);
     const onKeyDown = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
-        const { key } = e;
-        if (key !== 'Enter' && key !== 'Backspace' && key !== 'Delete') {
-            return;
+        const event = e.nativeEvent;
+        if (!dispatchEvent(new KeyboardEvent(event.type, event))) {
+            e.preventDefault();
         }
-        e.preventDefault();
-
-        switch (key) {
-            case 'Enter':
-                const { form } = internals;
-                if (!form) {
-                    return;
-                }
-
-                form.requestSubmit();
-                break;
-
-            case 'Backspace':
-                if (backspaceAction) {
-                    backspaceAction();
-                }
-                break;
-            case 'Delete':
-                if (deleteAction) {
-                    deleteAction();
-                }
-                break;
+    }, [dispatchEvent]);
+    const onPaste = useCallback((e: ClipboardEvent<HTMLDivElement>) => {
+        const event = e.nativeEvent;
+        if (!dispatchEvent(new ClipboardEvent(event.type, event))) {
+            e.preventDefault();
         }
-    }, [internals, backspaceAction, deleteAction]);
+    }, [dispatchEvent]);
 
     const errorRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        if (!internals) {
-            return;
-        }
-
         const messages = [];
         const flags: ValidityStateFlags = {
             valueMissing: required && value.length === 0,
@@ -184,12 +91,15 @@ export const InputImpl = ({
             messages.push('Too long value');
         }
 
-        internals.setValidity(
+        getInternals().setValidity(
             flags,
             messages.join('\n'),
             errorRef.current!);
-    }, [internals, required, value]);
+    }, [getInternals, required, value]);
 
+    useEffect(() => {
+        getInternals().setFormValue(value);
+    }, [getInternals, value]);
     const textRef = useRef<Text>(null);
     useEffect(() => {
         const elem = ref.current!;
@@ -203,15 +113,18 @@ export const InputImpl = ({
             elem.removeChild(text);
         };
     }, [value, selectionStart]);
-
-    return <div part="input-wrapper">
+    return <>
            <div part="input">
               <slot>
-                  <div part="input-inner" ref={ref} onBeforeInput={onBeforeInput}
-                      onPaste={onPaste} onKeyDown={onKeyDown} inputMode="text"
-                      tabIndex={0} contentEditable={true} suppressContentEditableWarning={true} />
+                 <div part="input-inner" ref={ref}
+                      onBeforeInput={onBeforeInput}
+                      onInput={onInput}
+                      onPaste={onPaste}
+                      onKeyDown={onKeyDown}
+    inputMode="text"
+                      contentEditable={true} />
               </slot>
            </div>
            <div ref={errorRef} part="error-anchor" />
-        </div>;
+        </>;
 };
