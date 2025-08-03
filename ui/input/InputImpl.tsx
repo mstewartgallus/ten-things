@@ -16,12 +16,7 @@ declare global {
 }
 
 const select = (node: Node, offset: number) => {
-    const shadowRoot = node.getRootNode();
-    if (shadowRoot instanceof ShadowRoot && shadowRoot.getSelection) {
-        shadowRoot.getSelection()!.collapse(node, offset);
-        return;
-    }
-    throw Error("no shadowroot selection polyfill");
+    document.getSelection()!.collapse(node, offset);
 }
 
 const getCaret = (node: Node) => {
@@ -31,7 +26,7 @@ const getCaret = (node: Node) => {
         const range = shadowRoot.getSelection().getRangeAt(0);
         return [range.startOffset, range.endOffset];
     }
-    throw Error("no shadowroot selection polyfill");
+    throw Error("no shadowroot selection method");
 };
 
 interface ImplProps {
