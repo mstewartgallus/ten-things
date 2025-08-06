@@ -94,3 +94,9 @@
 .inputWrapper[data-selected="true"]:invalid {
     outline-color: red;
 }
+
+@media print {
+    .disclosureButton, .widgets {
+        display: none;
+    }
+}
