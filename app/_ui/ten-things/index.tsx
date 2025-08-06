@@ -1,12 +1,11 @@
 'use client';
 
 import type { EntryId, TenHandle, FreshHandle, EntryHandle } from '@/lib';
-import type { ReactNode } from 'react';
 
 import { useCallback, useRef } from 'react';
 import { DragButton, DropButton, MainLabel,
          FreshEdit,
-         List, useItem, Time,
+         List, useItem,
          H1, Header } from '@/ui';
 import { useTen, useFresh, useEntry } from '@/lib';
 
@@ -39,11 +38,7 @@ const Entry = ({ id, ...props }: EntryProps) => {
 
     const changeAction = useCallback(async (value: string) => await entryRef.current!.change(value), []);
 
-    const created = entry && entry.created;
-
-    return <FreshEdit entry={entry} changeAction={changeAction} {...props}>
-        {created ? <>Created: <Time>{created}</Time></> : null}
-    </FreshEdit>;
+    return <FreshEdit entry={entry} changeAction={changeAction} {...props} />;
 };
 
 
