@@ -8,11 +8,11 @@ const fontSize = (size: number) => {
         return 540;
     }
 
-    if (size <= 192) {
+    if (size >= 192) {
         return 160;
     }
 
-    if (size <= 32) {
+    if (size >= 32) {
         return 24;
     }
 
