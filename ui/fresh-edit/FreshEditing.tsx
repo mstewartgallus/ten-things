@@ -207,8 +207,7 @@ export const FreshEditing = ({
                 </Button>
         }
         title={
-            <div className={styles.inputWrapper}>
-                    <div ref={ref}
+            <div ref={ref}
                         className={styles.input}
                         inputMode="text"
                         role="textbox"
@@ -223,7 +222,6 @@ export const FreshEditing = ({
                         onBlur={onBlur}
                         >
                         {value}
-                    </div>
                 </div>
         }
         completeButton={

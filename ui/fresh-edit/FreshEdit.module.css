@@ -40,8 +40,8 @@
     font-size: 1.25rem;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
-    padding-inline: 1ch;
-    padding-block: calc(0.5 * var(--line));
+    margin-inline: 1ch;
+    margin-block: calc(0.5 * var(--line));
 }
 
 .input {
@@ -56,10 +56,6 @@
 
 .inputWrapper {
     all: unset;
-    display: inline;
-}
-
-.inputWrapper {
     display: flow-root;
 }
 
