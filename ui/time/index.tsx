@@ -2,6 +2,8 @@
 
 import { useMemo } from 'react';
 
+import styles from "./Time.module.css";
+
 interface TimeProps {
     children: number;
 };
@@ -19,5 +21,5 @@ export const Time = ({ children }: TimeProps) => {
         const utc = date.toUTCString();
         return { formatted, utc };
     }, [children]);
-    return <time dateTime={utc}>{formatted}</time>;
+    return <time className={styles.time} dateTime={utc}>{formatted}</time>;
 };
