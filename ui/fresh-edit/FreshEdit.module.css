@@ -20,7 +20,7 @@
 }
 
 .disclosureButton {
-    float: left;
+    float: inline-start;
     display: flex;
     align-items: start;
 }
@@ -54,6 +54,20 @@
 
     margin-inline: 1ch;
     margin-block: calc(0.5 * var(--line));
+}
+
+.info {
+    float: inline-end;
+    margin-block-start: calc(0.5 * var(--line));
+    margin-inline-end: 1ch;
+    font-size: 1rem;
+    min-inline-size: 5em;
+    min-block-size: var(--line);
+    text-align: end;
+}
+
+.titleLabel {
+    display: none;
 }
 
 

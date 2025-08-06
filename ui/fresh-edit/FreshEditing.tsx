@@ -61,9 +61,26 @@ export const FreshEditing = ({
     }, [toggleAction]);
 
     const [focus, setFocus] = useState(false);
-    const [invalid, setInvalid] = useState(false);
     const [value, setValue] = useState(initialValue);
     const [selection, setSelection] = useState<number | null>(null);
+
+    const errorMessages = useMemo(() => {
+        const messages = []
+        const valueMissing = value.length === 0;
+        const tooLong = !!maxLength && value.length >= maxLength;
+
+        if (valueMissing) {
+            // FIXME put cleaner error messages
+            messages.push('Thing title is required');
+        }
+        if (tooLong) {
+            // FIXME put cleaner error messages
+            messages.push('Thing title is too long');
+        }
+        return messages;
+    }, [value, maxLength]);
+
+    const invalid = errorMessages.length > 0;
 
     const onFocus = useCallback(async () => startTransition(() => setFocus(true)), []);
     const onBlur = useCallback(async () => startTransition(() => setFocus(false)), []);
@@ -156,28 +173,6 @@ export const FreshEditing = ({
         }
     }, [invalid, backspaceAction, deleteAction]);
 
-    useEffect(() => {
-        const messages = [];
-        const valueMissing = value.length === 0;
-        const tooLong = !!maxLength && value.length >= maxLength;
-
-        if (valueMissing) {
-            // FIXME put cleaner error messages
-            messages.push('Thing title is required');
-        }
-        if (tooLong) {
-            // FIXME put cleaner error messages
-            messages.push('Thing title is too long');
-        }
-
-        setInvalid(messages.length > 0);
-
-        const elem = buttonRef.current;
-        if (!elem) {
-            return;
-        }
-        elem.setCustomValidity(messages.join('\n'));
-    }, [maxLength, value]);
 
     // FIXME do this on focus...
     useEffect(() => {
@@ -192,9 +187,9 @@ export const FreshEditing = ({
         sel.collapse(elem.firstChild, selection);
     }, [selection]);
 
-    const id = useId();
-    const { controlId } = useFresh();
+    const { controlId, infoId } = useFresh();
     return <FreshLayout
+        formAction={formAction}
         selected={true}
         focus={focus}
         titleButton={
@@ -206,12 +201,16 @@ export const FreshEditing = ({
                 <Icon>🗙</Icon>
                 </Button>
         }
+        info={<>{value.length} / {maxLength}</>}
+        titleLabel={initialValue}
         title={
             <div ref={ref}
                         className={styles.input}
                         inputMode="text"
                         role="textbox"
+                        aria-label="Title"
                         aria-disabled={disabled}
+                        aria-describedby={infoId}
                         aria-required={true}
                         aria-invalid={invalid}
                         contentEditable={!disabled} suppressContentEditableWarning={true}
@@ -222,14 +221,12 @@ export const FreshEditing = ({
                         onBlur={onBlur}
                         >
                         {value}
-                </div>
+            </div>
         }
         completeButton={
-            <form id={id} action={formAction}>
-                    <Button ref={buttonRef} disabled={disabled} aria-label="Edit Thing">
-                        <Icon>D</Icon>
-                    </Button>
-                </form>
+            <Button ref={buttonRef} disabled={disabled || invalid} aria-label="Edit Thing">
+                <Icon>D</Icon>
+            </Button>
         }
         >
         {children}

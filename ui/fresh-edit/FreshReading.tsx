@@ -45,6 +45,7 @@ export const FreshReading = ({
     const { controlId } = useFresh();
     const id = useId();
     return <FreshLayout
+            formAction={emptyValue ? undefined : completeAction}
             titleButton={
                 <Button aria-label={emptyValue ? 'Create Thing' : 'Edit Thing'}
                     disabled={disabled || !onClick}
@@ -57,11 +58,9 @@ export const FreshReading = ({
             title={<div className={styles.notedit}>{value ?? '...'}</div>}
             completeButton={
                 completeAction
-                    && <form id={id} action={completeAction}>
-                        <Button disabled={disabled} aria-label="Archive Thing">
+                    && <Button disabled={disabled} aria-label="Archive Thing">
                             <Icon>✔</Icon>
                         </Button>
-                    </form>
             }>
             {children}
     </FreshLayout>;

@@ -1,13 +1,17 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { createContext, useContext, useId } from 'react';
+import { createContext, useContext, useMemo, useId } from 'react';
 
-const FreshContext = createContext<string | null>(null);
+interface Context {
+    controlId?: string;
+    infoId?: string;
+}
+
+const FreshContext = createContext<Context>({ });
 
 export const useFresh = () => {
-    const controlId = useContext(FreshContext) ?? undefined;
-    return { controlId };
+    return useContext(FreshContext);
 };
 
 interface Props {
@@ -16,5 +20,7 @@ interface Props {
 
 export const FreshProvider = ({ children }: Props) => {
     const controlId = useId();
-    return <FreshContext value={controlId}>{children}</FreshContext>;
+    const infoId = useId();
+    const context = useMemo(() => ({ controlId, infoId }), [controlId, infoId]);
+    return <FreshContext value={context}>{children}</FreshContext>;
 }
