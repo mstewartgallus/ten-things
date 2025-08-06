@@ -54,7 +54,7 @@ export const FreshReading = ({
                     <Icon>{emptyValue ? '+' : '✎'}</Icon>
                 </Button>
             }
-            title={value ?? '...'}
+            title={<div className={styles.notedit}>{value ?? '...'}</div>}
             completeButton={
                 completeAction
                     && <form id={id} action={completeAction}>

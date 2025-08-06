@@ -40,19 +40,22 @@
     font-size: 1.25rem;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+}
+
+
+.input {
+    all: unset;
+    display: block;
+    caret-color: var(--highlight-text);
+    cursor: text;
+}
+.input, .notedit {
+    box-sizing: border-box;
+
     margin-inline: 1ch;
     margin-block: calc(0.5 * var(--line));
 }
 
-.input {
-    all: unset;
-    display: inline;
-    box-sizing: border-box;
-    caret-color: var(--highlight-text);
-    cursor: text;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-}
 
 .inputWrapper {
     all: unset;
