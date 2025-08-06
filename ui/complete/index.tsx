@@ -11,7 +11,9 @@ interface Props {
 
 export const Complete = ({ value, created, completed }: Props) =>
     <>
-        <P>{value}</P>
+        <div className={styles.complete}>
+          <P>{value}</P>
+        </div>
         <div className={styles.dates}>
             <span>Created: <Time>{created}</Time></span>
             <span>Completed: <Time>{completed}</Time></span>

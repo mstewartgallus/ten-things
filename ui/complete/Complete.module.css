@@ -1,6 +1,8 @@
 .complete {
     /* display: flex; */
     /* flex-direction: column; */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
 }
 
 .dates {
