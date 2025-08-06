@@ -7,7 +7,7 @@ const CompletePage = () =>
     <>
        <MainLabel>
            <Header>
-               <H1>Complete Things</H1>
+               <H1>Archived Things</H1>
            </Header>
        </MainLabel>
        <CompleteThings />
@@ -16,5 +16,5 @@ const CompletePage = () =>
 export default CompletePage;
 
 export const metadata: Metadata = {
-  title: "Complete Things"
+  title: "Archived Things"
 };

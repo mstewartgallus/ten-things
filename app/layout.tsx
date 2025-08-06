@@ -64,7 +64,7 @@ const RootLayout = ({ children }: Props) => {
             <Nav>
                 <Bag>
                     <A href="/">Fresh Things</A>
-                    <A href="/complete">Complete Things</A>
+                    <A href="/archive">Archived Things</A>
                     <SkipA href="#footer">Skip to Footer</SkipA>
                 </Bag>
             </Nav>

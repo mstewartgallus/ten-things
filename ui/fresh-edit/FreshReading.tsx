@@ -58,7 +58,7 @@ export const FreshReading = ({
             completeButton={
                 completeAction
                     && <form id={id} action={completeAction}>
-                        <Button disabled={disabled} aria-label="Complete Thing" value="complete">
+                        <Button disabled={disabled} aria-label="Archive Thing">
                             <Icon>✔</Icon>
                         </Button>
                     </form>
