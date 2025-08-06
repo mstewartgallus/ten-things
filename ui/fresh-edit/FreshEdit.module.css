@@ -29,6 +29,35 @@
     flex-grow: 1;
 }
 
+.input {
+    color: var(--field-text);
+}
+
+.title {
+    all: unset;
+    display: block;
+    box-sizing: border-box;
+    font-size: 1.25rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    padding-inline: 1ch;
+    padding-block: calc(0.5 * var(--line));
+}
+
+.input {
+    all: unset;
+    display: inline;
+    box-sizing: border-box;
+    caret-color: var(--highlight-text);
+    cursor: text;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.inputWrapper {
+    all: unset;
+    display: inline;
+}
 
 .inputWrapper {
     display: flow-root;
@@ -36,6 +65,7 @@
 
 .inputWrapper[data-selected="true"] {
     background-color: var(--field);
+    color: var(--field-text);
     outline-style: solid;
     outline-width: 0.15rem;
     outline-color: var(--button-border);
@@ -50,19 +80,4 @@
 
 .inputWrapper[data-selected="true"]:invalid {
     outline-color: red;
-}
-
-.input::part(input) {
-    color: var(--field-text);
-}
-
-.title {
-    all: unset;
-    display: block;
-    box-sizing: border-box;
-    font-size: 1.25rem;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    padding-inline: 1ch;
-    padding-block: calc(0.5 * var(--line));
 }
