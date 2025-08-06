@@ -5,9 +5,13 @@
 }
 .item {
     all: unset;
-    display: flex;
+    display: flow-root;
     max-inline-size: 40em;
     position: relative;
+    padding-inline-start: 1ch;
+}
+.itemMarker {
+    float: inline-start;
 }
 
 .grabberIcon {

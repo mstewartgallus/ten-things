@@ -23,9 +23,7 @@ const CompleteItem = () => {
 
     // const entry = entryAtId(item.id);
     return <li role="listitem" className={styles.item}>
-            <div className={styles.tick}>
-               —
-            </div>
+           <div className={styles.marker}>—</div>
            <CompleteComponent value={value} created={created} completed={completed} />
         </li>;
 };

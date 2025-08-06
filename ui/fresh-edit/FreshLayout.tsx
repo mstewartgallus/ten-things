@@ -50,11 +50,11 @@ export const FreshLayout = ({
                     <div id={controlId} className={styles.title} data-selected={selected}>
                         {title}
                     </div>
-                 </div>
-            </div>
 
-            <div className={styles.widgets}>
-                {completeButton}
+                     <div className={styles.widgets}>
+                         {completeButton}
+                     </div>
+                </div>
             </div>
 
             <div className={styles.metadata}>

@@ -87,7 +87,7 @@ const Item = ({ anyDragging, deselectAction, dragEndAction }: ItemProps) => {
 
     const toggleAction = iff(!selected, selectAction) ?? deselectAction;
 
-    return <li role="listitem" className={styles.item}>
+    return <li role="listitem" className={styles.item} data-selected={selected}>
             <DropButton action={dropAction} />
             <div className={styles.itemMarker}>
                 <DragButton disabled={anyDragging && !dragging} dragging={dragging}

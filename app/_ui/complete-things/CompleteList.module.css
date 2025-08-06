@@ -5,14 +5,20 @@
 .list {
     display: flex;
     flex-direction: column;
-    gap:  var(--line);
-}
-.item {
-    display: flex;
+    gap: var(--line);
 }
 
-.tick {
+.item {
+    display: flow-root;
+}
+
+.marker {
+    float: inline-start;
     color: var(--emphasis-text);
     font-size: 1.5625rem;
     margin-inline: calc(0.5 * var(--line));
+}
+
+.content {
+
 }

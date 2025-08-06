@@ -11,6 +11,7 @@ import { FreshProvider } from "./FreshProvider";
 import { FreshEditing } from "./FreshEditing";
 import { FreshReading } from "./FreshReading";
 import { Time } from "../time";
+import { P } from "../p";
 
 interface ViewProps {
     children: ReactNode;
@@ -44,7 +45,7 @@ export const FreshEdit = (props: Props) => {
      return <FreshProvider>
             <FreshView {...props}>
         {
-            created && <>Created: <Time>{created}</Time></>
+            created && <P>Created: <Time>{created}</Time></P>
         }
             </FreshView>
          </FreshProvider>;
