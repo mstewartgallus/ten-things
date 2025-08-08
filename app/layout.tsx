@@ -84,6 +84,7 @@ const RootLayout = ({ children }: Props) => {
                     </H2>
                 </Header>
                 <P>Just a little demo app by Molly Stewart-Gallus.</P>
+                <P><A href="https://mstewartgallus.github.io/select-webapp">Select another app.</A></P>
             </Footer>
          </Body>
     </Html>;
