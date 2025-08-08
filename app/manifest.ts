@@ -6,7 +6,7 @@ const manifest: () => MetadataRoute.Manifest = () => ({
     name: 'Ten Things',
     short_name: 'Ten',
     description: 'A minimalist todo list app',
-    start_url: process.env.PAGES_BASE_PATH,
+    scope: process.env.PAGES_BASE_PATH,
     display: 'standalone',
     background_color: '#1A0F00',
     theme_color: '#FFEEDD',
