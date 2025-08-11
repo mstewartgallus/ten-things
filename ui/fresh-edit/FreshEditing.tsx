@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode, ClipboardEvent, KeyboardEvent, InputEvent, MouseEvent } from "react";
+import type { Ref, ReactNode, ClipboardEvent, KeyboardEvent, InputEvent, MouseEvent } from "react";
 import type { Entry } from '@/lib';
 import {
     useTransition, useCallback, useImperativeHandle, useMemo,
@@ -13,13 +13,62 @@ import { Icon } from "../icon";
 
 import styles from "./FreshEdit.module.css";
 
-const getCaret = () => {
-    const selection = window.getSelection();
-    if (!selection) {
-        return [0, 0];
-    }
-    const range = selection.getRangeAt(0);
-    return [range.startOffset, range.endOffset];
+interface Modifiers {
+    altKey: boolean;
+    ctrlKey: boolean;
+    metaKey: boolean;
+    shiftKey: boolean;
+}
+
+interface CaretHandle {
+    focus(): void;
+}
+
+interface CaretProps {
+    ref: Ref<CaretHandle>;
+    disabled: boolean;
+
+    // FIXME... make work async
+    keyAction?: (key: string, modifiers: Readonly<Modifiers>) => boolean;
+    inputAction?: (data: string) => Promise<void>;
+
+    focusAction?: () => Promise<void>;
+    blurAction?: () => Promise<void>;
+}
+
+const Caret = ({
+    ref: handleRef,
+    disabled,
+    keyAction, inputAction,
+    focusAction, blurAction
+}: CaretProps) => {
+    const ref = useRef<HTMLSpanElement>(null);
+    useImperativeHandle(handleRef, () => ({
+        focus() {
+            ref.current!.focus();
+        }
+    }), []);
+    const onBeforeInput = useCallback((event: InputEvent<HTMLSpanElement>) => {
+        event.preventDefault();
+        inputAction?.(event.data);
+    }, [inputAction]);
+    const onPaste = useCallback((e: ClipboardEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        inputAction?.(e.clipboardData.getData('text'));
+    }, [inputAction]);
+    const onKeyDown = useCallback((event: KeyboardEvent<HTMLSpanElement>) => {
+        const { shiftKey, altKey, ctrlKey, metaKey } = event;
+        if (!keyAction?.(event.key, { shiftKey, altKey, metaKey, ctrlKey })) {
+            event.preventDefault();
+        }
+    }, [keyAction]);
+    return <span className={styles.caret} ref={ref}
+       inputMode="text"
+       contentEditable={!disabled} suppressContentEditableWarning={true}
+       onBeforeInput={onBeforeInput}
+       onPaste={onPaste}
+       onKeyDown={onKeyDown}
+       onFocus={focusAction} onBlur={blurAction} />;
 };
 
 interface Props {
@@ -62,7 +111,7 @@ export const FreshEditing = ({
 
     const [focus, setFocus] = useState(false);
     const [value, setValue] = useState(initialValue);
-    const [selection, setSelection] = useState<number | null>(null);
+    const [selection, setSelection] = useState<number>(0);
 
     const errorMessages = useMemo(() => {
         const messages = []
@@ -82,11 +131,11 @@ export const FreshEditing = ({
 
     const invalid = errorMessages.length > 0;
 
-    const onFocus = useCallback(async () => startTransition(() => setFocus(true)), []);
-    const onBlur = useCallback(async () => startTransition(() => setFocus(false)), []);
+    const focusAction = useCallback(async () => startTransition(() => setFocus(true)), []);
+    const blurAction = useCallback(async () => startTransition(() => setFocus(false)), []);
 
     const buttonRef = useRef<HTMLButtonElement>(null);
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<CaretHandle>(null);
 
     const formAction = useMemo(() => {
         if (!changeAction) {
@@ -102,90 +151,64 @@ export const FreshEditing = ({
         setSelection(selection);
     }, []);
 
+    const leftAction = useCallback(async () => {
+        setSelection(Math.max(selection - 1, 0));
+    }, [selection]);
+    const rightAction = useCallback(async () => {
+        setSelection(Math.min(selection + 1, value.length));
+    }, [selection, value]);
+
     const backspaceAction = useCallback(async () => {
-        let [selectionStart, selectionEnd] = getCaret();
-        if (selectionStart === selectionEnd) {
-            selectionStart -= 1;
-        }
-        if (selectionStart < 0) {
-            selectionStart = 0;
-        }
-        const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
-        await edit(newValue, selectionStart);
-    }, [value, edit]);
+        const pos = Math.max(selection - 1, 0);
+        const newValue = value.substring(0, pos) + value.substring(selection);
+        await edit(newValue, pos);
+    }, [value, edit, selection]);
 
     const deleteAction = useCallback(async () => {
-        let [selectionStart, selectionEnd] = getCaret();
-        if (selectionStart === selectionEnd) {
-            selectionEnd += 1;
-        }
-        if (selectionEnd >= value.length) {
-            selectionEnd = value.length;
-        }
-        const newValue = value.substring(0, selectionStart) + value.substring(selectionEnd);
-        await edit(newValue, selectionStart);
-    }, [value, edit]);
+        const newValue = value.substring(0, selection) + value.substring(selection + 1);
+        await edit(newValue, selection);
+    }, [value, edit, selection]);
 
     const inputAction = useCallback(async (data: string) => {
         data = data.replace('\n', ' ');
 
-        const [selectionStart, selectionEnd] = getCaret();
         const newValue =
-            value.substring(0, selectionStart) +
+            value.substring(0, selection) +
             data +
-            value.substring(selectionEnd);
-        await edit(newValue, selectionStart + data.length);
-    }, [value, edit]);
-
-    const onBeforeInput = useCallback((e: InputEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        inputAction(e.data);
-    }, [inputAction]);
-
-    const onPaste = useCallback((e: ClipboardEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        inputAction(e.clipboardData.getData('text'));
-    }, [inputAction]);
+            value.substring(selection);
+        await edit(newValue, selection + data.length);
+    }, [value, edit, selection]);
 
     // FIXME handle deletion better, also cut
-    const onKeyDown = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
-        const { key } = e;
-        if (key !== 'Enter' && key !== 'Backspace' && key !== 'Delete') {
-            return;
-        }
-        e.preventDefault();
-
+    const keyAction = useCallback((key: string) => {
         switch (key) {
             case 'Enter':
                 buttonRef.current!.click();
-                break;
+                return false;
+
+            case 'ArrowLeft':
+                leftAction?.();
+                return false;
+
+            case 'ArrowRight':
+                rightAction?.();
+                return false;
 
             case 'Backspace':
-                if (backspaceAction) {
-                    backspaceAction();
-                }
-                break;
+                backspaceAction?.();
+                return false;
+
             case 'Delete':
-                if (deleteAction) {
-                    deleteAction();
-                }
-                break;
+                deleteAction?.();
+                return false;
         }
-    }, [invalid, backspaceAction, deleteAction]);
+        return true;
+    }, [invalid, leftAction, rightAction, backspaceAction, deleteAction]);
 
 
-    // FIXME do this on focus...
-    useEffect(() => {
-        if (!selection) {
-            return;
-        }
-        const elem = ref.current!;
-        const sel = window.getSelection();
-        if (!sel) {
-            throw Error("huh?");
-        }
-        sel.collapse(elem.firstChild, selection);
-    }, [selection]);
+    const onClickTitle = useCallback(() => {
+        ref.current!.focus();
+    }, []);
 
     const { controlId, infoId } = useFresh();
     return <FreshLayout
@@ -204,23 +227,19 @@ export const FreshEditing = ({
         info={<>{value.length} / {maxLength}</>}
         titleLabel={initialValue}
         title={
-            <div ref={ref}
-                        className={styles.input}
-                        inputMode="text"
-                        role="textbox"
-                        aria-label="Title"
-                        aria-disabled={disabled}
-                        aria-describedby={infoId}
-                        aria-required={true}
-                        aria-invalid={invalid}
-                        contentEditable={!disabled} suppressContentEditableWarning={true}
-                        onBeforeInput={onBeforeInput}
-                        onPaste={onPaste}
-                        onKeyDown={onKeyDown}
-                        onFocus={onFocus}
-                        onBlur={onBlur}
-                        >
-                        {value}
+            <div className={styles.input}
+                 aria-label="Title"
+                 aria-disabled={disabled}
+                 aria-describedby={infoId}
+                 aria-required={true}
+                 aria-invalid={invalid}
+                 role="textbox"
+                 onClick={onClickTitle}
+                >
+                {value.substring(0, selection)}
+                <Caret ref={ref} disabled={disabled} inputAction={inputAction} keyAction={keyAction}
+                   focusAction={focusAction} blurAction={blurAction} />
+                {value.substring(selection)}
             </div>
         }
         completeButton={
