@@ -6,10 +6,10 @@
         "start": "next start",
         "serve": "npx serve out",
         "lint": "next lint",
-        "tsc": "tsc"
+        "tsc": "tsc",
+        "test": "jest"
     },
     "dependencies": {
-        "@r2wc/react-to-web-component": "^2.0.4",
         "@reduxjs/toolkit": "^2.8.2",
         "next": "^15.4.4",
         "react": "^19.1.0",
@@ -19,11 +19,19 @@
         "redux-persist": "^6.0.0"
     },
     "devDependencies": {
+        "@testing-library/dom": "^10.4.1",
+        "@testing-library/jest-dom": "^6.6.4",
+        "@testing-library/react": "^16.3.0",
+        "@types/jest": "^30.0.0",
+        "jest": "^30.0.5",
+        "jest-environment-jsdom": "^30.0.5",
+        "jsdom": "^26.1.0",
         "@types/node": "^22.16.5",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
         "eslint": "^9.32.0",
         "eslint-config-next": "15.3.5",
+        "ts-node": "^10.9.2",
         "typescript": "^5.8.3"
     },
     "browserslist": [
