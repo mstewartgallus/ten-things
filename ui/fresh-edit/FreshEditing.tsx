@@ -49,6 +49,8 @@ const Caret = ({
         }
     }), []);
     const onBeforeInput = useCallback((event: InputEvent<HTMLSpanElement>) => {
+        console.log(event);
+        console.log(event.nativeEvent);
         event.preventDefault();
         inputAction?.(event.data);
     }, [inputAction]);
@@ -62,9 +64,14 @@ const Caret = ({
             event.preventDefault();
         }
     }, [keyAction]);
+
+    // FIXME... handle autocomplete
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1673558
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=1763669
+
     return <span className={styles.caret} ref={ref}
        inputMode="text"
-       contentEditable={!disabled} suppressContentEditableWarning={true}
+       contentEditable={disabled ? undefined : "plaintext-only"}
        onBeforeInput={onBeforeInput}
        onPaste={onPaste}
        onKeyDown={onKeyDown}
