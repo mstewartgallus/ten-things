@@ -57,6 +57,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
+      - name: Run Tests
+        run: pnpm test
+        env:
+          PAGES_BASE_PATH: ${{ steps.setup_pages.outputs.base_path }}
+
       - name: Build with Next.js
         run: pnpm run build
         env:
