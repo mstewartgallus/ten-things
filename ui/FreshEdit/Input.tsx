@@ -1,6 +1,6 @@
 "use client";
 
-import type { Ref, ReactNode, ClipboardEvent, KeyboardEvent, InputEvent, MouseEvent } from "react";
+import type { Ref, ReactNode, ClipboardEvent, KeyboardEvent, MouseEvent } from "react";
 import type { Entry } from '@/lib';
 import {
     useTransition, useCallback, useImperativeHandle, useMemo,
@@ -48,14 +48,7 @@ const Caret = ({
             ref.current!.focus();
         }
     }), []);
-    const onBeforeInput = useCallback((event: InputEvent<HTMLSpanElement>) => {
-        event.preventDefault();
-        inputAction?.(event.data);
-    }, [inputAction]);
-    const onPaste = useCallback((e: ClipboardEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        inputAction?.(e.clipboardData.getData('text'));
-    }, [inputAction]);
+
     const onKeyDown = useCallback((event: KeyboardEvent<HTMLSpanElement>) => {
         const { shiftKey, altKey, ctrlKey, metaKey } = event;
         if (!keyAction?.(event.key, { shiftKey, altKey, metaKey, ctrlKey })) {
@@ -67,11 +60,44 @@ const Caret = ({
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1673558
     // https://bugzilla.mozilla.org/show_bug.cgi?id=1763669
 
+    // FIXME I think the caret trick doesn't really work and you need
+    // to just handle all the separate inputType events
+    const onBeforeInput = useCallback((event: InputEvent) => {
+        //  https://w3c.github.io/input-event
+        event.preventDefault();
+        switch (event.inputType) {
+            case 'insertFromYank':
+            case 'insertFromDrop':
+            case 'insertFromPaste':
+            case 'insertText': {
+                const text = event.data ?? event.dataTransfer.getData('text');
+                inputAction?.(text.replace('\n', ' '));
+                break;
+            }
+
+            case 'insertLineBreak':
+                inputAction?.(' ');
+                break;
+
+            default:
+                console.warn(`unhandled input event type ${event.inputType}`);
+                break;
+        }
+    }, [inputAction]);
+
+    useEffect(() => {
+        // React doesn't really give us enough control here
+        // unfortunately and just abuses TextEvent
+        const aborter = new AbortController();
+        ref.current!.addEventListener('beforeinput', onBeforeInput, {
+            signal: aborter.signal
+        });
+        return () => aborter.abort();
+    }, [onBeforeInput]);
+
     return <span className={styles.caret} ref={ref}
        inputMode="text"
        contentEditable={disabled ? undefined : true}
-       onBeforeInput={onBeforeInput}
-       onPaste={onPaste}
        onKeyDown={onKeyDown}
        onFocus={focusAction} onBlur={blurAction} />;
 };
@@ -103,7 +129,6 @@ const Input = ({
     const onClickTitle = useCallback(() => {
         ref.current!.focus();
     }, []);
-
     return <div className={styles.input}
                  aria-label="Title"
                  aria-disabled={disabled}
