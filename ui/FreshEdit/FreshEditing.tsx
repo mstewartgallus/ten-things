@@ -8,75 +8,11 @@ import {
 } from 'react';
 import { FreshLayout } from "./FreshLayout";
 import { useFresh } from "./FreshProvider";
+import Input from "./Input";
 import Button from "../Button";
 import Icon from "../Icon";
 
 import styles from "./FreshEdit.module.css";
-
-interface Modifiers {
-    altKey: boolean;
-    ctrlKey: boolean;
-    metaKey: boolean;
-    shiftKey: boolean;
-}
-
-interface CaretHandle {
-    focus(): void;
-}
-
-interface CaretProps {
-    ref: Ref<CaretHandle>;
-    disabled: boolean;
-
-    // FIXME... make work async
-    keyAction?: (key: string, modifiers: Readonly<Modifiers>) => boolean;
-    inputAction?: (data: string) => Promise<void>;
-
-    focusAction?: () => Promise<void>;
-    blurAction?: () => Promise<void>;
-}
-
-const Caret = ({
-    ref: handleRef,
-    disabled,
-    keyAction, inputAction,
-    focusAction, blurAction
-}: CaretProps) => {
-    const ref = useRef<HTMLSpanElement>(null);
-    useImperativeHandle(handleRef, () => ({
-        focus() {
-            ref.current!.focus();
-        }
-    }), []);
-    const onBeforeInput = useCallback((event: InputEvent<HTMLSpanElement>) => {
-        console.log(event);
-        console.log(event.nativeEvent);
-        event.preventDefault();
-        inputAction?.(event.data);
-    }, [inputAction]);
-    const onPaste = useCallback((e: ClipboardEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        inputAction?.(e.clipboardData.getData('text'));
-    }, [inputAction]);
-    const onKeyDown = useCallback((event: KeyboardEvent<HTMLSpanElement>) => {
-        const { shiftKey, altKey, ctrlKey, metaKey } = event;
-        if (!keyAction?.(event.key, { shiftKey, altKey, metaKey, ctrlKey })) {
-            event.preventDefault();
-        }
-    }, [keyAction]);
-
-    // FIXME... handle autocomplete
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1673558
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=1763669
-
-    return <span className={styles.caret} ref={ref}
-       inputMode="text"
-       contentEditable={disabled ? undefined : true}
-       onBeforeInput={onBeforeInput}
-       onPaste={onPaste}
-       onKeyDown={onKeyDown}
-       onFocus={focusAction} onBlur={blurAction} />;
-};
 
 interface Props {
     children?: ReactNode;
@@ -142,7 +78,6 @@ export const FreshEditing = ({
     const blurAction = useCallback(async () => startTransition(() => setFocus(false)), []);
 
     const buttonRef = useRef<HTMLButtonElement>(null);
-    const ref = useRef<CaretHandle>(null);
 
     const formAction = useMemo(() => {
         if (!changeAction) {
@@ -213,10 +148,6 @@ export const FreshEditing = ({
     }, [invalid, leftAction, rightAction, backspaceAction, deleteAction]);
 
 
-    const onClickTitle = useCallback(() => {
-        ref.current!.focus();
-    }, []);
-
     const { controlId, infoId } = useFresh();
     return <FreshLayout
         formAction={formAction}
@@ -233,22 +164,17 @@ export const FreshEditing = ({
         }
         info={<>{value.length} / {maxLength}</>}
         titleLabel={initialValue}
-        title={
-            <div className={styles.input}
-                 aria-label="Title"
-                 aria-disabled={disabled}
-                 aria-describedby={infoId}
-                 aria-required={true}
-                 aria-invalid={invalid}
-                 role="textbox"
-                 onClick={onClickTitle}
-                >
-                {value.substring(0, selection)}
-                <Caret ref={ref} disabled={disabled} inputAction={inputAction} keyAction={keyAction}
-                   focusAction={focusAction} blurAction={blurAction} />
-                {value.substring(selection)}
-            </div>
-        }
+        title={<Input
+               disabled={disabled}
+               aria-describedby={infoId}
+               aria-invalid={invalid}
+               value={value}
+               selection={selection}
+               keyAction={keyAction}
+               inputAction={inputAction}
+               focusAction={focusAction}
+               blurAction={blurAction}
+            />}
         completeButton={
             <Button ref={buttonRef} disabled={disabled || invalid} aria-label="Edit Thing">
                 <Icon>D</Icon>
