@@ -1,30 +1,30 @@
 export type { Cursor, HtmlHandle } from "./html";
 
 export { UiProvider } from "./UiProvider";
-export { Html } from "./html";
-export { Main } from "./main";
+export { default as Html } from "./Html";
+export { default as Main } from "./Main";
 export { MainLabel } from "./main-label";
-export { Body } from "./body";
-export { A } from "./a";
-export { Button } from "./button";
+export { default as Body } from "./Body";
+export { default as A } from "./A";
+export { default as Button } from "./Button";
 export { H1, H2, H3, H4, H5, H6 } from "./heading";
-export { Header } from "./header";
-export { Footer } from "./footer";
-export { Nav } from "./nav";
-export { Bag } from "./bag";
-export { P } from "./p";
-export { Section } from "./section";
+export { default as Header } from "./Header";
+export { default as Footer } from "./Footer";
+export { default as Nav } from "./Nav";
+export { default as Bag } from "./Bag";
+export { default as P } from "./P";
+export { default as Section } from "./Section";
 export { SkipA } from "./skip-a";
 export { SubtleA } from "./subtle-a";
-export { Time } from "./time";
+export { default as Time } from "./Time";
 
-export { Icon } from "./icon";
+export { default as Icon } from "./Icon";
 export { List, useItem } from "./list";
 
-export { DragButton } from "./drag-button";
-export { DropButton } from "./drop-button";
-export { FreshEdit } from "./fresh-edit";
-export { Complete } from "./complete";
+export { default as DragButton } from "./DragButton";
+export { default as DropButton } from "./DropButton";
+export { default as FreshEdit } from "./FreshEdit";
+export { default as Complete } from "./Complete";
 
 // FIXME do these belong here?
-export { Logo } from "./Logo";
+export { default as Logo } from "./Logo";

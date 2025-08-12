@@ -19,7 +19,7 @@ const fontSize = (size: number) => {
     return 16;
 };
 
-export const Logo = ({ size }: Props) =>
+const Logo = ({ size }: Props) =>
     <div
         style={{
             background: 'black',
@@ -35,3 +35,5 @@ export const Logo = ({ size }: Props) =>
     >
            &amp;
     </div>;
+
+export default Logo;
