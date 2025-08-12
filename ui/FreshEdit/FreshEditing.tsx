@@ -71,7 +71,7 @@ const Caret = ({
 
     return <span className={styles.caret} ref={ref}
        inputMode="text"
-       contentEditable={disabled ? undefined : "plaintext-only"}
+       contentEditable={disabled ? undefined : true}
        onBeforeInput={onBeforeInput}
        onPaste={onPaste}
        onKeyDown={onKeyDown}
