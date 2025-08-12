@@ -1,4 +1,4 @@
-export type { Cursor, HtmlHandle } from "./html";
+export type { Cursor, HtmlHandle } from "./Html";
 
 export { UiProvider } from "./UiProvider";
 export { default as Html } from "./Html";

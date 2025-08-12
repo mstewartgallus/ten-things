@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { Cursor } from "./html";
+import type { Cursor } from "./Html";
 import { createContext, useEffect, useContext } from "react";
 
 interface Context {

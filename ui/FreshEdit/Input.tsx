@@ -20,15 +20,13 @@ interface Modifiers {
     shiftKey: boolean;
 }
 
-interface CaretHandle {
-    focus(): void;
-}
+interface Props {
+    disabled?: boolean;
+    'aria-describedby'?: string;
+    'aria-invalid'?: boolean;
+    value?: string;
+    selection?: number
 
-interface CaretProps {
-    ref: Ref<CaretHandle>;
-    disabled: boolean;
-
-    // FIXME... make work async
     keyAction?: (key: string, modifiers: Readonly<Modifiers>) => boolean;
     inputAction?: (data: string) => Promise<void>;
 
@@ -36,19 +34,19 @@ interface CaretProps {
     blurAction?: () => Promise<void>;
 }
 
-const Caret = ({
-    ref: handleRef,
-    disabled,
+const Input = ({
+    disabled = false,
+    'aria-describedby': describedby,
+    'aria-invalid': invalid,
+    value = '',
+    selection = 0,
     keyAction, inputAction,
     focusAction, blurAction
-}: CaretProps) => {
+}: Props) => {
     const ref = useRef<HTMLSpanElement>(null);
-    useImperativeHandle(handleRef, () => ({
-        focus() {
-            ref.current!.focus();
-        }
-    }), []);
-
+    const onClickTitle = useCallback(() => {
+        ref.current!.focus();
+    }, []);
     const onKeyDown = useCallback((event: KeyboardEvent<HTMLSpanElement>) => {
         const { shiftKey, altKey, ctrlKey, metaKey } = event;
         if (!keyAction?.(event.key, { shiftKey, altKey, metaKey, ctrlKey })) {
@@ -70,8 +68,10 @@ const Caret = ({
             case 'insertFromDrop':
             case 'insertFromPaste':
             case 'insertText': {
-                const text = event.data ?? event.dataTransfer.getData('text');
-                inputAction?.(text.replace('\n', ' '));
+                const text = event.data ?? event.dataTransfer?.getData('text');
+                if (text) {
+                    inputAction?.(text.replace('\n', ' '));
+                }
                 break;
             }
 
@@ -95,54 +95,22 @@ const Caret = ({
         return () => aborter.abort();
     }, [onBeforeInput]);
 
-    return <span className={styles.caret} ref={ref}
-       inputMode="text"
-       contentEditable={disabled ? undefined : true}
-       onKeyDown={onKeyDown}
-       onFocus={focusAction} onBlur={blurAction} />;
-};
-
-interface Props {
-    disabled?: boolean;
-    'aria-describedby'?: string;
-    'aria-invalid'?: string;
-    value?: string;
-    selection?: number
-
-    keyAction?: (key: string, modifiers: Readonly<Modifiers>) => boolean;
-    inputAction?: (data: string) => Promise<void>;
-
-    focusAction?: () => Promise<void>;
-    blurAction?: () => Promise<void>;
-}
-
-const Input = ({
-    disabled = false,
-    'aria-describedby': describedby,
-    'aria-invalid': invalid,
-    value = '',
-    selection = 0,
-    keyAction, inputAction,
-    focusAction, blurAction
-}: Props) => {
-    const ref = useRef<CaretHandle>(null);
-    const onClickTitle = useCallback(() => {
-        ref.current!.focus();
-    }, []);
     return <div className={styles.input}
                  aria-label="Title"
                  aria-disabled={disabled}
                  aria-describedby={describedby}
                  aria-required={true}
-                 aria-invalid={invalid}
+                 aria-invalid={invalid ? true : undefined}
                  role="textbox"
                  onClick={onClickTitle}
                 >
                 {value.substring(0, selection)}
-                <Caret ref={ref} disabled={disabled} inputAction={inputAction} keyAction={keyAction}
-                   focusAction={focusAction} blurAction={blurAction} />
-                {value.substring(selection)}
-    </div>;
+                <span className={styles.caret} ref={ref} inputMode="text"
+                    contentEditable={disabled ? undefined : true}
+                    onKeyDown={onKeyDown}
+                    onFocus={focusAction} onBlur={blurAction} />
+               {value.substring(selection)}
+        </div>;
 };
 
 export default Input;
