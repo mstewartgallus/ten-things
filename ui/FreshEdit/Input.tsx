@@ -13,6 +13,14 @@ import Icon from "../Icon";
 
 import styles from "./FreshEdit.module.css";
 
+const getCaret = () => {
+    const range = window.getSelection()?.getRangeAt(0);
+    if (!range) {
+        return [0, 0];
+    }
+    return [range.startOffset, range.endOffset];
+};
+
 interface Modifiers {
     altKey: boolean;
     ctrlKey: boolean;
@@ -20,15 +28,36 @@ interface Modifiers {
     shiftKey: boolean;
 }
 
+interface InsertText {
+    type: 'insertText';
+    data: string;
+}
+interface DeleteContentBackward {
+    type: 'deleteContentBackward';
+}
+interface DeleteContentForward {
+    type: 'deleteContentForward';
+}
+
+export type InputData =
+    | InsertText
+    | DeleteContentBackward
+    | DeleteContentForward;
+
 interface Props {
     disabled?: boolean;
     'aria-describedby'?: string;
     'aria-invalid'?: boolean;
     value?: string;
-    selection?: number
+
+    selectionStart?: number;
+    selectionEnd?: number;
 
     keyAction?: (key: string, modifiers: Readonly<Modifiers>) => boolean;
-    inputAction?: (data: string) => Promise<void>;
+    inputAction?: (
+        selectionStart: number, selectionEnd: number,
+        input: InputData
+    ) => Promise<void>;
 
     focusAction?: () => Promise<void>;
     blurAction?: () => Promise<void>;
@@ -39,8 +68,10 @@ const Input = ({
     'aria-describedby': describedby,
     'aria-invalid': invalid,
     value = '',
-    selection = 0,
-    keyAction, inputAction,
+    selectionStart = 0,
+    selectionEnd = 0,
+    keyAction,
+    inputAction,
     focusAction, blurAction
 }: Props) => {
     const ref = useRef<HTMLSpanElement>(null);
@@ -60,7 +91,9 @@ const Input = ({
 
     // FIXME I think the caret trick doesn't really work and you need
     // to just handle all the separate inputType events
-    const onBeforeInput = useCallback((event: InputEvent) => {
+    const onBeforeInput = useCallback(async (event: InputEvent) => {
+        const [start, end] = getCaret();
+
         //  https://w3c.github.io/input-event
         event.preventDefault();
         switch (event.inputType) {
@@ -70,13 +103,21 @@ const Input = ({
             case 'insertText': {
                 const text = event.data ?? event.dataTransfer?.getData('text');
                 if (text) {
-                    inputAction?.(text.replace('\n', ' '));
+                    inputAction?.(start, end, { type: 'insertText', data: text });
                 }
                 break;
             }
 
             case 'insertLineBreak':
-                inputAction?.(' ');
+                inputAction?.(start, end, { type: 'insertText', data: ' ' });
+                break;
+
+            case 'deleteContentBackward':
+                inputAction?.(start, end, { type: 'deleteContentBackward' });
+                break;
+
+            case 'deleteContentForward':
+                inputAction?.(start, end, { type: 'deleteContentForward' });
                 break;
 
             default:
@@ -95,6 +136,24 @@ const Input = ({
         return () => aborter.abort();
     }, [onBeforeInput]);
 
+    useEffect(() => {
+        const elem = ref.current!;
+
+        const text = document.createTextNode(value);
+        elem.appendChild(text);
+
+        const range = document.createRange();
+        range.setStart(text, selectionStart);
+        range.setEnd(text, selectionEnd);
+
+        const selection = window.getSelection()!;
+        selection.empty();
+        selection.addRange(range);
+        return () => {
+            elem.removeChild(text);
+        };
+    }, [value, selectionStart, selectionEnd]);
+
     return <div className={styles.input}
                  aria-label="Title"
                  aria-disabled={disabled}
@@ -104,12 +163,10 @@ const Input = ({
                  role="textbox"
                  onClick={onClickTitle}
                 >
-                {value.substring(0, selection)}
                 <span className={styles.caret} ref={ref} inputMode="text"
                     contentEditable={disabled ? undefined : true}
                     onKeyDown={onKeyDown}
-                    onFocus={focusAction} onBlur={blurAction} />
-               {value.substring(selection)}
+    onFocus={focusAction} onBlur={blurAction} />
         </div>;
 };
 

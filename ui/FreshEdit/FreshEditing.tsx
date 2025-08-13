@@ -1,6 +1,6 @@
 "use client";
 
-import type { Ref, ReactNode, ClipboardEvent, KeyboardEvent, InputEvent, MouseEvent } from "react";
+import type { Ref, ReactNode, ClipboardEvent, KeyboardEvent, MouseEvent } from "react";
 import type { Entry } from '@/lib';
 import {
     useTransition, useCallback, useImperativeHandle, useMemo,
@@ -11,7 +11,7 @@ import { useFresh } from "./FreshProvider";
 import Input from "./Input";
 import Button from "../Button";
 import Icon from "../Icon";
-
+import type { InputData } from "./Input";
 import styles from "./FreshEdit.module.css";
 
 interface Props {
@@ -54,7 +54,7 @@ export const FreshEditing = ({
 
     const [focus, setFocus] = useState(false);
     const [value, setValue] = useState(initialValue);
-    const [selection, setSelection] = useState<number>(0);
+    const [[start, end], setSelection] = useState<[number, number]>([0, 0]);
 
     const errorMessages = useMemo(() => {
         const messages = []
@@ -90,36 +90,54 @@ export const FreshEditing = ({
 
     const edit = useCallback(async (value: string, selection: number) => {
         setValue(value);
-        setSelection(selection);
+        setSelection([selection, selection]);
     }, []);
 
-    const leftAction = useCallback(async () => {
-        setSelection(Math.max(selection - 1, 0));
-    }, [selection]);
-    const rightAction = useCallback(async () => {
-        setSelection(Math.min(selection + 1, value.length));
-    }, [selection, value]);
+    const inputAction = useCallback(async (
+        start: number, end: number,
+        input: InputData
+    ) => {
+        switch (input.type) {
+            case 'insertText': {
+                const data = input.data.replace('\n', ' ');
 
-    const backspaceAction = useCallback(async () => {
-        const pos = Math.max(selection - 1, 0);
-        const newValue = value.substring(0, pos) + value.substring(selection);
-        await edit(newValue, pos);
-    }, [value, edit, selection]);
+                const newValue =
+                    value.substring(0, start) +
+                    data +
+                    value.substring(end);
+                await edit(newValue, start + data.length);
+                break;
+            }
 
-    const deleteAction = useCallback(async () => {
-        const newValue = value.substring(0, selection) + value.substring(selection + 1);
-        await edit(newValue, selection);
-    }, [value, edit, selection]);
+            case 'deleteContentBackward': {
+                if (start === end) {
+                    const newStart = Math.max(start - 1, 0);
+                    const newValue =
+                        value.substring(0, newStart )
+                        + value.substring(start);
+                    await edit(newValue, newStart);
+                    return;
+                }
+                const newValue =
+                    value.substring(0, start) + value.substring(end);
+                await edit(newValue, start);
+                break;
+            }
 
-    const inputAction = useCallback(async (data: string) => {
-        data = data.replace('\n', ' ');
-
-        const newValue =
-            value.substring(0, selection) +
-            data +
-            value.substring(selection);
-        await edit(newValue, selection + data.length);
-    }, [value, edit, selection]);
+            case 'deleteContentForward': {
+                if (start === end) {
+                    const newValue =
+                        value.substring(0, start) + value.substring(start + 1);
+                    await edit(newValue, start);
+                    return;
+                }
+                const newValue =
+                    value.substring(0, start) + value.substring(end);
+                await edit(newValue, start);
+                break;
+            }
+        }
+    }, [value, edit, start, end]);
 
     // FIXME handle deletion better, also cut
     const keyAction = useCallback((key: string) => {
@@ -127,25 +145,9 @@ export const FreshEditing = ({
             case 'Enter':
                 buttonRef.current!.click();
                 return false;
-
-            case 'ArrowLeft':
-                leftAction?.();
-                return false;
-
-            case 'ArrowRight':
-                rightAction?.();
-                return false;
-
-            case 'Backspace':
-                backspaceAction?.();
-                return false;
-
-            case 'Delete':
-                deleteAction?.();
-                return false;
         }
         return true;
-    }, [invalid, leftAction, rightAction, backspaceAction, deleteAction]);
+    }, []);
 
 
     const { controlId, infoId } = useFresh();
@@ -169,7 +171,8 @@ export const FreshEditing = ({
                aria-describedby={infoId}
                aria-invalid={invalid}
                value={value}
-               selection={selection}
+               selectionStart={start}
+               selectionEnd={end}
                keyAction={keyAction}
                inputAction={inputAction}
                focusAction={focusAction}

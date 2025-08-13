@@ -33,7 +33,7 @@
 .caretWrapper {
 }
 .caret {
-    color: var(--highlight-text);
+    caret-color: var(--highlight-text);
     outline: none;
 }
 
