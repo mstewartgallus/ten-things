@@ -4,7 +4,6 @@ export { UiProvider } from "./UiProvider";
 export { default as Html } from "./Html";
 export { default as Main } from "./Main";
 export { MainLabel } from "./main-label";
-export { default as Body } from "./Body";
 export { default as A } from "./A";
 export { default as Button } from "./Button";
 export { H1, H2, H3, H4, H5, H6 } from "./heading";

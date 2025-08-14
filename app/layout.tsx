@@ -5,7 +5,7 @@ import { useCallback, useRef } from "react";
 import type { Store } from "redux";
 import type { Cursor, HtmlHandle } from "@/ui";
 import {
-    UiProvider, A, Bag, H2, Html, Header, Body, Main, Nav, SkipA,
+    UiProvider, A, Bag, H2, Html, Header, Main, Nav, SkipA,
     SubtleA, Footer, P
 } from "@/ui";
 import { LibProvider, StoreProvider } from "@/lib";
@@ -60,7 +60,7 @@ const RootLayout = ({ children }: Props) => {
     }, []);
 
     return <Html ref={htmlRef} lang="en">
-        <Body>
+        <body>
             <Nav>
                 <Bag>
                     <A href="/">Fresh Things</A>
@@ -86,7 +86,7 @@ const RootLayout = ({ children }: Props) => {
                 <P>Just a little demo app by Molly Stewart-Gallus.</P>
                 <P><A href="https://mstewartgallus.github.io/select-webapp">Select another app.</A></P>
             </Footer>
-         </Body>
+         </body>
     </Html>;
 };
 
