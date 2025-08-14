@@ -56,7 +56,7 @@ interface Props {
     keyAction?: (key: string, modifiers: Readonly<Modifiers>) => boolean;
     inputAction?: (
         selectionStart: number, selectionEnd: number,
-        input: InputData
+        input: Readonly<InputData>
     ) => Promise<void>;
 
     focusAction?: () => Promise<void>;
@@ -162,12 +162,10 @@ const Input = ({
                  aria-invalid={invalid ? true : undefined}
                  role="textbox"
                  onClick={onClickTitle}
-                >
-                <span className={styles.caret} ref={ref} inputMode="text"
-                    contentEditable={disabled ? undefined : true}
+                 ref={ref} inputMode="text"
+                 contentEditable={disabled ? undefined : true}
                     onKeyDown={onKeyDown}
-    onFocus={focusAction} onBlur={blurAction} />
-        </div>;
+    onFocus={focusAction} onBlur={blurAction} />;
 };
 
 export default Input;

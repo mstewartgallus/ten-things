@@ -47,7 +47,7 @@
 
     margin-inline: 1ch;
     padding-block: calc(0.5 * var(--line));
-    min-block-size: cavar(--line);
+    min-block-size: var(--line);
 }
 
 .info {
