@@ -74,11 +74,11 @@ const Input = ({
     inputAction,
     focusAction, blurAction
 }: Props) => {
-    const ref = useRef<HTMLSpanElement>(null);
+    const ref = useRef<HTMLParagraphElement>(null);
     const onClickTitle = useCallback(() => {
         ref.current!.focus();
     }, []);
-    const onKeyDown = useCallback((event: KeyboardEvent<HTMLSpanElement>) => {
+    const onKeyDown = useCallback((event: KeyboardEvent<HTMLElement>) => {
         const { shiftKey, altKey, ctrlKey, metaKey } = event;
         if (!keyAction?.(event.key, { shiftKey, altKey, metaKey, ctrlKey })) {
             event.preventDefault();
@@ -154,7 +154,7 @@ const Input = ({
         };
     }, [value, selectionStart, selectionEnd]);
 
-    return <div className={styles.input}
+    return <p className={styles.input}
                  aria-label="Title"
                  aria-disabled={disabled}
                  aria-describedby={describedby}
