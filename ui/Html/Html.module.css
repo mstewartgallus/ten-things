@@ -21,8 +21,6 @@
     /* Make the caret seeable with caret browsing?  Need to figure out */
     /* a better UX here/experiment on different platforms */
     caret-color: var(--highlight-text) ;
-
-    scrollbar-color: var(--emphasis-text) var(--canvas);
 }
 
 /* Debug text grid */
