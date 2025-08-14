@@ -16,6 +16,7 @@ export { default as Section } from "./Section";
 export { SkipA } from "./skip-a";
 export { SubtleA } from "./subtle-a";
 export { default as Time } from "./Time";
+export { Dl, Dd, Dt } from "./dl";
 
 export { default as Icon } from "./Icon";
 export { List, useItem } from "./list";
@@ -23,7 +24,6 @@ export { List, useItem } from "./list";
 export { default as DragButton } from "./DragButton";
 export { default as DropButton } from "./DropButton";
 export { default as FreshEdit } from "./FreshEdit";
-export { default as Complete } from "./Complete";
 
 // FIXME do these belong here?
 export { default as Logo } from "./Logo";

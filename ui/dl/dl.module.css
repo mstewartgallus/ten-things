@@ -1,17 +1,22 @@
-.p {
+.dl, .dd, .dt {
     all: unset;
     display: block;
-    contain: style;
-
-    margin-block: var(--line);
+}
+.dl {
     inline-size: var(--measure);
     max-inline-size: 100%;
-    hyphens: auto;
+}
+.dt {
+    clear: left;
+    float: left;
+}
+.dd {
+    clear: right;
+    float: right;
 }
 
 @media screen {
-    .p {
+    .dl {
         margin-inline-start: calc(1.5 * var(--s));
-        margin-inline-end: calc(0.5 * var(--s));
     }
 }

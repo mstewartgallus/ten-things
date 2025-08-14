@@ -8,7 +8,7 @@ import type {
 } from "@/lib";
 import { useCallback } from 'react';
 import { useTen, useComplete, useEntry } from "@/lib";
-import { List, useItem, Complete as CompleteComponent } from '@/ui';
+import { Time, P, List, useItem, Dl, Dd, Dt } from '@/ui';
 
 import styles from "./CompleteList.module.css";
 
@@ -23,8 +23,16 @@ const CompleteItem = () => {
 
     // const entry = entryAtId(item.id);
     return <li role="listitem" className={styles.item}>
-           <div className={styles.marker}>—</div>
-           <CompleteComponent value={value} created={created} completed={completed} />
+            <div>
+                <div className={styles.marker}>—</div>
+                <div className={styles.complete}>
+                    <P>{value}</P>
+                    <Dl>
+                       <Dt>Created:</Dt> <Dd><Time>{created}</Time></Dd>
+                       <Dt>Completed:</Dt> <Dd><Time>{completed}</Time></Dd>
+                    </Dl>
+                </div>
+            </div>
         </li>;
 };
 

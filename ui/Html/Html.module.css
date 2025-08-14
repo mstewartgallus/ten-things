@@ -56,6 +56,11 @@
 /* https://accessiblepalette.com/?lightness=97,79,75,23,11,57.8,48,40.2,31.8,10&b90000=1,29&dc0000=1,0&744e42=1,0&eed15c=1,-30&00FF00=1,0&0000c1=1,-20&ff00ce=1,0&2b3429=1,0 */
 
 .html {
+    /* FIXME there has to be a better way of doing things */
+    /* default ratio on browsers is 1rem = 16px */
+    --s: clamp(0rem, (1600vw - 600rem) / 100, 1rem) ;
+}
+.html {
     --canvas: Canvas ;
     --canvas-text: CanvasText ;
 

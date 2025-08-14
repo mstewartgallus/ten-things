@@ -9,7 +9,8 @@
 }
 
 .item {
-    display: flow-root;
+    /* display: flow-root; */
+    max-inline-size: 40em;
 }
 
 .marker {
@@ -21,4 +22,15 @@
 
 .content {
 
+}
+
+.complete {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    max-inline-size: 40em;
+}
+
+.dates {
+    display: flex;
+    flex-direction: column;
 }
