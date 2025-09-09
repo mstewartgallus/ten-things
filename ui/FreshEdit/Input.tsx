@@ -13,7 +13,7 @@ import Icon from "../Icon";
 
 import styles from "./FreshEdit.module.css";
 
-const getCaret = (node: Node) => {
+const getCaret = (node: Text) => {
     const range = window.getSelection()?.getRangeAt(0);
     if (!range) {
         return [0, 0];
@@ -78,7 +78,7 @@ const Input = ({
     focusAction, blurAction
 }: Props) => {
     const ref = useRef<HTMLParagraphElement>(null);
-    const textRef = useRef<TextNode>(null);
+    const textRef = useRef<Text>(null);
     const onClickTitle = useCallback(() => {
         ref.current!.focus();
     }, []);
