@@ -1,6 +1,6 @@
 'use client';
 
-import type { JSX, MouseEvent, PointerEvent, ReactNode } from 'react';
+import type { JSX, KeyboardEvent, MouseEvent, PointerEvent, ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useWrap, toDataProps } from "../wrap";
 import { useCursor } from "../UiProvider";
@@ -48,6 +48,7 @@ const DragButton = ({ disabled, children, dragging, dragStartAction, dragEndActi
             await dragStartAction();
         };
     }, [dragStartAction]);
+
     const onClick = dragging ? dragEndAction : dragStartAction;
 
     const [pointerDown, setPointerDown] = useState(false);
@@ -80,6 +81,13 @@ const DragButton = ({ disabled, children, dragging, dragStartAction, dragEndActi
         };
     }, [pointerDown, dragStartAction]);
 
+    const onKeyDown = useCallback((e: KeyboardEvent<HTMLButtonElement>) => {
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            dragEndAction?.();
+        }
+    }, [dragEndAction]);
+
     useCursor(dragging ? 'grabbing' : undefined);
 
     const { state, cb } = useWrap();
@@ -88,6 +96,7 @@ const DragButton = ({ disabled, children, dragging, dragStartAction, dragEndActi
                  disabled={disabled}
                  aria-label="Reorder"
                  aria-expanded={dragging}
+                 onKeyDown={onKeyDown}
                  onPointerMove={onPointerMove}
                  onPointerDown={onPointerDown}
                  onPointerUp={onPointerUp}
