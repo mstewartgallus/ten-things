@@ -31,7 +31,6 @@ const DragButton = ({ disabled, children, dragging, dragStartAction, dragEndActi
             if (e.button !== 0) {
                 return;
             }
-            console.log('drag end');
             e.preventDefault();
             await dragEndAction();
         };
@@ -45,7 +44,6 @@ const DragButton = ({ disabled, children, dragging, dragStartAction, dragEndActi
             if (e.button !== 0) {
                 return;
             }
-            console.log('drag start');
             e.preventDefault();
             await dragStartAction();
         };
