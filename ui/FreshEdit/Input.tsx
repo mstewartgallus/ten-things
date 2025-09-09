@@ -13,10 +13,13 @@ import Icon from "../Icon";
 
 import styles from "./FreshEdit.module.css";
 
-const getCaret = () => {
+const getCaret = (node: Node) => {
     const range = window.getSelection()?.getRangeAt(0);
     if (!range) {
         return [0, 0];
+    }
+    if (range.startContainer !== node) {
+        return [0, node.length];
     }
     return [range.startOffset, range.endOffset];
 };
@@ -75,6 +78,7 @@ const Input = ({
     focusAction, blurAction
 }: Props) => {
     const ref = useRef<HTMLParagraphElement>(null);
+    const textRef = useRef<TextNode>(null);
     const onClickTitle = useCallback(() => {
         ref.current!.focus();
     }, []);
@@ -92,7 +96,7 @@ const Input = ({
     // FIXME I think the caret trick doesn't really work and you need
     // to just handle all the separate inputType events
     const onBeforeInput = useCallback(async (event: InputEvent) => {
-        const [start, end] = getCaret();
+        const [start, end] = getCaret(textRef.current!);
 
         //  https://w3c.github.io/input-event
         event.preventDefault();
@@ -140,6 +144,7 @@ const Input = ({
         const elem = ref.current!;
 
         const text = document.createTextNode(value);
+        textRef.current = text;
         elem.appendChild(text);
 
         const range = document.createRange();
