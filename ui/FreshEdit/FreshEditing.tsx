@@ -77,6 +77,7 @@ export const FreshEditing = ({
     const focusAction = useCallback(async () => startTransition(() => setFocus(true)), []);
     const blurAction = useCallback(async () => startTransition(() => setFocus(false)), []);
 
+    const cancelRef = useRef<HTMLButtonElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
     const formAction = useMemo(() => {
@@ -145,6 +146,10 @@ export const FreshEditing = ({
             case 'Enter':
                 buttonRef.current!.click();
                 return false;
+
+            case 'Escape':
+                buttonRef.current!.click();
+                return false;
         }
         return true;
     }, []);
@@ -156,7 +161,7 @@ export const FreshEditing = ({
         selected={true}
         focus={focus}
         titleButton={
-            <Button aria-label={emptyValue ? 'Cancel Create Thing' : 'Cancel Edit Thing'}
+            <Button ref={cancelRef} aria-label={emptyValue ? 'Cancel Create Thing' : 'Cancel Edit Thing'}
             disabled={disabled || !onClick}
             onClick={onClick}
             aria-expanded={true}
