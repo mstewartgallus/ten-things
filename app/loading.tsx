@@ -1,12 +1,10 @@
-import { MainLabel, Header, H1, P } from "@/ui";
+import { Header, H1, P } from "@/ui";
 
 const Loading = () =>
     <>
-        <MainLabel>
-            <Header>
-                <H1>Loading...</H1>
-            </Header>
-        </MainLabel>
+        <Header>
+           <H1>Loading...</H1>
+        </Header>
         <P>Loading...</P>
     </>;
 

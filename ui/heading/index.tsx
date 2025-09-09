@@ -2,13 +2,22 @@
 
 import type { JSX } from "react";
 import { withClass } from "../with-class";
+import { useMainLabelId } from "../main-label";
 import styles from "./heading.module.css";
 
 type Props = JSX.IntrinsicElements;
 
-export const H1 = withClass<Props['h1']>(
+const RawH1 = withClass<Props['h1']>(
     'h1',
     styles.heading1);
+
+export const H1 = ({ children, ...props }: Props['h1']) => {
+    const id = useMainLabelId();
+    return <RawH1 {...props}>
+           <span id={id ?? undefined}>{children}</span>
+        </RawH1>;
+};
+
 export const H2 = withClass<Props['h2']>(
     'h2',
     styles.heading2);

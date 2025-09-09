@@ -3,7 +3,7 @@
 import type { EntryId, TenHandle, FreshHandle, EntryHandle } from '@/lib';
 
 import { useCallback, useRef } from 'react';
-import { DragButton, DropButton, MainLabel,
+import { DragButton, DropButton,
          FreshEdit,
          List, useItem,
          H1, Header } from '@/ui';
@@ -130,12 +130,10 @@ const TenFresh = () => {
 
 export const TenThings = () =>
     <>
-        <MainLabel>
-            <Header>
-                <H1>
-                    <Heading />
-                </H1>
-            </Header>
-        </MainLabel>
+       <Header>
+          <H1>
+             <Heading />
+          </H1>
+       </Header>
        <TenFresh />
     </>;

@@ -17,9 +17,4 @@ interface Props {
     readonly children: ReactNode;
 }
 
-export const MainLabel = ({ children }: Props) => {
-    const id = useContext(MainContext);
-    return <div className={styles.mainlabel} id={id ?? undefined}>
-        {children}
-        </div>;
-};
+export const useMainLabelId = () => useContext(MainContext);;
