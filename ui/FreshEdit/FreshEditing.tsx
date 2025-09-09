@@ -148,7 +148,7 @@ export const FreshEditing = ({
                 return false;
 
             case 'Escape':
-                buttonRef.current!.click();
+                cancelRef.current!.click();
                 return false;
         }
         return true;
