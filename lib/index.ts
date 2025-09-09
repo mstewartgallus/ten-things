@@ -12,5 +12,4 @@ export {
     useFresh, useComplete,
     useEntry
 } from "./hooks";
-export { StoreProvider } from "./StoreProvider";
-export { LibProvider } from "./LibProvider";
+export { default as Providers } from "./Providers";

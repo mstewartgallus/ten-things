@@ -8,11 +8,11 @@ import { useImperativeHandle, useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 
 interface Props {
-    readonly children: ReactNode;
-    readonly ref: Ref<Store>
+    children: ReactNode;
+    ref: Ref<Store>
 }
 
-export const StoreProvider = ({ ref, children }: Props) => {
+const StoreProvider = ({ ref, children }: Readonly<Props>) => {
     const storeRef = useRef<Store>(null);
 
     if (!storeRef.current) {
@@ -27,3 +27,5 @@ export const StoreProvider = ({ ref, children }: Props) => {
             {children}
     </Provider>;
 };
+
+export default StoreProvider;

@@ -8,24 +8,13 @@ import {
     UiProvider, A, Bag, H2, Html, Header, Main, Nav, SkipA,
     SubtleA, Footer, P
 } from "@/ui";
-import { LibProvider, StoreProvider } from "@/lib";
-import { persistStore } from "redux-persist";
+import { Providers } from "@/lib";
 
 import "./_ui/styles/globals.css";
 
 interface Props {
-  readonly children: ReactNode;
+    children: ReactNode;
 }
-
-const withResolvers = <T,>() => {
-    let resolve;
-    let reject;
-    const promise = new Promise<T>((res, rej) => {
-        resolve = res;
-        reject = rej;
-    });
-    return { promise, resolve: resolve!, reject: reject! };
-};
 
 interface State {
     init: boolean;
@@ -33,31 +22,12 @@ interface State {
     readonly resolve: () => void;
 }
 
-const RootLayout = ({ children }: Props) => {
-    const storeRef = useRef<Store>(null);
+const RootLayout = ({ children }: Readonly<Props>) => {
     const htmlRef = useRef<HtmlHandle>(null);
-
-    const ref = useRef<State>(null);
-    if (!ref.current) {
-        const { promise, resolve } = withResolvers<void>();
-        ref.current = { init: false, promise, resolve };
-    }
 
     const onCursorChange = useCallback(
         (cursor?: Cursor) => htmlRef.current!.cursor(cursor),
         []);
-
-    const persist = useCallback(() => {
-        const store = storeRef.current!;
-        const { init, promise, resolve } = ref.current!;
-
-        if (!init) {
-            persistStore(store, null, () => resolve());
-            ref.current!.init = true;
-        }
-
-        return promise;
-    }, []);
 
     return <Html ref={htmlRef} lang="en">
         <body>
@@ -69,13 +39,11 @@ const RootLayout = ({ children }: Props) => {
                 </Bag>
             </Nav>
             <Main>
-                <StoreProvider ref={storeRef}>
-                    <LibProvider persist={persist}>
+                <Providers>
                         <UiProvider onCursorChange={onCursorChange}>
                             {children}
                         </UiProvider>
-                    </LibProvider>
-                </StoreProvider>
+                </Providers>
             </Main>
             <Footer>
                 <Header>
