@@ -3,14 +3,15 @@
 import type { ReactNode } from "react";
 import { useCallback, useRef } from "react";
 import type { Store } from "redux";
-import type { Cursor, HtmlHandle } from "@/ui";
-import {
-    UiProvider, A, Bag, H2, Html, Header, Main, Nav, SkipA,
-    SubtleA, Footer, P
-} from "@/ui";
 import { LibProvider } from "./LibProvider";
 import StoreProvider from "./StoreProvider";
 import { persistStore } from "redux-persist";
+
+interface State {
+    init: boolean;
+    readonly promise: Promise<void>;
+    readonly resolve: () => void;
+}
 
 const withResolvers = <T,>() => {
     let resolve;

@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import { useCallback, useRef } from "react";
-import type { Store } from "redux";
 import type { Cursor, HtmlHandle } from "@/ui";
 import {
     UiProvider, A, Bag, H2, Html, Header, Main, Nav, SkipA,
@@ -14,12 +13,6 @@ import "./_ui/styles/globals.css";
 
 interface Props {
     children: ReactNode;
-}
-
-interface State {
-    init: boolean;
-    readonly promise: Promise<void>;
-    readonly resolve: () => void;
 }
 
 const RootLayout = ({ children }: Readonly<Props>) => {
