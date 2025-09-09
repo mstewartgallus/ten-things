@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { MainLabel, Header, H1 } from "@/ui";
 
-import { CompleteThings } from "../_ui/complete-things";
+import { CompleteThings } from "./_ui/complete-things";
 
 const CompletePage = () =>
     <>
