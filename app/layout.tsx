@@ -5,7 +5,7 @@ import { useCallback, useRef } from "react";
 import type { Cursor, HtmlHandle } from "@/ui";
 import {
     UiProvider, A, Bag, H2, Html, Header, Main, Nav, SkipA,
-    SubtleA, Footer, P
+    SubtleA, P, Footer
 } from "@/ui";
 import { Providers } from "@/lib";
 
@@ -38,13 +38,13 @@ const RootLayout = ({ children }: Readonly<Props>) => {
                         </UiProvider>
                 </Providers>
             </Main>
-            <Footer>
+            <Footer aria-describedby="footer">
                 <Header>
                     <H2>
                         <SubtleA id="footer" href="#footer">About This Website</SubtleA>
                     </H2>
                 </Header>
-                <P>Just a little demo app by Molly Stewart-Gallus.</P>
+                <P>Ten Things minimalist todo list demo by Molly Stewart-Gallus.</P>
                 <P><A href="https://mstewartgallus.github.io/select-webapp">Select another app.</A></P>
             </Footer>
          </body>
