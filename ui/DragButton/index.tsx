@@ -15,14 +15,14 @@ export const RawButton =
 
 interface Props {
     disabled: boolean;
-    readonly children?: ReactNode;
-    readonly dragging: boolean;
+    children?: ReactNode;
+    dragging: boolean;
 
-    readonly dragStartAction?: () => Promise<void>;
-    readonly dragEndAction?: () => Promise<void>;
+    dragStartAction?: () => Promise<void>;
+    dragEndAction?: () => Promise<void>;
 }
 
-const DragButton = ({ disabled, children, dragging, dragStartAction, dragEndAction }: Props) => {
+const DragButton = ({ disabled, children, dragging, dragStartAction, dragEndAction }: Readonly<Props>) => {
     const onClickDragEnd = useMemo(() => {
         if (!dragEndAction) {
             return;
